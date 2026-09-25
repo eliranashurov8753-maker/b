@@ -97,22 +97,68 @@ const supplierData = () => ({
   broadcasts: [{ id: "b1", text: "מבצע השבוע: 10% הנחה על פלפל אדום! 🫑", ts: Date.now() - 86400000 }],
 });
 
-const secondSupplier = () => ({ id: "s2", name: "מאפיית הבוקר", category: "מאפייה ולחמים", regions: "ירושלים, שפלה, מרכז", status: "active", biz: { taxId: "302998877", address: "יפו 100, ירושלים", phone: "02-5559876", email: "" }, invoiceSeq: 2000, owner: { email: "admin@boker.co.il", password: "1234", contact: "בעל המאפייה", phone: "02-0000000" }, brand: { logo: LOGO_IMG, tagline: "טרי מהתנור כל בוקר", color: "#B4791F", borderW: 2.5 }, cats: ["מאפים", "חד פעמי"], features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [ { id: "b1", name: "לחמניות", unit: "carton", cost: 0.8, price: 1.6, kg: 4, units: 24, stock: 50, emoji: "🥐", img: "" }, { id: "b2", name: "חלות", unit: "carton", cost: 6, price: 12, kg: 6, units: 6, stock: 30, emoji: "🍞", img: "" }, { id: "b3", name: "בורקסים", unit: "carton", cost: 2, price: 4, kg: 5, units: 12, stock: 40, emoji: "🥧", img: "" }, { id: "b4", name: "עוגיות", unit: "weight", cost: 15, price: 28, kg: 2, stock: 25, emoji: "🍪", img: "" }, { id: "b5", name: "כלים חד פעמי", unit: "carton", cost: 20, price: 38, kg: 3, units: 100, stock: 40, emoji: "🥡", img: "", cat: "חד פעמי" } ], clients: [ { id: "c1b", name: "מסעדת הגן", contact: "יוסי לוי", phone: "050-1234567", address: "הרצל 15, תל אביב", email: "gan@demo.co.il", password: "1234", taxId: "514112233", structure: "עוסק מורשה", category: "מסעדה", pay: "credit", status: "active", target: 15, docs: [], createdAt: Date.now() - 86400000 * 10 } ], staff: [], orders: [], messages: [], broadcasts: [] });
-const demoSupplier = () => { const now = Date.now(); const id = "demo" + now; return {
-  id, name: "ספק הדגמה", category: "ירקות ופירות", regions: "מרכז, השרון", status: "active",
+const secondSupplier = () => ({ id: "s2", name: "מאפיית הבוקר", category: "מאפייה ולחמים", regions: "ירושלים, שפלה, מרכז", status: "active", biz: { taxId: "302998877", address: "יפו 100, ירושלים", phone: "02-5559876", email: "" }, invoiceSeq: 2000, owner: { email: "admin@boker.co.il", password: "1234", contact: "בעל המאפייה", phone: "02-0000000" }, brand: { logo: LOGO_IMG, tagline: "טרי מהתנור כל בוקר", color: "#B4791F", borderW: 2.5 }, sub: { plan: "basic", status: "trial", method: "none", since: Date.now() - 86400000 * 10, invoices: [] }, cats: ["מאפים", "חד פעמי"], features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [ { id: "b1", name: "לחמניות", unit: "carton", cost: 0.8, price: 1.6, kg: 4, units: 24, stock: 50, emoji: "🥐", img: "" }, { id: "b2", name: "חלות", unit: "carton", cost: 6, price: 12, kg: 6, units: 6, stock: 30, emoji: "🍞", img: "" }, { id: "b3", name: "בורקסים", unit: "carton", cost: 2, price: 4, kg: 5, units: 12, stock: 40, emoji: "🥧", img: "" }, { id: "b4", name: "עוגיות", unit: "weight", cost: 15, price: 28, kg: 2, stock: 25, emoji: "🍪", img: "" }, { id: "b5", name: "כלים חד פעמי", unit: "carton", cost: 20, price: 38, kg: 3, units: 100, stock: 40, emoji: "🥡", img: "", cat: "חד פעמי" } ], clients: [ { id: "c1b", name: "מסעדת הגן", contact: "יוסי לוי", phone: "050-1234567", address: "הרצל 15, תל אביב", email: "gan@demo.co.il", password: "1234", taxId: "514112233", structure: "עוסק מורשה", category: "מסעדה", pay: "credit", status: "active", target: 15, docs: [], createdAt: Date.now() - 86400000 * 10 } ], staff: [], orders: [], messages: [], broadcasts: [] });
+const AREAS = {
+  "מרכז": ["תל אביב", "רמת גן", "גבעתיים", "פתח תקווה", "ראשון לציון", "חולון", "בת ים", "אור יהודה", "יהוד"],
+  "השרון": ["נתניה", "רעננה", "כפר סבא", "הוד השרון", "הרצליה", "רמת השרון", "כפר יונה"],
+  "ירושלים והסביבה": ["ירושלים", "מבשרת ציון", "בית שמש", "מעלה אדומים"],
+  "שפלה": ["רחובות", "נס ציונה", "לוד", "רמלה", "יבנה", "מודיעין"],
+  "צפון": ["חיפה", "קריות", "עכו", "נהריה", "טבריה", "עפולה", "כרמיאל", "נצרת", "קרית שמונה"],
+  "דרום": ["באר שבע", "אשדוד", "אשקלון", "אילת", "דימונה", "קרית גת", "נתיבות", "שדרות"],
+};
+const DEMO_TEMPLATES = {
+  veg: { name: "ירק+ שיווק השדה", category: "ירקות ופירות", color: "#1F7A4D", cats: ["ירקות", "פירות", "עלים"], tagline: "טרי מהשדה כל בוקר", products: [
+    { name: "עגבניות", unit: "weight", cost: 3, price: 6.5, kg: 10, stock: 60, emoji: "🍅", cat: "ירקות" },
+    { name: "מלפפונים", unit: "weight", cost: 2.5, price: 5.5, kg: 8, stock: 45, emoji: "🥒", cat: "ירקות" },
+    { name: "פלפל אדום", unit: "weight", cost: 5, price: 9, kg: 6, stock: 30, emoji: "🫑", cat: "ירקות" },
+    { name: "תפוחים", unit: "weight", cost: 4, price: 7.5, kg: 12, stock: 50, emoji: "🍎", cat: "פירות" },
+    { name: "בננות", unit: "weight", cost: 4.5, price: 8, kg: 10, stock: 40, emoji: "🍌", cat: "פירות" },
+    { name: "חסה", unit: "carton", cost: 6, price: 12, kg: 3, units: 12, stock: 25, emoji: "🥬", cat: "עלים" },
+  ] },
+  eggs: { name: "משק הביצים", category: "ביצים ומוצרי חלב", color: "#C79A1E", cats: ["ביצים", "חלב"], tagline: "ביצים טריות מהלול", products: [
+    { name: "ביצים L (תבנית 30)", unit: "carton", cost: 18, price: 32, kg: 2, units: 30, stock: 80, emoji: "🥚", cat: "ביצים" },
+    { name: "ביצים XL (תבנית 30)", unit: "carton", cost: 22, price: 38, kg: 2.2, units: 30, stock: 60, emoji: "🥚", cat: "ביצים" },
+    { name: "ביצי חופש (12)", unit: "carton", cost: 14, price: 26, kg: 0.9, units: 12, stock: 40, emoji: "🐓", cat: "ביצים" },
+    { name: "חלב 3% (ליטר)", unit: "carton", cost: 4, price: 7, kg: 1, units: 12, stock: 50, emoji: "🥛", cat: "חלב" },
+  ] },
+  drinks: { name: "משקאות פלוס", category: "שתייה ומשקאות", color: "#1E6FE0", cats: ["קר", "מים", "אנרגיה"], tagline: "משקאות קרים לעסק", products: [
+    { name: "קולה (משטח 24)", unit: "carton", cost: 30, price: 54, kg: 8, units: 24, stock: 40, emoji: "🥤", cat: "קר" },
+    { name: "מיץ תפוזים (12)", unit: "carton", cost: 24, price: 44, kg: 12, units: 12, stock: 30, emoji: "🧃", cat: "קר" },
+    { name: "מים מינרלים (24)", unit: "carton", cost: 12, price: 22, kg: 12, units: 24, stock: 90, emoji: "💧", cat: "מים" },
+    { name: "משקה אנרגיה (24)", unit: "carton", cost: 60, price: 108, kg: 6, units: 24, stock: 25, emoji: "⚡", cat: "אנרגיה" },
+  ] },
+  meat: { name: "אטליז הבשר", category: "בשר ועוף", color: "#B23B3B", cats: ["בקר", "עוף", "מעובד"], tagline: "בשר טרי ואיכותי", products: [
+    { name: "אנטריקוט", unit: "weight", cost: 55, price: 92, kg: 5, stock: 30, emoji: "🥩", cat: "בקר" },
+    { name: "בשר טחון", unit: "weight", cost: 32, price: 52, kg: 5, stock: 40, emoji: "🍖", cat: "בקר" },
+    { name: "חזה עוף", unit: "weight", cost: 22, price: 36, kg: 6, stock: 50, emoji: "🍗", cat: "עוף" },
+    { name: "שניצל פרוס", unit: "weight", cost: 28, price: 46, kg: 5, stock: 35, emoji: "🍗", cat: "עוף" },
+    { name: "נקניקיות (חבילה)", unit: "carton", cost: 12, price: 22, kg: 4, units: 10, stock: 30, emoji: "🌭", cat: "מעובד" },
+  ] },
+  food: { name: "מזון פלוס — יבשים", category: "מזון יבש ומכולת", color: "#8A5A2B", cats: ["יבשים", "שימורים", "תבלינים"], tagline: "כל המכולת לעסק", products: [
+    { name: "אורז (5 ק\"ג)", unit: "carton", cost: 20, price: 34, kg: 5, units: 1, stock: 60, emoji: "🍚", cat: "יבשים" },
+    { name: "פסטה (שק 3 ק\"ג)", unit: "carton", cost: 12, price: 22, kg: 3, units: 1, stock: 50, emoji: "🍝", cat: "יבשים" },
+    { name: "טונה (משטח 48)", unit: "carton", cost: 90, price: 150, kg: 9, units: 48, stock: 20, emoji: "🐟", cat: "שימורים" },
+    { name: "רסק עגבניות (12)", unit: "carton", cost: 24, price: 42, kg: 9, units: 12, stock: 30, emoji: "🥫", cat: "שימורים" },
+    { name: "מלח / פלפל (ערכה)", unit: "carton", cost: 8, price: 16, kg: 2, units: 6, stock: 40, emoji: "🧂", cat: "תבלינים" },
+  ] },
+  disposable: { name: "חד פעמי פלוס", category: "כלים חד פעמיים ואריזות", color: "#5B4BC4", cats: ["כלים", "אריזות", "ניקיון"], tagline: "הכל לעסק, חד פעמי", products: [
+    { name: "צלחות (100)", unit: "carton", cost: 15, price: 28, kg: 3, units: 100, stock: 60, emoji: "🍽️", cat: "כלים" },
+    { name: "כוסות (50)", unit: "carton", cost: 8, price: 16, kg: 1, units: 50, stock: 80, emoji: "🥤", cat: "כלים" },
+    { name: "מגשי אלומיניום (50)", unit: "carton", cost: 20, price: 36, kg: 4, units: 50, stock: 40, emoji: "🥡", cat: "אריזות" },
+    { name: "שקיות אשפה (רול)", unit: "carton", cost: 18, price: 32, kg: 5, units: 10, stock: 50, emoji: "🗑️", cat: "ניקיון" },
+  ] },
+};
+const DEMO_KINDS = [["veg", "ירקות ופירות", "🥬"], ["eggs", "ביצים וחלב", "🥚"], ["drinks", "שתייה", "🥤"], ["meat", "בשר ועוף", "🥩"], ["food", "מזון יבש", "🥫"], ["disposable", "חד פעמי", "🍽️"]];
+const PLANS = { basic: { id: "basic", name: "בסיסי", price: 99 }, pro: { id: "pro", name: "מקצועי", price: 199 }, premium: { id: "premium", name: "פרימיום", price: 349 } };
+const BILL_VAT = 0.18;
+const demoSupplier = (kind) => { const now = Date.now(); const id = "demo" + now; const t = DEMO_TEMPLATES[kind] || DEMO_TEMPLATES.veg; return {
+  id, name: t.name + " (הדגמה)", category: t.category, regions: "מרכז, השרון", status: "active",
   biz: { taxId: "500000000", address: "רחוב הדוגמה 1, תל אביב", phone: "03-0000000", email: "" },
   invoiceSeq: 5000,
   owner: { email: "demo-" + now + "@b2bplus.co.il", password: "1234", contact: "מנהל הדגמה", phone: "050-0000000" },
-  brand: { logo: LOGO_IMG, tagline: "הדגמה — כך תיראה החנות שלך", color: "#1E6FE0", borderW: 2.5 },
-  cats: ["ירקות", "פירות"], features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(),
-  products: [
-    { id: "dp1", name: "עגבניות", unit: "weight", cost: 3, price: 6.5, kg: 10, stock: 60, emoji: "🍅", img: "", cat: "ירקות" },
-    { id: "dp2", name: "מלפפונים", unit: "weight", cost: 2.5, price: 5.5, kg: 8, stock: 45, emoji: "🥒", img: "", cat: "ירקות" },
-    { id: "dp3", name: "פלפל אדום", unit: "weight", cost: 5, price: 9, kg: 6, stock: 30, emoji: "🫑", img: "", cat: "ירקות" },
-    { id: "dp4", name: "תפוחים", unit: "weight", cost: 4, price: 7.5, kg: 12, stock: 50, emoji: "🍎", img: "", cat: "פירות" },
-    { id: "dp5", name: "בננות", unit: "weight", cost: 4.5, price: 8, kg: 10, stock: 40, emoji: "🍌", img: "", cat: "פירות" },
-    { id: "dp6", name: "לימונים", unit: "weight", cost: 3, price: 6, kg: 5, stock: 25, emoji: "🍋", img: "", cat: "פירות" },
-  ],
+  brand: { logo: LOGO_IMG, tagline: t.tagline, color: t.color, borderW: 2.5 },
+  cats: t.cats, features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(),
+  products: t.products.map((pr, i) => ({ id: "dp" + i, img: "", ...pr })),
   clients: [
     { id: "dc1", name: "מסעדת הדגמה", contact: "דנה כהן", phone: "050-1111111", address: "דיזנגוף 100, תל אביב", email: "demo-rest-" + now + "@demo.co.il", password: "1234", taxId: "514000001", structure: "עוסק מורשה", category: "מסעדה", pay: "credit", status: "active", target: 20, docs: [], createdAt: now - 86400000 * 8 },
     { id: "dc2", name: "בית קפה לדוגמה", contact: "רון לוי", phone: "050-2222222", address: "אלנבי 50, תל אביב", email: "demo-cafe-" + now + "@demo.co.il", password: "1234", taxId: "514000002", structure: "חברה בעמ", category: "בית קפה", pay: "cash", status: "active", target: 12, docs: [], createdAt: now - 86400000 * 5 },
@@ -124,16 +170,16 @@ const demoSupplier = () => { const now = Date.now(); const id = "demo" + now; re
     { id: "da1", role: "agent", name: "סוכן הדגמה", email: "demo-agent-" + now + "@b2bplus.co.il", password: "1234" },
   ],
   orders: [
-    { id: "D" + (now % 100000) + "1", clientId: "dc1", date: now - 86400000 * 2, status: "delivered", driverId: "dd1", paid: true, pickedBy: "מלקט הדגמה", invNo: 5001, items: [{ pid: "dp1", cartons: 5, supplied: 5, actualKg: 52 }, { pid: "dp4", cartons: 3, supplied: 3, actualKg: 34 }] },
-    { id: "D" + (now % 100000) + "2", clientId: "dc2", date: now - 3600000 * 5, status: "picked", pickedBy: "מלקט הדגמה", invNo: 5002, items: [{ pid: "dp2", cartons: 4, supplied: 4, actualKg: 31 }] },
-    { id: "D" + (now % 100000) + "3", clientId: "dc1", date: now - 3600000 * 2, status: "new", items: [{ pid: "dp3", cartons: 2 }, { pid: "dp5", cartons: 3 }] },
+    { id: "D" + (now % 100000) + "1", clientId: "dc1", date: now - 86400000 * 2, status: "delivered", driverId: "dd1", paid: true, pickedBy: "מלקט הדגמה", invNo: 5001, items: [{ pid: "dp0", cartons: 5, supplied: 5, actualKg: 52 }, { pid: "dp1", cartons: 3, supplied: 3, actualKg: 24 }] },
+    { id: "D" + (now % 100000) + "2", clientId: "dc2", date: now - 3600000 * 5, status: "picked", pickedBy: "מלקט הדגמה", invNo: 5002, items: [{ pid: "dp2", cartons: 4, supplied: 4 }] },
+    { id: "D" + (now % 100000) + "3", clientId: "dc1", date: now - 3600000 * 2, status: "new", items: [{ pid: "dp0", cartons: 2 }, { pid: "dp1", cartons: 3 }] },
   ],
   messages: [], broadcasts: [{ id: "db1", text: "ברוכים הבאים לחנות ההדגמה של B2B+ 🎉", ts: now - 3600000 * 24 }],
 }; };
 const seed = () => ({
   superPw: SUPER_PW,
   superAgents: [{ id: "sa1", role: "superagent", name: "תמיכה B2B+", email: "support@b2bplus.co.il", password: "1234" }],
-  suppliers: [{ id: "s1", name: "שיווק השדה", category: "ירקות ופירות טריים", regions: "מרכז, השרון, תל אביב", status: "active", biz: { taxId: "515123456", address: "המסגר 20, תל אביב", phone: "03-5551234", email: "billing@sadeh.co.il" }, invoiceSeq: 1000, owner: { email: "admin@sadeh.co.il", password: "1234", contact: "בעל העסק", phone: "050-0000000" }, brand: { logo: LOGO_IMG, tagline: "ירקות ופירות טריים לעסקים", color: "#1F7A4D", borderW: 2.5 }, cats: ["ירקות", "פירות"], features: { prizes: true, chat: true, minOrder: 5 }, ...supplierData() }, secondSupplier()],
+  suppliers: [{ id: "s1", name: "שיווק השדה", category: "ירקות ופירות טריים", regions: "מרכז, השרון, תל אביב", status: "active", biz: { taxId: "515123456", address: "המסגר 20, תל אביב", phone: "03-5551234", email: "billing@sadeh.co.il" }, invoiceSeq: 1000, owner: { email: "admin@sadeh.co.il", password: "1234", contact: "בעל העסק", phone: "050-0000000" }, brand: { logo: LOGO_IMG, tagline: "ירקות ופירות טריים לעסקים", color: "#1F7A4D", borderW: 2.5 }, sub: { plan: "pro", status: "active", method: "credit", since: Date.now() - 86400000 * 40, last4: "4417", invoices: [] }, cats: ["ירקות", "פירות"], features: { prizes: true, chat: true, minOrder: 5 }, ...supplierData() }, secondSupplier()],
 });
 
 function useAppState() {
@@ -198,6 +244,30 @@ function Logo({ size = 42, light = false, sub = false, wordmark = false, img, na
   );
 }
 
+function PayMarkModal({ order, state, setState, onClose }) {
+  const [method, setMethod] = useState("cash");
+  const [checkDue, setCheckDue] = useState("");
+  const save = () => { setState((s) => ({ ...s, orders: s.orders.map((o) => o.id === order.id ? { ...o, paid: true, paidMethod: method, paidAt: Date.now(), checkDue: method === "check" ? checkDue : "" } : o) })); onClose(); };
+  return (
+    <Modal onClose={onClose} title={"סימון תשלום · הזמנה #" + order.id}>
+      <div style={{ fontSize: 13, color: C.sub, marginBottom: 10 }}>איך שולמה ההזמנה? · {NIS(orderTotal(order, state.products))}</div>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
+        {[["cash", "מזומן"], ["credit", "אשראי"], ["check", "צ'ק"]].map(([k, lbl]) => <button key={k} onClick={() => setMethod(k)} style={{ border: `1.5px solid ${method === k ? C.green : C.line}`, background: method === k ? C.greenSoft : "#fff", color: method === k ? C.greenDeep : C.sub, borderRadius: 10, padding: "10px 18px", fontWeight: 700, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><PayIcon pay={k} size={15} /> {lbl}</button>)}
+      </div>
+      {method === "check" && <label style={{ display: "block", marginBottom: 12 }}><div style={{ fontSize: 13, color: C.sub, marginBottom: 4 }}>תאריך פירעון הצ'ק</div><input type="date" value={checkDue} onChange={(e) => setCheckDue(e.target.value)} style={fieldStyle} /></label>}
+      <SubmitBtn onClick={save}>אשר תשלום</SubmitBtn>
+    </Modal>
+  );
+}
+function AlertSound({ count, active }) {
+  const prev = React.useRef(null);
+  useEffect(() => {
+    if (!active) { prev.current = null; return; }
+    if (prev.current !== null && count > prev.current) { try { const AC = window.AudioContext || window.webkitAudioContext; const ctx = new AC(); const o = ctx.createOscillator(); const g = ctx.createGain(); o.type = "sine"; o.frequency.value = 880; g.gain.setValueAtTime(0.0001, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.15, ctx.currentTime + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.25); o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 0.26); setTimeout(() => { try { ctx.close(); } catch (e) {} }, 400); } catch (e) {} }
+    prev.current = count;
+  }, [count, active]);
+  return null;
+}
 function FontLoader({ font }) {
   useEffect(() => { if (!font || font === "Rubik") return; const id = "gf-" + font.replace(/\s+/g, ""); if (document.getElementById(id)) return; const l = document.createElement("link"); l.id = id; l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=" + font.replace(/\s+/g, "+") + ":wght@400;600;700;800&display=swap"; document.head.appendChild(l); }, [font]);
   return null;
@@ -207,7 +277,7 @@ export default function App() {
   const [session, setSession] = useState({ kind: "none" });
   const [saved, setSaved] = useState(false);
   const [storeId] = useState(() => { try { return new URL(window.location.href).searchParams.get("store"); } catch { return null; } });
-  const [showProfile, setShowProfile] = useState(false);
+  const [showProfile, setShowProfile] = useState(false); const [showBell, setShowBell] = useState(false);
   useEffect(() => { if (!document.getElementById("ff-rubik")) { const l = document.createElement("link"); l.id = "ff-rubik"; l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap"; document.head.appendChild(l); } if (!document.getElementById("tp-css")) { const st = document.createElement("style"); st.id = "tp-css"; st.textContent = ".tp-2col{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:20px}.tp-2eq{grid-template-columns:1fr 1fr}.tp-staff{grid-template-columns:1fr 1fr 1fr 1fr auto}@media(max-width:760px){.tp-2col{grid-template-columns:1fr}.tp-staff{grid-template-columns:1fr 1fr}}@media(max-width:560px){.tp-2eq{grid-template-columns:1fr}}"; document.head.appendChild(st); } }, []);
   if (!state) return <div dir="rtl" style={{ background: C.bg, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: C.sub }}>טוען…</div>;
   if (session.kind === "none") { const storeSup = storeId ? state.suppliers.find((x) => x.id === storeId && x.status === "active") : null; return storeSup ? <StorePage supplier={storeSup} state={state} setState={setState} onLogin={setSession} /> : <AuthScreen state={state} setState={setState} onLogin={setSession} />; }
@@ -246,17 +316,17 @@ export default function App() {
           <span style={{ fontSize: 13.5, opacity: .92, fontWeight: 600 }}>{title}</span>
           {session.kind === "client" && session.supplierId && <button onClick={() => setSession({ kind: "client", email: session.email, pw: session.pw })} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,.16)", color: "#fff", border: "none", borderRadius: 9, padding: "8px 13px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}><Building2 size={15} /> הספקים שלי</button>}
           <button onClick={() => setShowProfile(true)} title="הפרופיל שלי" style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,.16)", color: "#fff", border: "none", borderRadius: 9, padding: "8px 12px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}><User size={16} /></button>
-          {session.kind === "supplier" && supAlerts > 0 && <div title="עדכונים חדשים" style={{ position: "relative", display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,.16)", color: "#fff", borderRadius: 9, padding: "8px 12px", fontSize: 14, fontWeight: 700 }}><Bell size={16} /><span style={{ background: C.amber, color: "#fff", borderRadius: 20, fontSize: 11, padding: "1px 7px", fontWeight: 800 }}>{supAlerts}</span></div>}
+          {session.kind === "supplier" && supAlerts > 0 && <button onClick={() => setShowBell(true)} title="עדכונים חדשים" style={{ position: "relative", display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,.16)", color: "#fff", border: "none", borderRadius: 9, padding: "8px 12px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}><Bell size={16} /><span style={{ background: C.amber, color: "#fff", borderRadius: 20, fontSize: 11, padding: "1px 7px", fontWeight: 800 }}>{supAlerts}</span></button>}
           <button onClick={save} style={{ display: "flex", alignItems: "center", gap: 6, background: saved ? "#fff" : "rgba(255,255,255,.16)", color: saved ? C.greenDeep : "#fff", border: "none", borderRadius: 9, padding: "8px 13px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>{saved ? <Check size={15} /> : <Save size={15} />}{saved ? "נשמר" : "שמור"}</button>
           <button onClick={() => setSession(session.asSuper ? { kind: session.from || "super" } : { kind: "none" })} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,.16)", color: "#fff", border: "none", borderRadius: 9, padding: "8px 13px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}><LogOut size={15} /> {session.asSuper ? "חזרה למנהל-על" : "יציאה"}</button>
         </div>
       </div>
       <div style={{ maxWidth: 1160, margin: "0 auto", padding: "20px 20px 60px" }}>
-        {isSuper && <SuperAdminView state={state} setState={setState} onEnter={(sid) => setSession({ kind: "supplier", supplierId: sid, asSuper: true, from: "super" })} />}
-        {isAgent && <SuperAdminView state={state} setState={setState} agentMode onEnter={(sid) => setSession({ kind: "supplier", supplierId: sid, asSuper: true, from: "superagent" })} />}
+        {isSuper && <SuperAdminView state={state} setState={setState} onEnter={(sid) => setSession({ kind: "supplier", supplierId: sid, asSuper: true, from: "super" })} onEnterAs={(sess) => setSession({ ...sess, asSuper: true, from: "super" })} />}
+        {isAgent && <SuperAdminView state={state} setState={setState} agentMode onEnter={(sid) => setSession({ kind: "supplier", supplierId: sid, asSuper: true, from: "superagent" })} onEnterAs={(sess) => setSession({ ...sess, asSuper: true, from: "superagent" })} />}
         {isHub && <BusinessHub state={state} setState={setState} email={session.email} onEnter={(sid) => setSession({ ...session, supplierId: sid })} onJoin={joinSupplier} />}
         {session.kind === "supplier" && <><FontLoader font={themeFont} /><ManagerView state={sup} setState={scopedSet} /></>}
-        {session.kind === "client" && sup && clientRec && <div style={{ zoom: themeScale, color: themeFontColor }}><FontLoader font={themeFont} /><ClientView state={sup} setState={scopedSet} clientId={clientRec.id} /></div>}
+        {session.kind === "client" && sup && clientRec && <div style={{ color: themeFontColor }}><FontLoader font={themeFont} /><ClientView state={sup} setState={scopedSet} clientId={clientRec.id} /></div>}
         {isStaffView && staffRoles.length > 1 && (
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16, background: "#fff", border: `1px solid ${C.line}`, borderRadius: 14, padding: 10, boxShadow: SH }}>
             <span style={{ fontSize: 13, color: C.sub, fontWeight: 700, alignSelf: "center", marginInlineEnd: 4 }}>התפקידים שלי:</span>
@@ -268,6 +338,13 @@ export default function App() {
         {session.kind === "agent" && <AgentView state={sup} setState={scopedSet} me={me} />}
       </div>
       {showProfile && <ProfileModal session={session} state={state} setState={setState} sup={sup} onClose={() => setShowProfile(false)} onLoggedOut={() => { setShowProfile(false); setSession({ kind: "none" }); }} />}
+      <AlertSound count={supAlerts} active={session.kind === "supplier"} />
+      {showBell && <Modal title="עדכונים" onClose={() => setShowBell(false)}>
+        <div style={{ display: "grid", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, border: `1px solid ${C.line}`, borderRadius: 12, padding: "12px 14px" }}><div style={{ width: 40, height: 40, borderRadius: 10, background: C.amberSoft, color: C.amber, display: "flex", alignItems: "center", justifyContent: "center" }}><ClipboardList size={20} /></div><div><div style={{ fontWeight: 800, fontSize: 16 }}>{supNewOrders} הזמנות חדשות</div><div style={{ fontSize: 13, color: C.sub }}>ממתינות לליקוט בלשונית "הזמנות"</div></div></div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, border: `1px solid ${C.line}`, borderRadius: 12, padding: "12px 14px" }}><div style={{ width: 40, height: 40, borderRadius: 10, background: C.blueSoft, color: C.blue, display: "flex", alignItems: "center", justifyContent: "center" }}><MessageSquare size={20} /></div><div><div style={{ fontWeight: 800, fontSize: 16 }}>{supUnreadMsgs} הודעות שלא נקראו</div><div style={{ fontSize: 13, color: C.sub }}>מלקוחות, בלשונית "הודעות"</div></div></div>
+        </div>
+      </Modal>}
     </div>
   );
 }
@@ -298,11 +375,14 @@ function SupplierRegister({ state, setState, back, byAdmin, onDone }) {
   const [f, setF] = useState({ name: "", category: "", regions: "", contact: "", phone: "", email: "", password: "" });
   const [err, setErr] = useState(""); const [done, setDone] = useState(false);
   const set = (k) => (e) => setF((s) => ({ ...s, [k]: e.target.value }));
+  const regList = f.regions ? f.regions.split(",").map((x) => x.trim()).filter(Boolean) : [];
+  const hasReg = (v) => regList.includes(v);
+  const toggleReg = (v) => { const next = hasReg(v) ? regList.filter((x) => x !== v) : [...regList, v]; setF((s) => ({ ...s, regions: next.join(", ") })); };
   const submit = () => {
     if (!f.name || !f.email || !f.password) return setErr("שם, אימייל וסיסמה חובה");
     const em = f.email.trim().toLowerCase();
     if (state.suppliers.some((sp) => sp.owner && sp.owner.email.trim().toLowerCase() === em)) return setErr("אימייל זה כבר רשום כספק");
-    const sup = { id: "s" + Date.now(), name: f.name, category: f.category || "כללי", regions: f.regions || "", status: byAdmin ? "active" : "pending", owner: { email: f.email, password: f.password, contact: f.contact, phone: f.phone }, brand: { logo: LOGO_IMG, tagline: "", color: "#1F7A4D" }, biz: { taxId: "", address: "", phone: f.phone || "", email: f.email || "" }, cats: [], invoiceSeq: 1000, features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [], clients: [], staff: [], orders: [], messages: [], broadcasts: [] };
+    const sup = { id: "s" + Date.now(), name: f.name, category: f.category || "כללי", regions: f.regions || "", status: byAdmin ? "active" : "pending", owner: { email: f.email, password: f.password, contact: f.contact, phone: f.phone }, brand: { logo: LOGO_IMG, tagline: "", color: "#1F7A4D" }, sub: { plan: "basic", status: "trial", method: "none", since: Date.now(), invoices: [] }, biz: { taxId: "", address: "", phone: f.phone || "", email: f.email || "" }, cats: [], invoiceSeq: 1000, features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [], clients: [], staff: [], orders: [], messages: [], broadcasts: [] };
     setState((root) => ({ ...root, suppliers: [...root.suppliers, sup] }));
     if (byAdmin && onDone) return onDone();
     setDone(true);
@@ -313,24 +393,98 @@ function SupplierRegister({ state, setState, back, byAdmin, onDone }) {
       <div className="tp-2eq" style={{ display: "grid", gap: 10 }}>
         <Field label="שם החנות / הספק *" value={f.name} onChange={set("name")} />
         <Field label="קטגוריה" value={f.category} onChange={set("category")} placeholder="ירקות ופירות / מאפייה / בשרים" />
-        <Field label="אזורי עבודה" value={f.regions} onChange={set("regions")} placeholder="מרכז, השרון, ירושלים" />
         <Field label="איש קשר" value={f.contact} onChange={set("contact")} />
         <Field label="טלפון" value={f.phone} onChange={set("phone")} />
         <Field label="אימייל (לכניסה) *" value={f.email} onChange={set("email")} />
         <Field label="סיסמה *" type="password" value={f.password} onChange={set("password")} />
+      </div>
+      <div style={{ marginTop: 12, border: `1px solid ${C.line}`, borderRadius: 12, padding: 14 }}>
+        <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>אזורי פעילות</div>
+        <div style={{ fontSize: 12.5, color: C.sub, marginBottom: 10 }}>סמנו את כל האזורים והערים שבהם אתם מספקים — כך לקוחות באזורים אלה ימצאו אתכם בחיפוש.</div>
+        {Object.keys(AREAS).map((ar) => (
+          <div key={ar} style={{ marginBottom: 10 }}>
+            <button type="button" onClick={() => toggleReg(ar)} style={{ border: `1.5px solid ${hasReg(ar) ? C.green : C.line}`, background: hasReg(ar) ? C.green : "#fff", color: hasReg(ar) ? "#fff" : C.ink, borderRadius: 20, padding: "5px 14px", fontSize: 13, fontWeight: 800, cursor: "pointer", marginBottom: 6 }}>{ar}{hasReg(ar) ? " ✓" : ""}</button>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{(AREAS[ar] || []).map((ct) => <button key={ct} type="button" onClick={() => toggleReg(ct)} style={{ border: `1px solid ${hasReg(ct) ? C.green : C.line}`, background: hasReg(ct) ? C.greenSoft : "#fff", color: hasReg(ct) ? C.greenDeep : C.sub, borderRadius: 16, padding: "4px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>{ct}{hasReg(ct) ? " ✓" : ""}</button>)}</div>
+          </div>
+        ))}
+        {regList.length > 0 && <div style={{ fontSize: 12.5, color: C.greenDeep, marginTop: 6 }}>נבחרו: {regList.join(", ")}</div>}
       </div>
       {err && <ErrBox>{err}</ErrBox>}<SubmitBtn onClick={submit}>{byAdmin ? "הוסף ספק" : "שליחת בקשה למנהל-על"}</SubmitBtn>
     </>
   );
   return byAdmin ? body : <Card title="הרשמת ספק חדש" back={back} wide>{body}</Card>;
 }
-function SuperAdminView({ state, setState, onEnter, agentMode }) {
+function BillingCenter({ state, setState }) {
+  const sups = state.suppliers.filter((x) => x.id.indexOf("demo") !== 0);
+  const setSub = (sid, patch) => setState((r) => ({ ...r, suppliers: r.suppliers.map((s2) => s2.id === sid ? { ...s2, sub: { ...(s2.sub || { plan: "basic", status: "trial", method: "none", invoices: [] }), ...patch } } : s2) }));
+  const monthKeyNow = new Date().toISOString().slice(0, 7);
+  const chargeOne = (sp) => {
+    const sub = sp.sub || {}; const plan = PLANS[sub.plan] || PLANS.basic; const net = plan.price; const vat = net * BILL_VAT; const gross = net + vat;
+    const inv = { id: "SV" + Date.now() + "-" + sp.id, month: monthKeyNow, plan: plan.id, planName: plan.name, net, vat, gross, method: sub.method || "none", ts: Date.now(), paid: sub.method === "credit" || sub.method === "standing" };
+    setSub(sp.id, { invoices: [inv, ...((sub.invoices) || [])], lastCharge: Date.now() });
+    return inv;
+  };
+  const chargeAll = () => { const due = sups.filter((sp) => (sp.sub && sp.sub.status === "active") && !(sp.sub.invoices || []).some((iv) => iv.month === monthKeyNow)); due.forEach(chargeOne); alert(due.length ? "בוצע חיוב חודשי ל-" + due.length + " ספקים." : "כל הספקים הפעילים כבר חויבו החודש."); };
+  const totalMonth = sups.reduce((sum, sp) => sum + ((sp.sub && sp.sub.invoices) || []).filter((iv) => iv.month === monthKeyNow).reduce((a, iv) => a + iv.gross, 0), 0);
+  const activeCount = sups.filter((sp) => sp.sub && sp.sub.status === "active").length;
+  const [openSup, setOpenSup] = useState(null);
+  return (
+    <div style={{ display: "grid", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 12 }}>
+        <Kpi icon={<Users size={17} />} label="ספקים פעילים" value={activeCount} tone="green" />
+        <Kpi icon={<Wallet size={17} />} label="הכנסות החודש" value={NIS(totalMonth)} tone="blue" />
+        <Kpi icon={<Building2 size={17} />} label={'סה"כ ספקים'} value={sups.length} tone="plum" />
+      </div>
+      <Panel style={{ boxShadow: SH }}>
+        <SectionTitle icon={<Wallet size={18} />} extra={<button onClick={chargeAll} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 800, fontSize: 13, padding: "9px 16px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><CreditCard size={15} /> חיוב חודשי לכל הפעילים</button>}>מנויי הספקים</SectionTitle>
+        <div style={{ fontSize: 12.5, color: C.sub, marginBottom: 12, background: C.amberSoft, borderRadius: 10, padding: "8px 12px", lineHeight: 1.6 }}>💳 החיובים כאן פועלים במצב הדגמה (רישום חשבונית + סימון שולם). לחיוב אשראי חוזר אמיתי — יש לחבר חברת סליקה עם מנויים (Stripe Billing / PayPlus). כל חיוב מפיק חשבונית מסודרת מטעם B2B+.</div>
+        <div style={{ display: "grid", gap: 8 }}>
+          {sups.map((sp) => { const sub = sp.sub || { plan: "basic", status: "trial", method: "none", invoices: [] }; const plan = PLANS[sub.plan] || PLANS.basic; const chargedThisMonth = (sub.invoices || []).some((iv) => iv.month === monthKeyNow); const stTone = sub.status === "active" ? "green" : sub.status === "trial" ? "amber" : "red"; const stLbl = sub.status === "active" ? "פעיל" : sub.status === "trial" ? "תקופת ניסיון" : "מבוטל"; return (
+            <div key={sp.id} style={{ border: `1px solid ${C.line}`, borderRadius: 12, padding: "12px 14px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                <Logo size={34} img={sp.brand && sp.brand.logo} name={sp.name} />
+                <div style={{ flex: 1, minWidth: 140 }}><div style={{ fontWeight: 800 }}>{sp.name}</div><div style={{ fontSize: 12, color: C.sub }}>{sp.owner ? sp.owner.email : ""}</div></div>
+                <Badge tone={stTone}>{stLbl}</Badge>
+                <Badge tone="blue">{plan.name} · {NIS(plan.price)}/חודש</Badge>
+                {sub.method === "credit" && <Badge><CreditCard size={11} /> אשראי{sub.last4 ? " ••" + sub.last4 : ""}</Badge>}
+                {sub.method === "standing" && <Badge><Wallet size={11} /> הוראת קבע</Badge>}
+                {chargedThisMonth && <Badge tone="green"><Check size={11} /> חויב החודש</Badge>}
+              </div>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 10, alignItems: "center" }}>
+                <span style={{ fontSize: 12, color: C.sub }}>מסלול:</span>
+                {Object.values(PLANS).map((pl) => <button key={pl.id} onClick={() => setSub(sp.id, { plan: pl.id })} style={{ border: `1px solid ${sub.plan === pl.id ? C.green : C.line}`, background: sub.plan === pl.id ? C.greenSoft : "#fff", color: sub.plan === pl.id ? C.greenDeep : C.sub, borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>{pl.name}</button>)}
+                <span style={{ fontSize: 12, color: C.sub, marginInlineStart: 8 }}>אמצעי:</span>
+                {[["credit", "אשראי"], ["standing", "הוראת קבע"], ["none", "ללא"]].map(([m, lbl]) => <button key={m} onClick={() => setSub(sp.id, { method: m })} style={{ border: `1px solid ${sub.method === m ? C.blue : C.line}`, background: sub.method === m ? C.blueSoft : "#fff", color: sub.method === m ? C.blue : C.sub, borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>{lbl}</button>)}
+              </div>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 10 }}>
+                {sub.status !== "active" ? <button onClick={() => setSub(sp.id, { status: "active", since: Date.now() })} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 700, fontSize: 12.5, padding: "7px 14px", borderRadius: 9, cursor: "pointer" }}>הפעל מנוי</button>
+                  : <button onClick={() => setSub(sp.id, { status: "canceled" })} style={{ border: `1px solid ${C.red}`, background: "#fff", color: C.red, fontWeight: 700, fontSize: 12.5, padding: "7px 14px", borderRadius: 9, cursor: "pointer" }}>בטל מנוי</button>}
+                <button onClick={() => { if (chargedThisMonth) { alert("ספק זה כבר חויב החודש."); return; } chargeOne(sp); }} disabled={sub.status !== "active"} style={{ border: "none", background: sub.status === "active" ? C.greenDeep : "#C9D3C7", color: "#fff", fontWeight: 700, fontSize: 12.5, padding: "7px 14px", borderRadius: 9, cursor: sub.status === "active" ? "pointer" : "default", display: "flex", alignItems: "center", gap: 5 }}><CreditCard size={13} /> חייב עכשיו</button>
+                <button onClick={() => setOpenSup(openSup === sp.id ? null : sp.id)} style={{ border: `1px solid ${C.line}`, background: "#fff", color: C.sub, fontWeight: 700, fontSize: 12.5, padding: "7px 14px", borderRadius: 9, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}><Receipt size={13} /> חשבוניות ({(sub.invoices || []).length})</button>
+              </div>
+              {openSup === sp.id && <div style={{ marginTop: 10, borderTop: `1px dashed ${C.line}`, paddingTop: 10, display: "grid", gap: 6 }}>{(sub.invoices || []).length === 0 ? <span style={{ fontSize: 12.5, color: C.sub }}>אין חשבוניות עדיין</span> : (sub.invoices || []).map((iv) => <div key={iv.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12.5, gap: 8, flexWrap: "wrap" }}><span>{iv.month} · {iv.planName} · {NIS(iv.gross)} {iv.paid ? "" : "(לא שולם)"}</span><button onClick={() => downloadSubInvoice(iv, sp, state)} style={{ border: `1px solid ${C.green}`, background: "#fff", color: C.greenDeep, fontWeight: 700, fontSize: 12, padding: "4px 10px", borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}><Download size={12} /> חשבונית</button></div>)}</div>}
+            </div>
+          ); })}
+          {sups.length === 0 && <Empty>אין ספקים עדיין</Empty>}
+        </div>
+      </Panel>
+    </div>
+  );
+}
+function downloadSubInvoice(iv, sp, state) {
+  const color = "#0B2A63";
+  const html = `<!doctype html><html dir="rtl" lang="he"><head><meta charset="utf-8"><title>חשבונית ${iv.id}</title><style>body{font-family:system-ui,Arial;padding:32px;color:#182620}h1{color:${color};margin:0}table{width:100%;border-collapse:collapse;margin-top:16px}td,th{border-bottom:1px solid #E4E9DE;padding:8px;text-align:right}thead tr{background:${color};color:#fff}.tot{margin-top:16px;text-align:left;line-height:1.8}.tot b{font-size:20px;color:${color}}.hd{display:flex;justify-content:space-between;border-bottom:3px solid ${color};padding-bottom:10px}</style></head><body><div class="hd"><div><h1>B2B+ Marketplace</h1><div style="color:#5B6B60;font-size:13px">ממשק הזמנות מהספק לעסק<br>ע.מ/ח.פ: 000000000</div></div><div style="text-align:left"><div style="font-weight:800;color:${color};font-size:18px">חשבונית מס / קבלה</div><div style="color:#5B6B60;font-size:13px">מס' ${iv.id}<br>${new Date(iv.ts).toLocaleDateString("he-IL")}</div></div></div><div style="margin-top:12px">לכבוד: <b>${sp.name}</b>${sp.biz && sp.biz.taxId ? " · ע.מ/ח.פ " + sp.biz.taxId : ""}<br>${sp.owner ? sp.owner.email : ""}</div><table><thead><tr><th>תיאור</th><th>חודש</th><th>סכום</th></tr></thead><tbody><tr><td>מנוי B2B+ — מסלול ${iv.planName}</td><td>${iv.month}</td><td>${NIS(iv.net)}</td></tr></tbody></table><div class="tot">סכום לפני מע"מ: ${NIS(iv.net)}<br>מע"מ 18%: ${NIS(iv.vat)}<br><b>סה"כ לתשלום: ${NIS(iv.gross)}</b></div><p style="color:#5B6B60;font-size:12px">${iv.paid ? "שולם ב" + (iv.method === "credit" ? "אשראי" : iv.method === "standing" ? "הוראת קבע" : "") : "ממתין לתשלום"} · מופק ע"י B2B+ Marketplace</p></body></html>`;
+  try { const blob = new Blob([html], { type: "text/html;charset=utf-8" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "b2b-invoice-" + iv.id + ".html"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); } catch (e) {}
+}
+function SuperAdminView({ state, setState, onEnter, onEnterAs, agentMode }) {
+  const [saTab, setSaTab] = useState("main");
   const [add, setAdd] = useState(false); const [sf, setSf] = useState({ name: "", email: "", password: "" }); const [saErr, setSaErr] = useState("");
   const addAgent = () => { if (!sf.name || !sf.email || !sf.password) return setSaErr("שם, אימייל וסיסמה חובה"); if ((state.superAgents || []).some((a) => a.email.trim().toLowerCase() === sf.email.trim().toLowerCase())) return setSaErr("אימייל כבר קיים"); setState((r) => ({ ...r, superAgents: [...(r.superAgents || []), { id: "sa" + Date.now(), role: "superagent", ...sf }] })); setSf({ name: "", email: "", password: "" }); setSaErr(""); };
   const delAgent = (id) => setState((r) => ({ ...r, superAgents: (r.superAgents || []).filter((a) => a.id !== id) }));
-  const hasDemo = (state.suppliers || []).some((x) => x.id.indexOf("demo") === 0);
-  const createDemo = () => { const d = demoSupplier(); setState((r) => ({ ...r, suppliers: [...r.suppliers, d] })); if (onEnter) onEnter(d.id); };
+  const demoSup = (state.suppliers || []).find((x) => x.id.indexOf("demo") === 0);
+  const createDemo = (kind) => setState((r) => ({ ...r, suppliers: [...r.suppliers.filter((x) => x.id.indexOf("demo") !== 0), demoSupplier(kind)] }));
   const resetDemo = () => setState((r) => ({ ...r, suppliers: r.suppliers.filter((x) => x.id.indexOf("demo") !== 0) }));
+  const enterRole = (role) => { if (!demoSup || !onEnterAs) return; if (role === "supplier") return onEnterAs({ kind: "supplier", supplierId: demoSup.id }); if (role === "client") { const cl = demoSup.clients.find((c) => c.status === "active"); if (cl) onEnterAs({ kind: "client", supplierId: demoSup.id, email: cl.email }); return; } const st = demoSup.staff.find((x) => x.role === role); if (st) onEnterAs({ kind: role, supplierId: demoSup.id, userId: st.id }); };
   const suppliers = state.suppliers;
   const pending = suppliers.filter((x) => x.status === "pending");
   const active = suppliers.filter((x) => x.status === "active");
@@ -341,6 +495,12 @@ function SuperAdminView({ state, setState, onEnter, agentMode }) {
   const reject = (id) => setState((r) => ({ ...r, suppliers: r.suppliers.filter((s) => s.id !== id) }));
   return (
     <div style={{ display: "grid", gap: 20 }}>
+      {!agentMode && (
+        <div style={{ display: "flex", gap: 8, background: C.surface, border: `1px solid ${C.line}`, borderRadius: 14, padding: 8, boxShadow: SH }}>
+          {[["main", "ספקים והדגמה", Building2], ["billing", "חיובים ומנויים", Wallet]].map(([id, label, Icon]) => { const on = saTab === id; return <button key={id} onClick={() => setSaTab(id)} style={{ display: "flex", alignItems: "center", gap: 7, border: "none", background: on ? C.green : "transparent", color: on ? "#fff" : C.sub, fontWeight: 700, fontSize: 14, padding: "9px 16px", borderRadius: 10, cursor: "pointer" }}><Icon size={16} />{label}</button>; })}
+        </div>
+      )}
+      {saTab === "billing" && !agentMode ? <BillingCenter state={state} setState={setState} /> : <>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 14 }}>
         <Kpi icon={<Building2 size={18} />} label="ספקים פעילים" value={active.length} tone="green" />
         <Kpi icon={<Clock size={18} />} label="ממתינים לאישור" value={pending.length} tone="amber" />
@@ -371,12 +531,32 @@ function SuperAdminView({ state, setState, onEnter, agentMode }) {
         </div>
       </Panel>
       <Panel style={{ boxShadow: SH, borderColor: "#BBD3F5", background: "#F5F9FF" }}>
-        <SectionTitle icon={<Building2 size={18} />}>מצב הדגמה — הצגת המערכת לספקים</SectionTitle>
-        <div style={{ fontSize: 13, color: C.sub, marginBottom: 12, lineHeight: 1.6 }}>צור בלחיצה ספק הדגמה מלא — עם מוצרים, קטגוריות, לקוחות, צוות (מלקט/נהג/סוכן) והזמנות במצבים שונים — ותיכנס אליו כדי להראות לספק פוטנציאלי בדיוק איך המערכת עובדת. בתוך ההדגמה תוכל גם להוסיף עוד אנשי צוות דרך לשונית "צוות".</div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <button onClick={createDemo} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 800, fontSize: 14, padding: "11px 20px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><Building2 size={16} /> צור והצג ספק הדגמה</button>
-          {hasDemo && <button onClick={resetDemo} style={{ border: `1px solid ${C.red}`, background: "#fff", color: C.red, fontWeight: 700, fontSize: 14, padding: "11px 16px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><Trash2 size={15} /> מחק הדגמות</button>}
+        <SectionTitle icon={<Building2 size={18} />}>מרכז הדגמה — הצגת כל התהליך לספקים</SectionTitle>
+        <div style={{ fontSize: 13, color: C.sub, marginBottom: 10, lineHeight: 1.6 }}>בחר סוג ספק ליצירת הדגמה — ייווצרו אוטומטית מוצרים, קטגוריות, לקוחות, צוות והזמנות מתאימים. לאחר מכן היכנס לכל תפקיד להצגת כל המסע.</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(130px,1fr))", gap: 8, marginBottom: 4 }}>
+          {DEMO_KINDS.map(([k, label, emoji]) => { const on = demoSup && demoSup.id.indexOf("demo") === 0 && (DEMO_TEMPLATES[k] && demoSup.category === DEMO_TEMPLATES[k].category); return (
+            <button key={k} onClick={() => createDemo(k)} style={{ border: `1.5px solid ${on ? C.green : C.line}`, background: on ? C.greenSoft : "#fff", color: on ? C.greenDeep : C.ink, borderRadius: 12, padding: "12px 8px", cursor: "pointer", fontWeight: 700, fontSize: 13, display: "flex", flexDirection: "column", alignItems: "center", gap: 5 }}><span style={{ fontSize: 24 }}>{emoji}</span>{label}</button>
+          ); })}
         </div>
+        {demoSup && (
+          <div style={{ marginTop: 16, borderTop: `1px solid ${C.line}`, paddingTop: 14 }}>
+            <div style={{ fontSize: 13, color: C.ink, fontWeight: 700, marginBottom: 10 }}>הדגמה פעילה: {demoSup.name} — היכנס לכל תפקיד:</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))", gap: 10 }}>
+              {[["client", "לקוח — מזמין", ShoppingCart, C.green], ["picker", "מלקט — שוקל", Scale, C.amber], ["driver", "נהג — מוסר", Truck, C.plum], ["agent", "סוכן — תמיכה", MessageSquare, C.blue], ["supplier", "ניהול הספק", Building2, C.greenDeep]].map(([role, label, Icon, col]) => (
+                <button key={role} onClick={() => enterRole(role)} style={{ border: `1px solid ${col}`, background: "#fff", color: col, fontWeight: 800, fontSize: 13.5, padding: "14px 10px", borderRadius: 12, cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}><Icon size={22} />{label}</button>
+              ))}
+            </div>
+            <div style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 10, padding: 12, marginTop: 14, fontSize: 12.5, color: C.sub, lineHeight: 1.7 }}>
+              <b style={{ color: C.ink }}>תסריט הדגמה מומלץ:</b><br />
+              1. <b>לקוח</b> → "הזמנה חדשה" → בחר מוצרים ושלח.<br />
+              2. <b>מלקט</b> (או הספק עצמו) → שקול וסמן שסופק → נוצרת חשבונית.<br />
+              3. <b>ניהול הספק</b> → הזמנות → הצב נהג + קבע יום ושעת אספקה → "עדכן לקוח".<br />
+              4. <b>נהג</b> → "אספתי" ואז "נמסר".<br />
+              5. <b>לקוח</b> → דף הבית → רואה עדכון מועד אספקה + חשבונית.
+            </div>
+            <button onClick={resetDemo} style={{ border: `1px solid ${C.red}`, background: "#fff", color: C.red, fontWeight: 700, fontSize: 14, padding: "10px 16px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, marginTop: 14 }}><Trash2 size={15} /> מחק הדגמה</button>
+          </div>
+        )}
       </Panel>
       {!agentMode && (
         <Panel style={{ boxShadow: SH }}>
@@ -393,6 +573,7 @@ function SuperAdminView({ state, setState, onEnter, agentMode }) {
         </Panel>
       )}
       {add && <Modal onClose={() => setAdd(false)} title="הוספת ספק חדש"><SupplierRegister state={state} setState={setState} byAdmin onDone={() => setAdd(false)} back={() => setAdd(false)} /></Modal>}
+      </>}
     </div>
   );
 }
@@ -558,6 +739,12 @@ function ProfileModal({ session, state, setState, sup, onClose }) {
         <div style={{ width: 46, height: 46, borderRadius: 12, background: C.greenSoft, color: C.greenDeep, display: "flex", alignItems: "center", justifyContent: "center" }}><User size={22} /></div>
         <div><div style={{ fontWeight: 800, fontSize: 16 }}>{f.name || roleLabel}</div><Badge>{roleLabel}</Badge></div>
       </div>
+      {kind === "supplier" && sup && (
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+          <Logo size={52} img={sup.brand && sup.brand.logo} name={f.name || sup.name} />
+          <label style={{ display: "inline-flex", alignItems: "center", gap: 6, border: `1.5px dashed ${C.line}`, borderRadius: 10, padding: "10px 14px", cursor: "pointer", color: C.green, fontWeight: 700, fontSize: 13 }}><ImageIcon size={15} /> העלה לוגו של החנות<input type="file" accept="image/*" onChange={(e) => { const file = e.target.files[0]; if (!file) return; const r = new FileReader(); r.onload = () => setState((st) => ({ ...st, suppliers: st.suppliers.map((s2) => s2.id === sup.id ? { ...s2, brand: { ...(s2.brand || {}), logo: r.result } } : s2) })); r.readAsDataURL(file); }} style={{ display: "none" }} /></label>
+        </div>
+      )}
       {showName && <Field label={kind === "supplier" || kind === "client" ? "שם העסק" : "שם"} value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />}
       {showContact && <Field label="איש קשר" value={f.contact} onChange={(e) => setF({ ...f, contact: e.target.value })} />}
       {showContact && <Field label="טלפון" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} />}
@@ -574,7 +761,7 @@ function ProfileModal({ session, state, setState, sup, onClose }) {
 }
 function BusinessHub({ state, setState, email, onEnter, onJoin }) {
   const [tab, setTab] = useState("mine");
-  const [q, setQ] = useState(""); const [region, setRegion] = useState("");
+  const [q, setQ] = useState(""); const [area, setArea] = useState(""); const [city, setCity] = useState(""); const [cat, setCat] = useState("");
   const emL = (email || "").trim().toLowerCase();
   const anyRec = state.suppliers.map((sp) => sp.clients.find((c) => c.email.trim().toLowerCase() === emL)).find(Boolean) || null;
   const [pf, setPf] = useState({ name: anyRec ? anyRec.name : "", contact: anyRec ? anyRec.contact || "" : "", phone: anyRec ? anyRec.phone || "" : "", address: anyRec ? anyRec.address || "" : "", taxId: anyRec ? anyRec.taxId || "" : "" });
@@ -587,8 +774,12 @@ function BusinessHub({ state, setState, email, onEnter, onJoin }) {
   const others = active.filter((s) => !recOf(s));
   const regions = Array.from(new Set(active.flatMap((s) => (s.regions || "").split(",").map((x) => x.trim()).filter(Boolean))));
   const matchText = (s) => { const t = q.trim().toLowerCase(); if (!t) return true; const hay = (s.name + " " + s.category + " " + (s.regions || "") + " " + (s.products || []).map((p) => p.name).join(" ")).toLowerCase(); return hay.includes(t); };
-  const found = others.filter((s) => (!region || (s.regions || "").includes(region)) && matchText(s));
-  const dir = active.filter((s) => (!region || (s.regions || "").includes(region)) && matchText(s));
+  const catsList = Array.from(new Set(active.flatMap((s) => [(s.category || "").trim(), ...((s.cats) || []).map((c) => (c || "").trim())]).filter(Boolean)));
+  const catOkFull = (s) => !cat || (s.category || "").includes(cat) || ((s.cats) || []).some((c) => c === cat);
+  const geoOk = (s) => { const r = s.regions || ""; if (city) return r.includes(city); if (area) return r.includes(area) || (AREAS[area] || []).some((c) => r.includes(c)); return true; };
+  const catOk = (s) => !cat || (s.category || "").includes(cat);
+  const found = others.filter((s) => geoOk(s) && catOkFull(s) && matchText(s));
+  const dir = active.filter((s) => geoOk(s) && catOkFull(s) && matchText(s));
   const matchedProducts = (s) => q.trim() ? (s.products || []).filter((p) => p.name.toLowerCase().includes(q.trim().toLowerCase())).map((p) => p.name) : [];
   const businessName = mine[0] ? recOf(mine[0]).name : "העסק שלי";
   const tabs = [["mine", "הספקים שלי", Building2], ["find", "מצא ספקים", Search], ["profile", "הפרופיל שלי", ShieldCheck]];
@@ -619,14 +810,25 @@ function BusinessHub({ state, setState, email, onEnter, onJoin }) {
         </div>)}
       {tab === "find" && (
         <div style={{ display: "grid", gap: 14 }}>
-          <Panel style={{ boxShadow: SH }}>
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1px solid ${C.line}`, borderRadius: 10, padding: "0 10px", flex: 1, minWidth: 180 }}><Search size={15} color={C.sub} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="חיפוש: שם ספק / קטגוריה / מוצר (למשל: חד פעמי)" style={{ border: "none", outline: "none", padding: "9px 4px", fontSize: 13, width: "100%", fontFamily: "inherit", background: "transparent" }} /></div>
-              <select value={region} onChange={(e) => setRegion(e.target.value)} style={{ border: `1px solid ${C.line}`, borderRadius: 10, padding: "9px 10px", fontSize: 13, fontFamily: "inherit" }}><option value="">כל האזורים</option>{regions.map((r) => <option key={r} value={r}>{r}</option>)}</select>
-              <button onClick={() => setTab("find")} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 800, padding: "10px 18px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><Search size={15} /> חיפוש</button>
+          <Panel style={{ boxShadow: SH, padding: 0, overflow: "hidden" }}>
+            <div style={{ background: `linear-gradient(120deg, ${C.greenDeep}, ${C.green})`, color: "#fff", padding: "16px 18px" }}>
+              <div style={{ fontWeight: 800, fontSize: 18, display: "flex", alignItems: "center", gap: 8 }}><Search size={18} /> חיפוש ספקים</div>
+              <div style={{ fontSize: 13, opacity: .9, marginTop: 2 }}>סננו לפי אזור, עיר וקטגוריה — ומצאו את הספק המתאים לעסק שלכם</div>
+            </div>
+            <div style={{ padding: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1px solid ${C.line}`, borderRadius: 10, padding: "0 12px", marginBottom: 12 }}><Search size={16} color={C.sub} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="חיפוש חופשי: שם ספק / מוצר (למשל: חד פעמי)" style={{ border: "none", outline: "none", padding: "11px 4px", fontSize: 14, width: "100%", fontFamily: "inherit", background: "transparent" }} /></div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 10 }}>
+                <label style={{ display: "block" }}><div style={{ fontSize: 12, color: C.sub, marginBottom: 4, fontWeight: 600 }}>אזור</div><select value={area} onChange={(e) => { setArea(e.target.value); setCity(""); }} style={{ ...fieldStyle, padding: "10px" }}><option value="">כל האזורים</option>{Object.keys(AREAS).map((r) => <option key={r} value={r}>{r}</option>)}</select></label>
+                <label style={{ display: "block" }}><div style={{ fontSize: 12, color: C.sub, marginBottom: 4, fontWeight: 600 }}>עיר</div><select value={city} onChange={(e) => setCity(e.target.value)} disabled={!area} style={{ ...fieldStyle, padding: "10px", opacity: area ? 1 : .5 }}><option value="">{area ? "כל הערים ב" + area : "בחר אזור קודם"}</option>{(AREAS[area] || []).map((c) => <option key={c} value={c}>{c}</option>)}</select></label>
+                <label style={{ display: "block" }}><div style={{ fontSize: 12, color: C.sub, marginBottom: 4, fontWeight: 600 }}>קטגוריה</div><select value={cat} onChange={(e) => setCat(e.target.value)} style={{ ...fieldStyle, padding: "10px" }}><option value="">כל הקטגוריות</option>{catsList.map((c) => <option key={c} value={c}>{c}</option>)}</select></label>
+              </div>
+              {(q || area || city || cat) && <button onClick={() => { setQ(""); setArea(""); setCity(""); setCat(""); }} style={{ marginTop: 12, border: `1px solid ${C.line}`, background: "#fff", color: C.sub, fontWeight: 700, fontSize: 13, padding: "8px 14px", borderRadius: 9, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 }}><X size={14} /> נקה סינון</button>}
             </div>
           </Panel>
-          <div style={{ fontSize: 13, color: C.sub, fontWeight: 600 }}>{dir.length} ספקים זמינים{region ? " באזור " + region : ""}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <div style={{ fontSize: 14, color: C.ink, fontWeight: 800 }}>{dir.length} ספקים</div>
+            <div style={{ fontSize: 13, color: C.sub }}>{city ? "ב" + city : area ? "ב" + area : "בכל הארץ"}{cat ? " · " + cat : ""}</div>
+          </div>
           {dir.length === 0 ? <Empty>לא נמצאו ספקים לפי הסינון</Empty> :
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 14 }}>
               {dir.map((sp) => { const color = (sp.brand && sp.brand.color) || C.green; const rec = recOf(sp); const mp = matchedProducts(sp); const cta = rec ? (rec.status === "active"
@@ -956,7 +1158,7 @@ function MyStore({ state, setState }) {
 }
 
 function MgrOrders({ state, setState }) {
-  const [view, setView] = useState(null); const [edit, setEdit] = useState(null);
+  const [view, setView] = useState(null); const [edit, setEdit] = useState(null); const [pickOrder, setPickOrder] = useState(null); const [payMark, setPayMark] = useState(null);
   const [filter, setFilter] = useState("new"); const [q, setQ] = useState("");
   const orders = [...state.orders].sort((a, b) => b.date - a.date);
   const drivers = state.staff.filter((s) => hasRole(s, "driver"));
@@ -1016,6 +1218,11 @@ function MgrOrders({ state, setState }) {
                   {drivers.map((d) => { const on = o.driverId === d.id; return <button key={d.id} onClick={() => assign(o.id, d.id)} style={{ border: `1px solid ${C.plum}`, color: on ? "#fff" : C.plum, background: on ? C.plum : C.plumSoft, borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>{d.name}</button>; })}
                 </div>
               )}
+              {o.status === "new" && (
+                <div style={{ marginTop: 8 }}>
+                  <button onClick={() => setPickOrder(o)} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 800, fontSize: 13.5, padding: "9px 16px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><Scale size={15} /> לקט ושקול הזמנה</button>
+                </div>
+              )}
               {o.status !== "delivered" && (
                 <div style={{ marginTop: 8, borderTop: `1px dashed ${C.line}`, paddingTop: 8, display: "flex", gap: 10, alignItems: "flex-end", flexWrap: "wrap" }}>
                   <label style={{ fontSize: 11, color: C.sub }}>יום אספקה<br /><input type="date" value={o.delivDate || ""} onChange={(e) => setSlot(o.id, { delivDate: e.target.value })} style={{ border: `1px solid ${C.line}`, borderRadius: 8, padding: "6px 8px", fontSize: 13, fontFamily: "inherit", marginTop: 3 }} /></label>
@@ -1030,6 +1237,8 @@ function MgrOrders({ state, setState }) {
       </Panel>
       {view && <InvoiceModal order={view} state={state} onClose={() => setView(null)} withAddress />}
       {edit && <EditOrder order={edit} state={state} setState={setState} onClose={() => setEdit(null)} />}
+      {pickOrder && <PickModal order={pickOrder} state={state} setState={setState} me={{ name: state.name || "מנהל" }} onClose={() => setPickOrder(null)} />}
+      {payMark && <PayMarkModal order={payMark} state={state} setState={setState} onClose={() => setPayMark(null)} />}
     </div>
   );
 }
@@ -1197,11 +1406,11 @@ function StoreDesign({ state, setState }) {
               <div><div style={{ fontWeight: 800, fontSize: Math.round(18 * f.fontScale) }}>{f.name || state.name}</div><div style={{ opacity: .9, fontSize: Math.round(12 * f.fontScale) }}>{f.tagline || "החנות שלך"}</div></div>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 12 }}>
-              {[["עגבניות", "🍅", 45], ["מלפפונים", "🥒", 38]].map(([nm, em, pr]) => (
-                <div key={nm} style={{ background: "#fff", border: `${f.borderW}px solid ${f.color}`, borderRadius: 12, padding: 10 }}>
-                  <div style={{ width: 34, height: 34, borderRadius: 9, background: f.color + "1A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>{em}</div>
-                  <div style={{ fontWeight: 700, marginTop: 6, fontSize: Math.round(13 * f.fontScale), color: f.fontColor }}>{nm}</div>
-                  <div style={{ fontWeight: 800, color: f.color, fontSize: Math.round(14 * f.fontScale) }}>₪{pr} <span style={{ fontSize: Math.round(10 * f.fontScale), color: C.sub, fontWeight: 500 }}>/ קרטון</span></div>
+              {(((state.products || []).filter((p) => p.stock > 0).slice(0, 2)).length ? (state.products || []).filter((p) => p.stock > 0).slice(0, 2) : [{ id: "ph1", name: "מוצר לדוגמה", emoji: "🛒", unit: "carton", kg: 1, price: 0, noPrice: true, img: "" }]).map((p) => (
+                <div key={p.id} style={{ background: "#fff", border: `${f.borderW}px solid ${f.color}`, borderRadius: 12, padding: 10 }}>
+                  {p.img ? <img src={p.img} alt={p.name} style={{ width: 34, height: 34, borderRadius: 9, objectFit: "cover" }} /> : <div style={{ width: 34, height: 34, borderRadius: 9, background: f.color + "1A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>{p.emoji || "🛒"}</div>}
+                  <div style={{ fontWeight: 700, marginTop: 6, fontSize: Math.round(13 * f.fontScale), color: f.fontColor }}>{p.name}</div>
+                  <div style={{ fontWeight: 800, color: f.color, fontSize: Math.round(14 * f.fontScale) }}>{noPrice(p) ? "לפי הצעה" : <>{NIS(cartonPriceGross(p))} <span style={{ fontSize: Math.round(10 * f.fontScale), color: C.sub, fontWeight: 500 }}>/ קרטון</span></>}</div>
                 </div>
               ))}
             </div>
@@ -1664,7 +1873,7 @@ function ClientModal({ client, state, setState, onClose }) {
         <div key={o.id} style={{ border: `1px solid ${C.line}`, borderRadius: 12, padding: "10px 14px", background: "#fff" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><span style={{ fontSize: 13, color: C.sub }}>#{o.id} · {dayStr(o.date)}</span><Badge tone="green">{STATUS[o.status].label}</Badge></div>
           <div style={{ fontSize: 13, margin: "5px 0" }}>{o.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); return `${p?.name}×${it.cartons}`; }).join(" · ")}</div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 6, flexWrap: "wrap" }}><div style={{ display: "flex", gap: 6 }}><button onClick={() => setInv(o)} style={miniBtn}><Receipt size={13} /> חשבונית</button>{o.status === "delivered" && (o.paid ? <Badge tone="green">שולם</Badge> : <button onClick={() => markPaid(o.id)} style={{ ...miniBtn, color: C.amber, borderColor: C.amber }}><Wallet size={13} /> סמן כשולם</button>)}</div><span style={{ fontWeight: 800, color: C.greenDeep }}>{NIS(orderTotal(o, state.products))}</span></div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 6, flexWrap: "wrap" }}><div style={{ display: "flex", gap: 6 }}><button onClick={() => setInv(o)} style={miniBtn}><Receipt size={13} /> חשבונית</button>{o.status === "delivered" && (o.paid ? <Badge tone="green"><Check size={11} /> שולם{o.paidMethod ? " · " + (PAY[o.paidMethod] || PAY.cash).label : ""}{o.checkDue ? " · צ'ק ל-" + new Date(o.checkDue).toLocaleDateString("he-IL") : ""}</Badge> : <button onClick={() => setPayMark(o)} style={{ ...miniBtn, color: C.amber, borderColor: C.amber }}><Wallet size={13} /> סמן כשולם</button>)}</div><span style={{ fontWeight: 800, color: C.greenDeep }}>{NIS(orderTotal(o, state.products))}</span></div>
         </div>
       ))}</div>
       {inv && <InvoiceModal order={inv} state={state} onClose={() => setInv(null)} withAddress />}
