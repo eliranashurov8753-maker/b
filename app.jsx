@@ -5,7 +5,7 @@ import {
   UserPlus, Building2, ShieldCheck, CreditCard, Banknote, FileText, X, Clock, Trophy,
   Lock, Gift, Trash2, RotateCcw, Boxes, AlertTriangle, Truck, Scale, MessageSquare,
   Users, Send, Megaphone, ClipboardCheck, MapPin, Receipt, Image as ImageIcon,
-  ChevronLeft, Search, Pencil, Save, Download, Paperclip, ClipboardList, Phone, Mail, Home
+  ChevronLeft, Search, Pencil, Save, Download, Paperclip, ClipboardList, Phone, Mail, Home, Bell, User, KeyRound, MessageCircle, Share2, Facebook
 } from "lucide-react";
 
 const C = {
@@ -66,7 +66,7 @@ const supplierData = () => ({
     { id: "p2", name: "מלפפונים", unit: "weight", cost: 1.6, price: 3.8, kg: 10, stock: 65, emoji: "🥒", img: "" },
     { id: "p3", name: "בצל יבש", unit: "weight", cost: 1.1, price: 2.9, kg: 10, stock: 120, emoji: "🧅", img: "" },
     { id: "p4", name: "תפוחי אדמה", unit: "weight", cost: 1.3, price: 3.2, kg: 15, stock: 90, emoji: "🥔", img: "" },
-    { id: "p5", name: "לימון", unit: "weight", cost: 3.0, price: 6.0, kg: 3, stock: 30, emoji: "🍋", img: "" },
+    { id: "p5", name: "לימון", unit: "weight", cost: 3.0, price: 6.0, kg: 3, stock: 30, emoji: "🍋", img: "", cat: "פירות" },
     { id: "p6", name: "פלפל אדום", unit: "weight", cost: 5.5, price: 8.5, kg: 8, stock: 9, emoji: "🫑", img: "" },
     { id: "p7", name: "חסה", unit: "carton", cost: 2.8, price: 5.0, kg: 5, units: 12, stock: 40, emoji: "🥬", img: "" },
     { id: "p8", name: "כרובית", unit: "carton", cost: 2.5, price: 4.5, kg: 8, units: 8, stock: 22, emoji: "🥦", img: "" },
@@ -97,16 +97,58 @@ const supplierData = () => ({
   broadcasts: [{ id: "b1", text: "מבצע השבוע: 10% הנחה על פלפל אדום! 🫑", ts: Date.now() - 86400000 }],
 });
 
-const secondSupplier = () => ({ id: "s2", name: "מאפיית הבוקר", category: "מאפייה ולחמים", regions: "ירושלים, שפלה, מרכז", status: "active", biz: { taxId: "302998877", address: "יפו 100, ירושלים", phone: "02-5559876", email: "" }, invoiceSeq: 2000, owner: { email: "admin@boker.co.il", password: "1234", contact: "בעל המאפייה", phone: "02-0000000" }, brand: { logo: LOGO_IMG, tagline: "טרי מהתנור כל בוקר", color: "#B4791F" }, features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [ { id: "b1", name: "לחמניות", unit: "carton", cost: 0.8, price: 1.6, kg: 4, units: 24, stock: 50, emoji: "🥐", img: "" }, { id: "b2", name: "חלות", unit: "carton", cost: 6, price: 12, kg: 6, units: 6, stock: 30, emoji: "🍞", img: "" }, { id: "b3", name: "בורקסים", unit: "carton", cost: 2, price: 4, kg: 5, units: 12, stock: 40, emoji: "🥧", img: "" }, { id: "b4", name: "עוגיות", unit: "weight", cost: 15, price: 28, kg: 2, stock: 25, emoji: "🍪", img: "" }, { id: "b5", name: "כלים חד פעמי", unit: "carton", cost: 20, price: 38, kg: 3, units: 100, stock: 40, emoji: "🥡", img: "" } ], clients: [ { id: "c1b", name: "מסעדת הגן", contact: "יוסי לוי", phone: "050-1234567", address: "הרצל 15, תל אביב", email: "gan@demo.co.il", password: "1234", taxId: "514112233", structure: "עוסק מורשה", category: "מסעדה", pay: "credit", status: "active", target: 15, docs: [], createdAt: Date.now() - 86400000 * 10 } ], staff: [], orders: [], messages: [], broadcasts: [] });
+const secondSupplier = () => ({ id: "s2", name: "מאפיית הבוקר", category: "מאפייה ולחמים", regions: "ירושלים, שפלה, מרכז", status: "active", biz: { taxId: "302998877", address: "יפו 100, ירושלים", phone: "02-5559876", email: "" }, invoiceSeq: 2000, owner: { email: "admin@boker.co.il", password: "1234", contact: "בעל המאפייה", phone: "02-0000000" }, brand: { logo: LOGO_IMG, tagline: "טרי מהתנור כל בוקר", color: "#B4791F", borderW: 2.5 }, cats: ["מאפים", "חד פעמי"], features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [ { id: "b1", name: "לחמניות", unit: "carton", cost: 0.8, price: 1.6, kg: 4, units: 24, stock: 50, emoji: "🥐", img: "" }, { id: "b2", name: "חלות", unit: "carton", cost: 6, price: 12, kg: 6, units: 6, stock: 30, emoji: "🍞", img: "" }, { id: "b3", name: "בורקסים", unit: "carton", cost: 2, price: 4, kg: 5, units: 12, stock: 40, emoji: "🥧", img: "" }, { id: "b4", name: "עוגיות", unit: "weight", cost: 15, price: 28, kg: 2, stock: 25, emoji: "🍪", img: "" }, { id: "b5", name: "כלים חד פעמי", unit: "carton", cost: 20, price: 38, kg: 3, units: 100, stock: 40, emoji: "🥡", img: "", cat: "חד פעמי" } ], clients: [ { id: "c1b", name: "מסעדת הגן", contact: "יוסי לוי", phone: "050-1234567", address: "הרצל 15, תל אביב", email: "gan@demo.co.il", password: "1234", taxId: "514112233", structure: "עוסק מורשה", category: "מסעדה", pay: "credit", status: "active", target: 15, docs: [], createdAt: Date.now() - 86400000 * 10 } ], staff: [], orders: [], messages: [], broadcasts: [] });
+const demoSupplier = () => { const now = Date.now(); const id = "demo" + now; return {
+  id, name: "ספק הדגמה", category: "ירקות ופירות", regions: "מרכז, השרון", status: "active",
+  biz: { taxId: "500000000", address: "רחוב הדוגמה 1, תל אביב", phone: "03-0000000", email: "" },
+  invoiceSeq: 5000,
+  owner: { email: "demo-" + now + "@b2bplus.co.il", password: "1234", contact: "מנהל הדגמה", phone: "050-0000000" },
+  brand: { logo: LOGO_IMG, tagline: "הדגמה — כך תיראה החנות שלך", color: "#1E6FE0", borderW: 2.5 },
+  cats: ["ירקות", "פירות"], features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(),
+  products: [
+    { id: "dp1", name: "עגבניות", unit: "weight", cost: 3, price: 6.5, kg: 10, stock: 60, emoji: "🍅", img: "", cat: "ירקות" },
+    { id: "dp2", name: "מלפפונים", unit: "weight", cost: 2.5, price: 5.5, kg: 8, stock: 45, emoji: "🥒", img: "", cat: "ירקות" },
+    { id: "dp3", name: "פלפל אדום", unit: "weight", cost: 5, price: 9, kg: 6, stock: 30, emoji: "🫑", img: "", cat: "ירקות" },
+    { id: "dp4", name: "תפוחים", unit: "weight", cost: 4, price: 7.5, kg: 12, stock: 50, emoji: "🍎", img: "", cat: "פירות" },
+    { id: "dp5", name: "בננות", unit: "weight", cost: 4.5, price: 8, kg: 10, stock: 40, emoji: "🍌", img: "", cat: "פירות" },
+    { id: "dp6", name: "לימונים", unit: "weight", cost: 3, price: 6, kg: 5, stock: 25, emoji: "🍋", img: "", cat: "פירות" },
+  ],
+  clients: [
+    { id: "dc1", name: "מסעדת הדגמה", contact: "דנה כהן", phone: "050-1111111", address: "דיזנגוף 100, תל אביב", email: "demo-rest-" + now + "@demo.co.il", password: "1234", taxId: "514000001", structure: "עוסק מורשה", category: "מסעדה", pay: "credit", status: "active", target: 20, docs: [], createdAt: now - 86400000 * 8 },
+    { id: "dc2", name: "בית קפה לדוגמה", contact: "רון לוי", phone: "050-2222222", address: "אלנבי 50, תל אביב", email: "demo-cafe-" + now + "@demo.co.il", password: "1234", taxId: "514000002", structure: "חברה בעמ", category: "בית קפה", pay: "cash", status: "active", target: 12, docs: [], createdAt: now - 86400000 * 5 },
+    { id: "dc3", name: "קייטרינג (ממתין לאישור)", contact: "שירה אזולאי", phone: "050-3333333", address: "הרצליה", email: "demo-inst-" + now + "@demo.co.il", password: "1234", taxId: "514000003", structure: "עוסק מורשה", category: "קייטרינג", pay: "check", status: "pending", target: 30, docs: ["רישיון עסק"], createdAt: now - 86400000 },
+  ],
+  staff: [
+    { id: "dk1", role: "picker", name: "מלקט הדגמה", email: "demo-pick-" + now + "@b2bplus.co.il", password: "1234" },
+    { id: "dd1", role: "driver", name: "נהג הדגמה", email: "demo-drive-" + now + "@b2bplus.co.il", password: "1234" },
+    { id: "da1", role: "agent", name: "סוכן הדגמה", email: "demo-agent-" + now + "@b2bplus.co.il", password: "1234" },
+  ],
+  orders: [
+    { id: "D" + (now % 100000) + "1", clientId: "dc1", date: now - 86400000 * 2, status: "delivered", driverId: "dd1", paid: true, pickedBy: "מלקט הדגמה", invNo: 5001, items: [{ pid: "dp1", cartons: 5, supplied: 5, actualKg: 52 }, { pid: "dp4", cartons: 3, supplied: 3, actualKg: 34 }] },
+    { id: "D" + (now % 100000) + "2", clientId: "dc2", date: now - 3600000 * 5, status: "picked", pickedBy: "מלקט הדגמה", invNo: 5002, items: [{ pid: "dp2", cartons: 4, supplied: 4, actualKg: 31 }] },
+    { id: "D" + (now % 100000) + "3", clientId: "dc1", date: now - 3600000 * 2, status: "new", items: [{ pid: "dp3", cartons: 2 }, { pid: "dp5", cartons: 3 }] },
+  ],
+  messages: [], broadcasts: [{ id: "db1", text: "ברוכים הבאים לחנות ההדגמה של B2B+ 🎉", ts: now - 3600000 * 24 }],
+}; };
 const seed = () => ({
   superPw: SUPER_PW,
-  suppliers: [{ id: "s1", name: "שיווק השדה", category: "ירקות ופירות טריים", regions: "מרכז, השרון, תל אביב", status: "active", biz: { taxId: "515123456", address: "המסגר 20, תל אביב", phone: "03-5551234", email: "billing@sadeh.co.il" }, invoiceSeq: 1000, owner: { email: "admin@sadeh.co.il", password: "1234", contact: "בעל העסק", phone: "050-0000000" }, brand: { logo: LOGO_IMG, tagline: "ירקות ופירות טריים לעסקים", color: "#1F7A4D" }, features: { prizes: true, chat: true, minOrder: 5 }, ...supplierData() }, secondSupplier()],
+  superAgents: [{ id: "sa1", role: "superagent", name: "תמיכה B2B+", email: "support@b2bplus.co.il", password: "1234" }],
+  suppliers: [{ id: "s1", name: "שיווק השדה", category: "ירקות ופירות טריים", regions: "מרכז, השרון, תל אביב", status: "active", biz: { taxId: "515123456", address: "המסגר 20, תל אביב", phone: "03-5551234", email: "billing@sadeh.co.il" }, invoiceSeq: 1000, owner: { email: "admin@sadeh.co.il", password: "1234", contact: "בעל העסק", phone: "050-0000000" }, brand: { logo: LOGO_IMG, tagline: "ירקות ופירות טריים לעסקים", color: "#1F7A4D", borderW: 2.5 }, cats: ["ירקות", "פירות"], features: { prizes: true, chat: true, minOrder: 5 }, ...supplierData() }, secondSupplier()],
 });
 
 function useAppState() {
   const [state, setState] = useState(null);
+  const lastSaveRef = React.useRef(0);
   useEffect(() => { let live = true; (async () => { try { const r = await window.storage.get(KEY); if (live) setState(r && r.value ? JSON.parse(r.value) : seed()); } catch { if (live) setState(seed()); } })(); return () => { live = false; }; }, []);
-  useEffect(() => { if (!state) return; (async () => { try { await window.storage.set(KEY, JSON.stringify(state)); } catch {} })(); }, [state]);
+  useEffect(() => { if (!state) return; lastSaveRef.current = Date.now(); (async () => { try { await window.storage.set(KEY, JSON.stringify(state)); } catch {} })(); }, [state]);
+  // סנכרון בין מכשירים: כשחוזרים לאפליקציה, טוענים מחדש את המצב העדכני מהענן
+  useEffect(() => {
+    const reload = async () => { if (Date.now() - lastSaveRef.current < 3000) return; try { const r = await window.storage.get(KEY); if (r && r.value) { const remote = JSON.parse(r.value); setState((cur) => JSON.stringify(cur) === r.value ? cur : remote); } } catch {} };
+    const onVis = () => { if (document.visibilityState === "visible") reload(); };
+    window.addEventListener("focus", reload); document.addEventListener("visibilitychange", onVis);
+    const iv = setInterval(() => { if (document.visibilityState === "visible") reload(); }, 25000);
+    return () => { window.removeEventListener("focus", reload); document.removeEventListener("visibilitychange", onVis); clearInterval(iv); };
+  }, []);
   return [state, setState];
 }
 
@@ -165,19 +207,25 @@ export default function App() {
   const [session, setSession] = useState({ kind: "none" });
   const [saved, setSaved] = useState(false);
   const [storeId] = useState(() => { try { return new URL(window.location.href).searchParams.get("store"); } catch { return null; } });
+  const [showProfile, setShowProfile] = useState(false);
   useEffect(() => { if (!document.getElementById("ff-rubik")) { const l = document.createElement("link"); l.id = "ff-rubik"; l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap"; document.head.appendChild(l); } if (!document.getElementById("tp-css")) { const st = document.createElement("style"); st.id = "tp-css"; st.textContent = ".tp-2col{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:20px}.tp-2eq{grid-template-columns:1fr 1fr}.tp-staff{grid-template-columns:1fr 1fr 1fr 1fr auto}@media(max-width:760px){.tp-2col{grid-template-columns:1fr}.tp-staff{grid-template-columns:1fr 1fr}}@media(max-width:560px){.tp-2eq{grid-template-columns:1fr}}"; document.head.appendChild(st); } }, []);
   if (!state) return <div dir="rtl" style={{ background: C.bg, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: C.sub }}>טוען…</div>;
   if (session.kind === "none") { const storeSup = storeId ? state.suppliers.find((x) => x.id === storeId && x.status === "active") : null; return storeSup ? <StorePage supplier={storeSup} state={state} setState={setState} onLogin={setSession} /> : <AuthScreen state={state} setState={setState} onLogin={setSession} />; }
   const save = async () => { try { await window.storage.set(KEY, JSON.stringify(state)); } catch {} setSaved(true); setTimeout(() => setSaved(false), 1600); };
   const isSuper = session.kind === "super";
+  const isAgent = session.kind === "superagent";
   const isHub = session.kind === "client" && !session.supplierId;
-  const sup = (isSuper || isHub) ? null : state.suppliers.find((x) => x.id === session.supplierId);
-  if (!isSuper && !isHub && !sup) return <AuthScreen state={state} setState={setState} onLogin={setSession} />;
+  const sup = (isSuper || isAgent || isHub) ? null : state.suppliers.find((x) => x.id === session.supplierId);
+  if (!isSuper && !isAgent && !isHub && !sup) return <AuthScreen state={state} setState={setState} onLogin={setSession} />;
   const scopedSet = (u) => setState((root) => ({ ...root, suppliers: root.suppliers.map((s) => s.id === session.supplierId ? (typeof u === "function" ? u(s) : u) : s) }));
   const clientRec = (session.kind === "client" && sup) ? sup.clients.find((c) => c.email.trim().toLowerCase() === (session.email || "").trim().toLowerCase()) : null;
   const joinSupplier = (supId) => setState((root) => { let prof = null; for (const sp of root.suppliers) { const c = sp.clients.find((x) => x.email.trim().toLowerCase() === (session.email || "").trim().toLowerCase()); if (c) prof = c; } if (!prof) return root; const tgt = root.suppliers.find((x) => x.id === supId); if (tgt && tgt.clients.some((c) => c.email.trim().toLowerCase() === session.email.trim().toLowerCase())) return root; const { id, readBc, ...rest } = prof; const nc = { ...rest, id: "c" + Date.now(), status: "pending", createdAt: Date.now() }; return { ...root, suppliers: root.suppliers.map((sp) => sp.id === supId ? { ...sp, clients: [...sp.clients, nc] } : sp) }; });
-  const me = isSuper ? { name: "מנהל-על" } : isHub ? { name: "העסק שלי" } : session.kind === "supplier" ? { name: sup.name } : session.kind === "client" ? clientRec : (sup ? sup.staff.find((s) => s.id === session.userId) : null);
-  const title = isSuper ? "פיקוח על כל הספקים" : isHub ? "הספקים שלי" : session.kind === "supplier" ? "ניהול החנות" : (ROLE_LABEL[session.kind] || "") + " · " + (me ? me.name : "");
+  const me = isSuper ? { name: "מנהל-על" } : isAgent ? { name: "סוכן-על" } : isHub ? { name: "העסק שלי" } : session.kind === "supplier" ? { name: sup.name } : session.kind === "client" ? clientRec : (sup ? sup.staff.find((s) => s.id === session.userId) : null);
+  const title = isSuper ? "פיקוח על כל הספקים" : isAgent ? "ניהול ותמיכה" : isHub ? "הספקים שלי" : session.kind === "supplier" ? "ניהול החנות" : (ROLE_LABEL[session.kind] || "") + " · " + (me ? me.name : "");
+  const supNewOrders = session.kind === "supplier" && sup ? sup.orders.filter((o) => o.status === "new").length : 0;
+  const supUnreadMsgs = session.kind === "supplier" && sup ? sup.messages.filter((m) => m.fromRole === "client" && !m.readBySup).length : 0;
+  const supAlerts = supNewOrders + supUnreadMsgs;
+  const bizRec = session.kind === "client" ? (state.suppliers.map((sp) => sp.clients.find((c) => c.email.trim().toLowerCase() === (session.email || "").trim().toLowerCase())).find(Boolean) || null) : null;
   const staffRoles = (me && me.role) ? [me.role, ...((me.roles) || [])].filter((v, i, a) => a.indexOf(v) === i) : [];
   const isStaffView = ["picker", "driver", "agent"].includes(session.kind);
   const headerBg = sup && sup.brand && sup.brand.color ? `linear-gradient(100deg, ${shade(sup.brand.color)}, ${sup.brand.color})` : `linear-gradient(100deg, ${C.greenDeep}, #1E6FE0)`;
@@ -193,18 +241,20 @@ export default function App() {
     <div dir="rtl" style={{ background: pageBg, minHeight: "100vh", color: C.ink, fontFamily: pageFont }}>
       <div style={{ background: headerBg, color: "#fff", boxShadow: "0 2px 12px rgba(18,74,43,.18)", position: "sticky", top: 0, zIndex: 20 }}>
         <div style={{ maxWidth: 1160, margin: "0 auto", padding: "12px 20px", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-          <Logo size={32} light wordmark img={sup && sup.brand && sup.brand.logo} name={sup ? sup.name : "מנהל-על"} />
-          {session.asSuper && <Badge tone="amber">מנהל-על צופה</Badge>}
+          <Logo size={32} light wordmark img={isHub && bizRec ? bizRec.logo : (sup && sup.brand && sup.brand.logo)} name={isHub ? (bizRec ? bizRec.name : "העסק שלי") : (sup ? sup.name : (isAgent ? "סוכן-על" : "מנהל-על"))} />
           <div style={{ flex: 1 }} />
           <span style={{ fontSize: 13.5, opacity: .92, fontWeight: 600 }}>{title}</span>
           {session.kind === "client" && session.supplierId && <button onClick={() => setSession({ kind: "client", email: session.email, pw: session.pw })} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,.16)", color: "#fff", border: "none", borderRadius: 9, padding: "8px 13px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}><Building2 size={15} /> הספקים שלי</button>}
+          <button onClick={() => setShowProfile(true)} title="הפרופיל שלי" style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,.16)", color: "#fff", border: "none", borderRadius: 9, padding: "8px 12px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}><User size={16} /></button>
+          {session.kind === "supplier" && supAlerts > 0 && <div title="עדכונים חדשים" style={{ position: "relative", display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,.16)", color: "#fff", borderRadius: 9, padding: "8px 12px", fontSize: 14, fontWeight: 700 }}><Bell size={16} /><span style={{ background: C.amber, color: "#fff", borderRadius: 20, fontSize: 11, padding: "1px 7px", fontWeight: 800 }}>{supAlerts}</span></div>}
           <button onClick={save} style={{ display: "flex", alignItems: "center", gap: 6, background: saved ? "#fff" : "rgba(255,255,255,.16)", color: saved ? C.greenDeep : "#fff", border: "none", borderRadius: 9, padding: "8px 13px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>{saved ? <Check size={15} /> : <Save size={15} />}{saved ? "נשמר" : "שמור"}</button>
-          <button onClick={() => setSession(session.asSuper ? { kind: "super" } : { kind: "none" })} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,.16)", color: "#fff", border: "none", borderRadius: 9, padding: "8px 13px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}><LogOut size={15} /> {session.asSuper ? "חזרה למנהל-על" : "יציאה"}</button>
+          <button onClick={() => setSession(session.asSuper ? { kind: session.from || "super" } : { kind: "none" })} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,.16)", color: "#fff", border: "none", borderRadius: 9, padding: "8px 13px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}><LogOut size={15} /> {session.asSuper ? "חזרה למנהל-על" : "יציאה"}</button>
         </div>
       </div>
       <div style={{ maxWidth: 1160, margin: "0 auto", padding: "20px 20px 60px" }}>
-        {isSuper && <SuperAdminView state={state} setState={setState} onEnter={(sid) => setSession({ kind: "supplier", supplierId: sid, asSuper: true })} />}
-        {isHub && <BusinessHub state={state} email={session.email} onEnter={(sid) => setSession({ ...session, supplierId: sid })} onJoin={joinSupplier} />}
+        {isSuper && <SuperAdminView state={state} setState={setState} onEnter={(sid) => setSession({ kind: "supplier", supplierId: sid, asSuper: true, from: "super" })} />}
+        {isAgent && <SuperAdminView state={state} setState={setState} agentMode onEnter={(sid) => setSession({ kind: "supplier", supplierId: sid, asSuper: true, from: "superagent" })} />}
+        {isHub && <BusinessHub state={state} setState={setState} email={session.email} onEnter={(sid) => setSession({ ...session, supplierId: sid })} onJoin={joinSupplier} />}
         {session.kind === "supplier" && <><FontLoader font={themeFont} /><ManagerView state={sup} setState={scopedSet} /></>}
         {session.kind === "client" && sup && clientRec && <div style={{ zoom: themeScale, color: themeFontColor }}><FontLoader font={themeFont} /><ClientView state={sup} setState={scopedSet} clientId={clientRec.id} /></div>}
         {isStaffView && staffRoles.length > 1 && (
@@ -217,6 +267,7 @@ export default function App() {
         {session.kind === "driver" && <DriverView state={sup} setState={scopedSet} me={me} />}
         {session.kind === "agent" && <AgentView state={sup} setState={scopedSet} me={me} />}
       </div>
+      {showProfile && <ProfileModal session={session} state={state} setState={setState} sup={sup} onClose={() => setShowProfile(false)} onLoggedOut={() => { setShowProfile(false); setSession({ kind: "none" }); }} />}
     </div>
   );
 }
@@ -224,8 +275,6 @@ export default function App() {
 /* ============ AUTH ============ */
 function AuthScreen({ state, setState, onLogin }) {
   const [mode, setMode] = useState("menu");
-  const quick = [["super", null, null, "מנהל-על"], ["supplier", "s1", null, "ספק"], ["client", "s1", "c1", "לקוח"], ["picker", "s1", "k1", "מלקט"], ["driver", "s1", "d1", "נהג"], ["agent", "s1", "a1", "סוכן"]];
-  const qlogin = (k, sid, uid) => onLogin(k === "super" ? { kind: "super" } : k === "client" ? { kind: "client", email: "gan@demo.co.il", pw: "1234" } : { kind: k, supplierId: sid, userId: uid });
   return (
     <div dir="rtl" style={{ minHeight: "100vh", color: C.ink, fontFamily: FONT, display: "flex", flexDirection: "column", alignItems: "center", padding: "44px 16px", background: `radial-gradient(1200px 500px at 50% -8%, ${C.greenSoft}, ${C.bg})` }}>
       <div style={{ marginBottom: 12 }}><Logo size={122} /></div>
@@ -236,10 +285,6 @@ function AuthScreen({ state, setState, onLogin }) {
           <BigBtn icon={<LogIn size={18} />} onClick={() => setMode("login")} primary>התחברות</BigBtn>
           <BigBtn icon={<Building2 size={18} />} onClick={() => setMode("supreg")}>הרשמת ספק חדש</BigBtn>
           <BigBtn icon={<UserPlus size={18} />} onClick={() => setMode("register")}>הרשמת עסק (לקוח)</BigBtn>
-          <div style={{ borderTop: `1px solid ${C.line}`, marginTop: 8, paddingTop: 12 }}>
-            <div style={{ fontSize: 12, color: C.sub, marginBottom: 8, textAlign: "center" }}>כניסה מהירה להתנסות</div>
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>{quick.map(([k, sid, uid, lbl]) => <SmallBtn key={lbl} onClick={() => qlogin(k, sid, uid)}>{lbl}</SmallBtn>)}</div>
-          </div>
         </div>
       )}
       {mode === "login" && <LoginForm state={state} onLogin={onLogin} back={() => setMode("menu")} onForgot={() => setMode("forgot")} />}
@@ -257,7 +302,7 @@ function SupplierRegister({ state, setState, back, byAdmin, onDone }) {
     if (!f.name || !f.email || !f.password) return setErr("שם, אימייל וסיסמה חובה");
     const em = f.email.trim().toLowerCase();
     if (state.suppliers.some((sp) => sp.owner && sp.owner.email.trim().toLowerCase() === em)) return setErr("אימייל זה כבר רשום כספק");
-    const sup = { id: "s" + Date.now(), name: f.name, category: f.category || "כללי", regions: f.regions || "", status: byAdmin ? "active" : "pending", owner: { email: f.email, password: f.password, contact: f.contact, phone: f.phone }, brand: { logo: LOGO_IMG, tagline: "", color: "#1F7A4D" }, biz: { taxId: "", address: "", phone: f.phone || "", email: f.email || "" }, invoiceSeq: 1000, features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [], clients: [], staff: [], orders: [], messages: [], broadcasts: [] };
+    const sup = { id: "s" + Date.now(), name: f.name, category: f.category || "כללי", regions: f.regions || "", status: byAdmin ? "active" : "pending", owner: { email: f.email, password: f.password, contact: f.contact, phone: f.phone }, brand: { logo: LOGO_IMG, tagline: "", color: "#1F7A4D" }, biz: { taxId: "", address: "", phone: f.phone || "", email: f.email || "" }, cats: [], invoiceSeq: 1000, features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [], clients: [], staff: [], orders: [], messages: [], broadcasts: [] };
     setState((root) => ({ ...root, suppliers: [...root.suppliers, sup] }));
     if (byAdmin && onDone) return onDone();
     setDone(true);
@@ -279,8 +324,13 @@ function SupplierRegister({ state, setState, back, byAdmin, onDone }) {
   );
   return byAdmin ? body : <Card title="הרשמת ספק חדש" back={back} wide>{body}</Card>;
 }
-function SuperAdminView({ state, setState, onEnter }) {
-  const [add, setAdd] = useState(false);
+function SuperAdminView({ state, setState, onEnter, agentMode }) {
+  const [add, setAdd] = useState(false); const [sf, setSf] = useState({ name: "", email: "", password: "" }); const [saErr, setSaErr] = useState("");
+  const addAgent = () => { if (!sf.name || !sf.email || !sf.password) return setSaErr("שם, אימייל וסיסמה חובה"); if ((state.superAgents || []).some((a) => a.email.trim().toLowerCase() === sf.email.trim().toLowerCase())) return setSaErr("אימייל כבר קיים"); setState((r) => ({ ...r, superAgents: [...(r.superAgents || []), { id: "sa" + Date.now(), role: "superagent", ...sf }] })); setSf({ name: "", email: "", password: "" }); setSaErr(""); };
+  const delAgent = (id) => setState((r) => ({ ...r, superAgents: (r.superAgents || []).filter((a) => a.id !== id) }));
+  const hasDemo = (state.suppliers || []).some((x) => x.id.indexOf("demo") === 0);
+  const createDemo = () => { const d = demoSupplier(); setState((r) => ({ ...r, suppliers: [...r.suppliers, d] })); if (onEnter) onEnter(d.id); };
+  const resetDemo = () => setState((r) => ({ ...r, suppliers: r.suppliers.filter((x) => x.id.indexOf("demo") !== 0) }));
   const suppliers = state.suppliers;
   const pending = suppliers.filter((x) => x.status === "pending");
   const active = suppliers.filter((x) => x.status === "active");
@@ -315,11 +365,33 @@ function SuperAdminView({ state, setState, onEnter }) {
             <div key={sp.id} style={{ border: `1px solid ${C.line}`, borderRadius: 16, padding: 16, background: "#fff", boxShadow: SH }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}><Logo size={40} img={sp.brand && sp.brand.logo} name={sp.name} /><div><div style={{ fontWeight: 800 }}>{sp.name}</div><div style={{ fontSize: 12, color: C.sub }}>{sp.category}</div></div></div>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap", margin: "12px 0" }}><Badge>{sp.products.length} מוצרים</Badge><Badge>{sp.clients.filter((c) => c.status === "active").length} לקוחות</Badge><Badge>{sp.orders.length} הזמנות</Badge>{nw > 0 && <Badge tone="amber">{nw} חדשות</Badge>}</div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><span style={{ fontWeight: 800, color: C.greenDeep }}>{NIS(rev)}</span><button onClick={() => onEnter(sp.id)} style={{ border: `1px solid ${C.green}`, background: C.greenSoft, color: C.greenDeep, fontWeight: 700, fontSize: 13, padding: "7px 14px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}><LogIn size={14} /> כניסה לניהול</button></div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}><span style={{ fontWeight: 800, color: C.greenDeep }}>{NIS(rev)}</span><button onClick={() => onEnter(sp.id)} style={{ border: `1px solid ${C.green}`, background: C.greenSoft, color: C.greenDeep, fontWeight: 700, fontSize: 13, padding: "7px 14px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}><LogIn size={14} /> כניסה לניהול</button></div>
             </div>
           ); })}
         </div>
       </Panel>
+      <Panel style={{ boxShadow: SH, borderColor: "#BBD3F5", background: "#F5F9FF" }}>
+        <SectionTitle icon={<Building2 size={18} />}>מצב הדגמה — הצגת המערכת לספקים</SectionTitle>
+        <div style={{ fontSize: 13, color: C.sub, marginBottom: 12, lineHeight: 1.6 }}>צור בלחיצה ספק הדגמה מלא — עם מוצרים, קטגוריות, לקוחות, צוות (מלקט/נהג/סוכן) והזמנות במצבים שונים — ותיכנס אליו כדי להראות לספק פוטנציאלי בדיוק איך המערכת עובדת. בתוך ההדגמה תוכל גם להוסיף עוד אנשי צוות דרך לשונית "צוות".</div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <button onClick={createDemo} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 800, fontSize: 14, padding: "11px 20px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><Building2 size={16} /> צור והצג ספק הדגמה</button>
+          {hasDemo && <button onClick={resetDemo} style={{ border: `1px solid ${C.red}`, background: "#fff", color: C.red, fontWeight: 700, fontSize: 14, padding: "11px 16px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><Trash2 size={15} /> מחק הדגמות</button>}
+        </div>
+      </Panel>
+      {!agentMode && (
+        <Panel style={{ boxShadow: SH }}>
+          <SectionTitle icon={<ShieldCheck size={18} />}>סוכני-על / תמיכה</SectionTitle>
+          <div style={{ fontSize: 13, color: C.sub, marginBottom: 10 }}>סוכני-על יכולים להוסיף ספקים חדשים ולתת תמיכה (כניסה לניהול של כל ספק).</div>
+          <div style={{ display: "grid", gap: 8, marginBottom: 14 }}>{(state.superAgents || []).map((a) => (<div key={a.id} style={{ display: "flex", alignItems: "center", gap: 10, border: `1px solid ${C.line}`, borderRadius: 12, padding: "10px 14px" }}><Badge tone="plum">סוכן-על</Badge><div style={{ flex: 1 }}><div style={{ fontWeight: 700 }}>{a.name}</div><div style={{ fontSize: 12, color: C.sub }}>{a.email}</div></div><button onClick={() => delAgent(a.id)} style={{ border: "none", background: C.redSoft, color: C.red, borderRadius: 8, width: 32, height: 32, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Trash2 size={15} /></button></div>))}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 8, alignItems: "end" }}>
+            <MiniField label="שם" value={sf.name} onChange={(v) => setSf({ ...sf, name: v })} />
+            <MiniField label="אימייל" value={sf.email} onChange={(v) => setSf({ ...sf, email: v })} />
+            <MiniField label="סיסמה" value={sf.password} onChange={(v) => setSf({ ...sf, password: v })} />
+            <button onClick={addAgent} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 700, padding: "10px 16px", borderRadius: 10, cursor: "pointer", height: 40 }}>הוסף</button>
+          </div>
+          {saErr && <ErrBox>{saErr}</ErrBox>}
+        </Panel>
+      )}
       {add && <Modal onClose={() => setAdd(false)} title="הוספת ספק חדש"><SupplierRegister state={state} setState={setState} byAdmin onDone={() => setAdd(false)} back={() => setAdd(false)} /></Modal>}
     </div>
   );
@@ -331,6 +403,8 @@ function LoginForm({ state, onLogin, back, onForgot }) {
   const submit = () => {
     const em = email.trim().toLowerCase();
     if (pw === (state.superPw || SUPER_PW) && (em === "" || em === "super")) return finish({ kind: "super" });
+    const sa = (state.superAgents || []).find((x) => x.email.trim().toLowerCase() === em && x.password === pw);
+    if (sa) return finish({ kind: "superagent", userId: sa.id });
     let clientActive = false, clientPending = false;
     for (const sup of state.suppliers) {
       if (sup.status !== "active") continue;
@@ -456,9 +530,56 @@ function StaffRolePicker({ me, onPick }) {
     </div>
   );
 }
-function BusinessHub({ state, email, onEnter, onJoin }) {
+function ProfileModal({ session, state, setState, sup, onClose }) {
+  const kind = session.kind;
+  const roleLabel = kind === "super" ? "מנהל-על" : ROLE_LABEL[kind] || kind;
+  let rec = null;
+  if (kind === "super") rec = { name: "מנהל-על", email: "super", contact: "", phone: "", password: state.superPw || "super" };
+  else if (kind === "supplier" && sup) rec = { name: sup.name, email: (sup.owner && sup.owner.email) || "", contact: (sup.owner && sup.owner.contact) || "", phone: (sup.owner && sup.owner.phone) || "", password: (sup.owner && sup.owner.password) || "" };
+  else if (kind === "client") { const em = (session.email || "").trim().toLowerCase(); for (const s2 of state.suppliers) { const c = s2.clients.find((c) => c.email.trim().toLowerCase() === em); if (c) rec = c; } }
+  else if (sup) rec = sup.staff.find((x) => x.id === session.userId);
+  const [f, setF] = useState({ name: rec ? rec.name || "" : "", contact: rec ? rec.contact || "" : "", phone: rec ? rec.phone || "" : "", email: rec ? rec.email || "" : "" });
+  const [pw1, setPw1] = useState(""); const [pw2, setPw2] = useState(""); const [msg, setMsg] = useState("");
+  const emailEditable = kind === "supplier" || kind === "picker" || kind === "driver" || kind === "agent";
+  const showContact = kind === "supplier" || kind === "client";
+  const showName = kind !== "super";
+  const save = () => {
+    if (pw1 && pw1 !== pw2) { setMsg("הסיסמאות אינן תואמות"); return; }
+    const np = pw1 || null;
+    if (kind === "super") setState((r) => ({ ...r, superPw: np || r.superPw || "super" }));
+    else if (kind === "supplier" && sup) setState((r) => ({ ...r, suppliers: r.suppliers.map((s2) => s2.id === sup.id ? { ...s2, name: f.name || s2.name, owner: { ...(s2.owner || {}), contact: f.contact, phone: f.phone, email: f.email || (s2.owner && s2.owner.email), password: np || (s2.owner && s2.owner.password) } } : s2) }));
+    else if (kind === "client") { const em = (session.email || "").trim().toLowerCase(); setState((r) => ({ ...r, suppliers: r.suppliers.map((s2) => ({ ...s2, clients: s2.clients.map((c) => c.email.trim().toLowerCase() === em ? { ...c, name: f.name, contact: f.contact, phone: f.phone, password: np || c.password } : c) })) })); }
+    else if (sup) setState((r) => ({ ...r, suppliers: r.suppliers.map((s2) => s2.id === sup.id ? { ...s2, staff: s2.staff.map((u) => u.id === session.userId ? { ...u, name: f.name, email: f.email || u.email, password: np || u.password } : u) } : s2) }));
+    setMsg("נשמר בהצלחה" + (np ? " · הסיסמה עודכנה" : "")); setPw1(""); setPw2("");
+  };
+  return (
+    <Modal onClose={onClose} title="הפרופיל שלי">
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+        <div style={{ width: 46, height: 46, borderRadius: 12, background: C.greenSoft, color: C.greenDeep, display: "flex", alignItems: "center", justifyContent: "center" }}><User size={22} /></div>
+        <div><div style={{ fontWeight: 800, fontSize: 16 }}>{f.name || roleLabel}</div><Badge>{roleLabel}</Badge></div>
+      </div>
+      {showName && <Field label={kind === "supplier" || kind === "client" ? "שם העסק" : "שם"} value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />}
+      {showContact && <Field label="איש קשר" value={f.contact} onChange={(e) => setF({ ...f, contact: e.target.value })} />}
+      {showContact && <Field label="טלפון" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} />}
+      <Field label="אימייל" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} disabled={!emailEditable} />
+      <div style={{ borderTop: `1px solid ${C.line}`, margin: "8px 0 0", paddingTop: 12 }}>
+        <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}><KeyRound size={15} /> שינוי סיסמה</div>
+        <Field label="סיסמה חדשה" type="password" value={pw1} onChange={(e) => setPw1(e.target.value)} placeholder="השאר ריק כדי לא לשנות" />
+        <Field label="אימות סיסמה" type="password" value={pw2} onChange={(e) => setPw2(e.target.value)} />
+      </div>
+      {msg && <div style={{ background: msg.includes("אינן") ? C.redSoft : C.greenSoft, color: msg.includes("אינן") ? C.red : C.greenDeep, padding: "9px 12px", borderRadius: 10, fontSize: 13, fontWeight: 600, marginBottom: 8 }}>{msg}</div>}
+      <SubmitBtn onClick={save}>שמור שינויים</SubmitBtn>
+    </Modal>
+  );
+}
+function BusinessHub({ state, setState, email, onEnter, onJoin }) {
   const [tab, setTab] = useState("mine");
   const [q, setQ] = useState(""); const [region, setRegion] = useState("");
+  const emL = (email || "").trim().toLowerCase();
+  const anyRec = state.suppliers.map((sp) => sp.clients.find((c) => c.email.trim().toLowerCase() === emL)).find(Boolean) || null;
+  const [pf, setPf] = useState({ name: anyRec ? anyRec.name : "", contact: anyRec ? anyRec.contact || "" : "", phone: anyRec ? anyRec.phone || "" : "", address: anyRec ? anyRec.address || "" : "", taxId: anyRec ? anyRec.taxId || "" : "" });
+  const patchAll = (patch) => setState((root) => ({ ...root, suppliers: root.suppliers.map((sp) => ({ ...sp, clients: sp.clients.map((c) => c.email.trim().toLowerCase() === emL ? { ...c, ...patch } : c) })) }));
+  const pickLogo = (file) => { if (!file) return; const r = new FileReader(); r.onload = () => patchAll({ logo: r.result }); r.readAsDataURL(file); };
   const em = (email || "").trim().toLowerCase();
   const recOf = (sp) => sp.clients.find((c) => c.email.trim().toLowerCase() === em);
   const active = state.suppliers.filter((s) => s.status === "active");
@@ -470,7 +591,7 @@ function BusinessHub({ state, email, onEnter, onJoin }) {
   const dir = active.filter((s) => (!region || (s.regions || "").includes(region)) && matchText(s));
   const matchedProducts = (s) => q.trim() ? (s.products || []).filter((p) => p.name.toLowerCase().includes(q.trim().toLowerCase())).map((p) => p.name) : [];
   const businessName = mine[0] ? recOf(mine[0]).name : "העסק שלי";
-  const tabs = [["mine", "הספקים שלי", Building2], ["find", "מצא ספקים", Search]];
+  const tabs = [["mine", "הספקים שלי", Building2], ["find", "מצא ספקים", Search], ["profile", "הפרופיל שלי", ShieldCheck]];
   const card = (sp, cta) => { const color = (sp.brand && sp.brand.color) || C.green; return (
     <div key={sp.id} style={{ border: `1px solid ${C.line}`, borderRadius: 16, overflow: "hidden", background: "#fff", boxShadow: SH }}>
       <div style={{ height: 8, background: color }} />
@@ -485,8 +606,7 @@ function BusinessHub({ state, email, onEnter, onJoin }) {
     <div style={{ display: "grid", gap: 20 }}>
       <Panel pad={0} style={{ overflow: "hidden", boxShadow: SH }}>
         <div style={{ padding: "24px 26px", background: `linear-gradient(120deg, ${C.greenSoft}, #fff 78%)` }}>
-          <div style={{ fontSize: 14, color: C.sub, fontWeight: 600 }}>שלום,</div>
-          <div style={{ fontWeight: 800, fontSize: 24 }}>{businessName}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}><Logo size={46} img={anyRec && anyRec.logo} name={businessName} /><div><div style={{ fontSize: 14, color: C.sub, fontWeight: 600 }}>שלום,</div><div style={{ fontWeight: 800, fontSize: 24 }}>{businessName}</div></div></div>
           <div style={{ fontSize: 14, color: C.sub, marginTop: 4 }}>בחר ספק להזמנה, או גלה ספקים חדשים לפי אזור ומוצר</div>
         </div>
       </Panel>
@@ -517,6 +637,26 @@ function BusinessHub({ state, email, onEnter, onJoin }) {
             </div>}
         </div>
       )}
+      {tab === "profile" && (
+        <div style={{ display: "grid", gap: 16 }}>
+          <Panel style={{ boxShadow: SH }}>
+            <SectionTitle icon={<ShieldCheck size={18} />}>פרופיל העסק שלי</SectionTitle>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
+              <Logo size={58} img={anyRec && anyRec.logo} name={pf.name || businessName} />
+              <label style={{ display: "inline-flex", alignItems: "center", gap: 6, border: `1.5px dashed ${C.line}`, borderRadius: 10, padding: "10px 14px", cursor: "pointer", color: C.green, fontWeight: 700, fontSize: 13 }}><ImageIcon size={15} /> העלה לוגו של העסק<input type="file" accept="image/*" onChange={(e) => pickLogo(e.target.files[0])} style={{ display: "none" }} /></label>
+            </div>
+            <div className="tp-2eq" style={{ display: "grid", gap: 10 }}>
+              <Field label="שם העסק" value={pf.name} onChange={(e) => setPf({ ...pf, name: e.target.value })} />
+              <Field label="איש קשר" value={pf.contact} onChange={(e) => setPf({ ...pf, contact: e.target.value })} />
+              <Field label="טלפון" value={pf.phone} onChange={(e) => setPf({ ...pf, phone: e.target.value })} />
+              <Field label="כתובת" value={pf.address} onChange={(e) => setPf({ ...pf, address: e.target.value })} />
+              <Field label="ע.מ / ח.פ" value={pf.taxId} onChange={(e) => setPf({ ...pf, taxId: e.target.value })} />
+            </div>
+            <div style={{ fontSize: 12, color: C.sub, margin: "4px 0 8px" }}>הפרטים והלוגו מתעדכנים אצל כל הספקים שאתה עובד איתם.</div>
+            <SubmitBtn onClick={() => patchAll(pf)}>שמור פרופיל</SubmitBtn>
+          </Panel>
+        </div>
+      )}
     </div>
   );
 }
@@ -542,10 +682,10 @@ function RoleHome({ name, prompt, cards, onOpen, accent }) {
   return (
     <div style={{ display: "grid", gap: 18 }}>
       <Panel pad={0} style={{ overflow: "hidden", boxShadow: SH }}>
-        <div style={{ padding: "26px 28px", background: accent ? `linear-gradient(120deg, ${accent}22, #fff 78%)` : `linear-gradient(120deg, ${C.greenSoft}, #fff 78%)` }}>
-          <div style={{ fontSize: 14, color: C.sub, fontWeight: 600 }}>שלום,</div>
-          <div style={{ fontWeight: 800, fontSize: 25, letterSpacing: "-0.5px" }}>{name}</div>
-          <div style={{ fontSize: 14, color: C.sub, marginTop: 4 }}>{prompt || "מה תרצה לעשות היום?"}</div>
+        <div style={{ padding: "26px 28px", background: accent ? `linear-gradient(135deg, ${accent}, ${shade(accent)})` : `linear-gradient(120deg, ${C.greenSoft}, #fff 78%)` }}>
+          <div style={{ fontSize: 14, color: accent ? "rgba(255,255,255,.85)" : C.sub, fontWeight: 600 }}>שלום,</div>
+          <div style={{ fontWeight: 800, fontSize: 25, letterSpacing: "-0.5px", color: accent ? "#fff" : C.ink }}>{name}</div>
+          <div style={{ fontSize: 14, color: accent ? "rgba(255,255,255,.9)" : C.sub, marginTop: 4 }}>{prompt || "מה תרצה לעשות היום?"}</div>
         </div>
       </Panel>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: 16 }}>
@@ -581,7 +721,23 @@ function ClientHome({ state, clientId, unread, onOpen }) {
     { id: "inbox", title: "תיבת דואר", desc: "הודעות ומבצעים", Icon: Mail, tone: "amber", badge: unread ? unread + " חדשות" : null },
     { id: "chat", title: "צ'אט עם הספק", desc: "שאלה? דברו איתנו", Icon: MessageSquare, tone: "green" },
   ];
-  return <RoleHome name={client.name} accent={state.brand && state.brand.color} cards={cards.filter((c) => (c.id !== "prizes" || feat.prizes !== false) && (c.id !== "chat" || feat.chat !== false))} onOpen={onOpen} />;
+  const upcoming = state.orders.filter((o) => o.clientId === clientId && o.delivDate && o.delivWindow && o.status !== "delivered").sort((a, b) => new Date(a.delivDate).getTime() - new Date(b.delivDate).getTime())[0];
+  const dayLbl = (ds) => { const d = new Date(ds); return isNaN(d.getTime()) ? ds : d.toLocaleDateString("he-IL", { weekday: "long", day: "numeric", month: "numeric" }); };
+  return (
+    <div>
+      {upcoming && (
+        <button onClick={() => onOpen("orders")} style={{ width: "100%", textAlign: "right", border: "none", cursor: "pointer", marginBottom: 16, borderRadius: 16, padding: "14px 18px", background: `linear-gradient(120deg, ${C.green}, ${C.greenDeep})`, color: "#fff", display: "flex", alignItems: "center", gap: 14, boxShadow: SH }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(255,255,255,.18)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Truck size={24} /></div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 800, fontSize: 16 }}>הספק עדכן מועד אספקה 🚚</div>
+            <div style={{ fontSize: 13.5, opacity: .95, marginTop: 2 }}>הזמנה #{upcoming.id} תגיע ביום {dayLbl(upcoming.delivDate)}, בין השעות {upcoming.delivWindow}</div>
+          </div>
+          <ChevronLeft size={20} style={{ opacity: .8 }} />
+        </button>
+      )}
+      <RoleHome name={client.name} accent={state.brand && state.brand.color} cards={cards.filter((c) => (c.id !== "prizes" || feat.prizes !== false) && (c.id !== "chat" || feat.chat !== false))} onOpen={onOpen} />
+    </div>
+  );
 }
 function Inbox({ state, setState, clientId }) {
   useEffect(() => {
@@ -604,10 +760,10 @@ function Inbox({ state, setState, clientId }) {
 }
 
 function OrderForm({ state, setState, clientId, agentName }) {
-  const [cart, setCart] = useState({}); const [toast, setToast] = useState(""); const [pq, setPq] = useState("");
+  const [cart, setCart] = useState({}); const [toast, setToast] = useState(""); const [pq, setPq] = useState(""); const [pcat, setPcat] = useState("");
   const minOrder = (state.features && state.features.minOrder) || MIN_ORDER;
   const themeColor = (state.brand && state.brand.color) || C.greenDeep;
-  const borderW = (state.brand && state.brand.borderW != null) ? state.brand.borderW : 1.5;
+  const borderW = (state.brand && state.brand.borderW != null) ? state.brand.borderW : 2.5;
   const setQty = (pid, n) => setCart((c) => { const p = state.products.find((x) => x.id === pid); const v = Math.max(0, Math.min(p.stock, (c[pid] || 0) + n)); const nc = { ...c }; if (v === 0) delete nc[pid]; else nc[pid] = v; return nc; });
   const items = Object.entries(cart); const cartons = items.reduce((s, [, n]) => s + n, 0);
   const est = items.reduce((s, [pid, n]) => { const p = state.products.find((x) => x.id === pid); return s + n * cartonPriceGross(p); }, 0);
@@ -619,9 +775,10 @@ function OrderForm({ state, setState, clientId, agentName }) {
       <Panel style={{ boxShadow: SH }}>
         <SectionTitle icon={<Package size={18} />} extra={<span style={{ fontSize: 12, color: C.sub }}>מינימום {minOrder} קרטונים</span>}>קטלוג</SectionTitle>
         <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1px solid ${C.line}`, borderRadius: 10, padding: "0 10px", marginBottom: 12 }}><Search size={15} color={C.sub} /><input value={pq} onChange={(e) => setPq(e.target.value)} placeholder="חיפוש מוצר בקטלוג" style={{ border: "none", outline: "none", padding: "9px 4px", fontSize: 13, width: "100%", fontFamily: "inherit", background: "transparent" }} /></div>
+          {(state.cats || []).length > 0 && <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>{[["", "הכל"], ...(state.cats || []).map((c) => [c, c])].map(([id, lbl]) => { const on = pcat === id; return <button key={id || "all"} onClick={() => setPcat(id)} style={{ border: `1.5px solid ${on ? themeColor : C.line}`, background: on ? themeColor : "#fff", color: on ? "#fff" : C.sub, borderRadius: 20, padding: "6px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>{lbl}</button>; })}</div>}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(158px,1fr))", gap: 12 }}>
-          {state.products.filter((p) => !pq.trim() || p.name.toLowerCase().includes(pq.trim().toLowerCase())).map((p) => { const out = p.stock <= 0, low = p.stock > 0 && p.stock <= LOW, inCart = cart[p.id] || 0; return (
-            <div key={p.id} style={{ border: `${Math.max(1, borderW)}px solid ${inCart > 0 ? themeColor : themeColor + "77"}`, borderRadius: 16, padding: 12, opacity: out ? .55 : 1, background: "#fff", boxShadow: inCart > 0 ? `0 0 0 3px ${themeColor}22` : "none" }}>
+          {state.products.filter((p) => (!pq.trim() || p.name.toLowerCase().includes(pq.trim().toLowerCase())) && (!pcat || (p.cat || "") === pcat)).map((p) => { const out = p.stock <= 0, low = p.stock > 0 && p.stock <= LOW, inCart = cart[p.id] || 0; return (
+            <div key={p.id} style={{ border: `${Math.max(1.5, borderW)}px solid ${inCart > 0 ? themeColor : themeColor + "99"}`, borderRadius: 16, padding: 12, opacity: out ? .55 : 1, background: "#fff", boxShadow: inCart > 0 ? `0 0 0 3px ${themeColor}22` : "none" }}>
               <ProdThumb p={p} tint={themeColor} /><div style={{ fontWeight: 700, marginTop: 8 }}>{p.name}</div>
               <div style={{ fontSize: 11.5, color: C.sub }}>{p.unit === "carton" ? "לפי קרטון" + (p.units ? " · " + p.units + " יח\' בקרטון" : "") : NIS(p.price) + " לק\"ג · קרטון " + p.kg + " ק\"ג"}</div>
               <div style={{ fontWeight: 800, color: themeColor, margin: "5px 0 6px" }}>{noPrice(p) ? <span style={{ fontSize: 13 }}>לפי הצעת מחיר</span> : <>{NIS(cartonPriceGross(p))} <span style={{ fontSize: 11, color: C.sub, fontWeight: 500 }}>/ קרטון</span></>}</div>
@@ -677,11 +834,12 @@ function ClientOrders({ state, setState, clientId, canEdit, editorRole }) {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}><span style={{ fontSize: 13, color: C.sub }}>#{o.id} · {dayStr(o.date)}</span><span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: st.bg, color: st.color, borderRadius: 20, padding: "3px 10px", fontSize: 12, fontWeight: 700 }}>{st.label}</span></div>
               <div style={{ fontSize: 13, margin: "6px 0" }}>{o.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); return `${p?.emoji}${p?.name}×${it.cartons}`; }).join("  ·  ")}</div>
               {hasShortage(o) && <div style={{ fontSize: 12.5, color: C.amber, fontWeight: 700, marginBottom: 4, display: "flex", alignItems: "center", gap: 4 }}><AlertTriangle size={13} /> חלק מהפריטים סופקו חלקית — פירוט מלא בחשבונית</div>}
+              {o.delivDate && o.delivWindow && <div style={{ fontSize: 12.5, color: C.greenDeep, background: C.greenSoft, borderRadius: 8, padding: "6px 10px", marginBottom: 6, display: "flex", alignItems: "center", gap: 5, fontWeight: 700 }}><Truck size={13} /> אספקה: {(() => { const d = new Date(o.delivDate); return isNaN(d.getTime()) ? o.delivDate : d.toLocaleDateString("he-IL", { weekday: "long", day: "numeric", month: "numeric" }); })()} · בין {o.delivWindow}</div>}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                 <div style={{ display: "flex", gap: 6 }}>
                   <button onClick={() => setInv(o)} style={miniBtn}><Receipt size={13} /> חשבונית</button>
                   {editable && <button onClick={() => setEdit(o)} style={{ ...miniBtn, color: C.blue, borderColor: C.blue }}><Pencil size={13} /> שינוי הזמנה</button>}
-                  {o.status === "delivered" && (o.paid ? <Badge tone="green">שולם</Badge> : <Badge tone="amber">לתשלום</Badge>)}
+                  {o.status === "delivered" && (o.paid ? <Badge tone="green"><Check size={11} /> שולם</Badge> : <Badge tone="amber">לתשלום מול הספק</Badge>)}
                 </div>
                 <span style={{ fontWeight: 800, color: C.greenDeep }}>{NIS(orderTotal(o, state.products))}</span>
               </div>
@@ -765,24 +923,26 @@ function ManagerView({ state, setState }) {
   const lowCount = state.products.filter((p) => p.stock <= LOW).length;
   const newCount = state.orders.filter((o) => o.status === "new").length;
   const pendCount = state.clients.filter((c) => c.status === "pending").length;
-  const tabs = [["home", "בית", Home], ["orders", "הזמנות", ClipboardList], ["mystore", "החנות שלי", Building2], ["clients", "לקוחות", Users], ["messages", "הודעות", MessageSquare]];
+  const tabs = [["home", "בית", Home], ["orders", "הזמנות", ClipboardList], ["mystore", "החנות שלי", Building2], ["clients", "לקוחות", Users], ["staff", "צוות", ShieldCheck], ["messages", "הודעות", MessageSquare]];
   return (<div><Tabs tabs={tabs} active={tab} onChange={setTab} badges={{ orders: newCount, clients: pendCount }} />
     {tab === "home" && <RoleHome name="מנהל" prompt="ניהול החנות" cards={[
       { id: "orders", title: "הזמנות", desc: newCount ? `${newCount} לליקוט` : "כל ההזמנות", Icon: ClipboardList, tone: "amber", badge: newCount ? newCount + " חדשות" : null },
-      { id: "mystore", title: "החנות שלי", desc: lowCount ? `${lowCount} מוצרים במלאי נמוך` : "מוצרים · עיצוב · יעדים · צוות", Icon: Building2, tone: "blue", badge: lowCount ? lowCount + " נמוך" : null },
+      { id: "mystore", title: "החנות שלי", desc: lowCount ? `${lowCount} מוצרים במלאי נמוך` : "מוצרים · עיצוב · יעדים", Icon: Building2, tone: "blue", badge: lowCount ? lowCount + " נמוך" : null },
       { id: "clients", title: "לקוחות", desc: pendCount ? `${pendCount} ממתינים לאישור` : "ניהול לקוחות", Icon: Users, tone: "green", badge: pendCount ? pendCount + " ממתינים" : null },
+      { id: "staff", title: "צוות", desc: "מלקטים, נהגים וסוכנים", Icon: ShieldCheck, tone: "blue" },
       { id: "messages", title: "הודעות", desc: "צ'אט ומבצעים ללקוחות", Icon: MessageSquare, tone: "amber" },
     ]} onOpen={setTab} />}
     {tab === "orders" && <MgrOrders state={state} setState={setState} />}
     {tab === "mystore" && <MyStore state={state} setState={setState} />}
     {tab === "clients" && <MgrClients state={state} setState={setState} />}
+    {tab === "staff" && <MgrStaff state={state} setState={setState} />}
     {tab === "messages" && <MgrMessages state={state} setState={setState} />}
   </div>);
 }
 function MyStore({ state, setState }) {
   const [sub, setSub] = useState("products");
   const lowCount = state.products.filter((p) => p.stock <= LOW).length;
-  const subs = [["products", "מוצרים ומלאי", Boxes], ["design", "עיצוב החנות", ImageIcon], ["prizes", "יעדים ופרסים", Gift], ["staff", "צוות", ShieldCheck]];
+  const subs = [["products", "מוצרים ומלאי", Boxes], ["design", "עיצוב החנות", ImageIcon], ["prizes", "יעדים ופרסים", Gift]];
   return (
     <div>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 18, background: C.surface, border: `1px solid ${C.line}`, borderRadius: 14, padding: 8, boxShadow: SH }}>
@@ -791,7 +951,6 @@ function MyStore({ state, setState }) {
       {sub === "products" && <MgrProducts state={state} setState={setState} />}
       {sub === "design" && <StoreDesign state={state} setState={setState} />}
       {sub === "prizes" && <MgrPrizes state={state} setState={setState} />}
-      {sub === "staff" && <MgrStaff state={state} setState={setState} />}
     </div>
   );
 }
@@ -815,6 +974,11 @@ function MgrOrders({ state, setState }) {
   const list = orders.filter((o) => inFilter(o) && inSearch(o));
   const assign = (oid, did) => setState((s) => ({ ...s, orders: s.orders.map((o) => o.id === oid ? { ...o, status: o.status === "new" ? "new" : "assigned", driverId: did } : o) }));
   const markPaid = (oid) => setState((s) => ({ ...s, orders: s.orders.map((o) => o.id === oid ? { ...o, paid: true } : o) }));
+  const slotDayLabel = (ds) => { const d = new Date(ds); return isNaN(d.getTime()) ? ds : d.toLocaleDateString("he-IL", { weekday: "long", day: "numeric", month: "numeric" }); };
+  const setSlot = (oid, patch) => setState((s) => ({ ...s, orders: s.orders.map((o) => o.id === oid ? { ...o, ...patch, delivNotified: false } : o) }));
+  const winPart = (o, i) => { const w = o.delivWindow || ""; return w.includes("-") ? w.split("-")[i] : ""; };
+  const setWinPart = (o, i, val) => { const from = i === 0 ? val : winPart(o, 0); const to = i === 1 ? val : winPart(o, 1); setSlot(o.id, { delivWindow: (from || to) ? (from + "-" + to) : "" }); };
+  const notifyClient = (o) => { const items = o.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); return `${p ? p.name : ""}×${it.cartons}`; }).join(", "); const text = `עדכון הזמנה #${o.id}: האספקה נקבעה ליום ${slotDayLabel(o.delivDate)}, בין השעות ${o.delivWindow}. פריטים: ${items}. סכום משוער: ${NIS(orderTotal(o, state.products))}.`; setState((s) => ({ ...s, messages: [...s.messages, { id: "m" + Date.now(), clientId: o.clientId, fromRole: "manager", fromName: "מערכת", text, ts: Date.now() }], orders: s.orders.map((x) => x.id === o.id ? { ...x, delivNotified: true } : x) })); };
 
   const chips = [["new", "לליקוט", cnt.new, "amber"], ["picked", "מוכנות למשלוח", cnt.picked, "blue"], ["transit", "בדרך", cnt.transit, "plum"], ["delivered", "בוצעו", cnt.delivered, "green"], ["today", "מכירות היום", cnt.today, "green"], ["all", "הכל", orders.length, "green"]];
   return (
@@ -840,6 +1004,7 @@ function MgrOrders({ state, setState }) {
               <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                 <Badge tone="green">{orderCartons(o)} קרטונים</Badge>
                 {hasShortage(o) && <Badge tone="amber"><AlertTriangle size={11} /> חוסרים</Badge>}
+                {o.delivDate && o.delivWindow && <Badge tone="blue"><Clock size={11} /> {slotDayLabel(o.delivDate)} · {o.delivWindow}</Badge>}
                 <button onClick={() => setView(o)} style={miniBtn}><Receipt size={13} /> צפייה</button>
                 {o.status === "new" && <button onClick={() => setEdit(o)} style={{ ...miniBtn, color: C.blue, borderColor: C.blue }}><Pencil size={13} /> שינוי</button>}
                 {o.status === "delivered" && (o.paid ? <Badge tone="green">שולם</Badge> : <button onClick={() => markPaid(o.id)} style={{ ...miniBtn, color: C.amber, borderColor: C.amber }}><Wallet size={13} /> סמן כשולם</button>)}
@@ -849,6 +1014,14 @@ function MgrOrders({ state, setState }) {
                 <div style={{ marginTop: 8, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
                   <span style={{ fontSize: 12, color: C.sub }}>{o.driverId ? "שנה נהג:" : "הצב לנהג:"}</span>
                   {drivers.map((d) => { const on = o.driverId === d.id; return <button key={d.id} onClick={() => assign(o.id, d.id)} style={{ border: `1px solid ${C.plum}`, color: on ? "#fff" : C.plum, background: on ? C.plum : C.plumSoft, borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>{d.name}</button>; })}
+                </div>
+              )}
+              {o.status !== "delivered" && (
+                <div style={{ marginTop: 8, borderTop: `1px dashed ${C.line}`, paddingTop: 8, display: "flex", gap: 10, alignItems: "flex-end", flexWrap: "wrap" }}>
+                  <label style={{ fontSize: 11, color: C.sub }}>יום אספקה<br /><input type="date" value={o.delivDate || ""} onChange={(e) => setSlot(o.id, { delivDate: e.target.value })} style={{ border: `1px solid ${C.line}`, borderRadius: 8, padding: "6px 8px", fontSize: 13, fontFamily: "inherit", marginTop: 3 }} /></label>
+                  <div style={{ fontSize: 11, color: C.sub }}>טווח שעות<div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 3 }}><input type="time" value={winPart(o, 0)} onChange={(e) => setWinPart(o, 0, e.target.value)} style={{ border: `1px solid ${C.line}`, borderRadius: 8, padding: "6px 8px", fontSize: 13, fontFamily: "inherit" }} /><span style={{ color: C.sub }}>עד</span><input type="time" value={winPart(o, 1)} onChange={(e) => setWinPart(o, 1, e.target.value)} style={{ border: `1px solid ${C.line}`, borderRadius: 8, padding: "6px 8px", fontSize: 13, fontFamily: "inherit" }} /></div></div>
+                  <button onClick={() => notifyClient(o)} disabled={!o.delivDate || !(o.delivWindow && o.delivWindow.split("-")[0] && o.delivWindow.split("-")[1])} style={{ border: "none", background: (o.delivDate && o.delivWindow && o.delivWindow.split("-")[0] && o.delivWindow.split("-")[1]) ? C.green : "#C9D3C7", color: "#fff", fontWeight: 700, fontSize: 13, padding: "9px 14px", borderRadius: 9, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}><Send size={14} /> עדכן לקוח</button>
+                  {o.delivNotified && <Badge tone="green"><Check size={11} /> הלקוח עודכן</Badge>}
                 </div>
               )}
             </div>
@@ -862,7 +1035,10 @@ function MgrOrders({ state, setState }) {
 }
 
 function MgrProducts({ state, setState }) {
-  const [add, setAdd] = useState(false); const [q, setQ] = useState("");
+  const [add, setAdd] = useState(false); const [q, setQ] = useState(""); const [newCat, setNewCat] = useState("");
+  const cats = state.cats || [];
+  const addCat = () => { const v = newCat.trim(); if (!v) return; setState((s) => ({ ...s, cats: [...(s.cats || []), v].filter((x, i, a) => a.indexOf(x) === i) })); setNewCat(""); };
+  const removeCat = (cat) => setState((s) => ({ ...s, cats: (s.cats || []).filter((c) => c !== cat), products: s.products.map((pr) => pr.cat === cat ? { ...pr, cat: "" } : pr) }));
   const products = state.products;
   const upd = (pid, k, v) => setState((s) => ({ ...s, products: s.products.map((p) => p.id === pid ? { ...p, [k]: v } : p) }));
   const num = (pid, k, v) => upd(pid, k, Math.max(0, v));
@@ -875,11 +1051,12 @@ function MgrProducts({ state, setState }) {
       <Panel style={{ boxShadow: SH }}>
         <SectionTitle icon={<Boxes size={18} />} extra={<button onClick={() => setAdd(true)} style={{ display: "flex", alignItems: "center", gap: 5, border: "none", background: C.green, color: "#fff", fontWeight: 700, fontSize: 13, padding: "7px 13px", borderRadius: 9, cursor: "pointer" }}><Plus size={15} /> מוצר חדש</button>}>ניהול מוצרים ומלאי</SectionTitle>
         <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1px solid ${C.line}`, borderRadius: 10, padding: "0 10px", marginBottom: 12 }}><Search size={15} color={C.sub} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="חיפוש מוצר" style={{ border: "none", outline: "none", padding: "9px 4px", fontSize: 13, width: "100%", fontFamily: "inherit", background: "transparent" }} /></div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginBottom: 14, background: "#F7F9FC", borderRadius: 10, padding: 10 }}><span style={{ fontSize: 13, color: C.sub, fontWeight: 700 }}>קטגוריות:</span>{cats.map((cat) => <span key={cat} style={{ display: "inline-flex", alignItems: "center", gap: 5, background: C.greenSoft, color: C.greenDeep, borderRadius: 20, padding: "4px 10px", fontSize: 12.5, fontWeight: 700 }}>{cat}<button onClick={() => removeCat(cat)} style={{ border: "none", background: "transparent", color: C.greenDeep, cursor: "pointer", padding: 0, display: "flex" }}><X size={13} /></button></span>)}<input value={newCat} onChange={(e) => setNewCat(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addCat()} placeholder="קטגוריה חדשה" style={{ border: `1px solid ${C.line}`, borderRadius: 8, padding: "6px 10px", fontSize: 13, fontFamily: "inherit" }} /><button onClick={addCat} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 700, fontSize: 13, padding: "6px 12px", borderRadius: 8, cursor: "pointer" }}>הוסף</button></div>
         <div style={{ display: "grid", gap: 10 }}>
           {products.filter((p) => !q.trim() || p.name.toLowerCase().includes(q.trim().toLowerCase())).map((p) => { const isC = p.unit === "carton"; const unitTxt = isC ? "קרטון" : "ק\"ג"; const m = p.price - p.cost; const out = p.stock <= 0, lw = p.stock > 0 && p.stock <= LOW; return (
             <div key={p.id} style={{ border: `1px solid ${C.line}`, borderRadius: 14, padding: 12, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
               <label style={{ cursor: "pointer", position: "relative" }}><ProdThumb p={p} size={54} /><input type="file" accept="image/*" onChange={(e) => pickImg(p.id, e.target.files[0])} style={{ display: "none" }} /><span style={{ position: "absolute", bottom: -4, left: -4, background: C.green, color: "#fff", borderRadius: "50%", width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center" }}><ImageIcon size={11} /></span></label>
-              <div style={{ minWidth: 120 }}><div style={{ fontWeight: 700 }}>{p.name}</div><select value={p.unit} onChange={(e) => upd(p.id, "unit", e.target.value)} style={{ marginTop: 4, border: `1px solid ${C.line}`, borderRadius: 8, padding: "3px 6px", fontSize: 12, fontFamily: "inherit" }}><option value="weight">לפי משקל</option><option value="carton">לפי קרטון</option></select></div>
+              <div style={{ minWidth: 120 }}><div style={{ fontWeight: 700 }}>{p.name}</div><select value={p.unit} onChange={(e) => upd(p.id, "unit", e.target.value)} style={{ marginTop: 4, border: `1px solid ${C.line}`, borderRadius: 8, padding: "3px 6px", fontSize: 12, fontFamily: "inherit" }}><option value="weight">לפי משקל</option><option value="carton">לפי קרטון</option></select><select value={p.cat || ""} onChange={(e) => upd(p.id, "cat", e.target.value)} style={{ marginTop: 4, marginInlineStart: 4, border: `1px solid ${C.line}`, borderRadius: 8, padding: "3px 6px", fontSize: 12, fontFamily: "inherit" }}><option value="">ללא קטגוריה</option>{cats.map((cat) => <option key={cat} value={cat}>{cat}</option>)}</select></div>
               <LabIn label={"עלות " + unitTxt} val={isC ? p.cost * p.kg : p.cost} step="0.1" onChange={(v) => num(p.id, "cost", isC ? v / p.kg : v)} />
               <LabIn label={"מחיר " + unitTxt} val={isC ? p.price * p.kg : p.price} step="0.1" onChange={(v) => num(p.id, "price", isC ? v / p.kg : v)} />
               <LabIn label={'ק"ג/קרטון'} val={p.kg} onChange={(v) => num(p.id, "kg", v)} />
@@ -899,7 +1076,7 @@ function MgrProducts({ state, setState }) {
   );
 }
 function AddProduct({ state, setState, onClose }) {
-  const [f, setF] = useState({ name: "", unit: "weight", kg: 10, units: "", cost: "", price: "", stock: "", emoji: "🥗", img: "", noPrice: false, vatIncluded: true });
+  const [f, setF] = useState({ name: "", unit: "weight", kg: 10, units: "", cost: "", price: "", stock: "", emoji: "🥗", img: "", noPrice: false, vatIncluded: true, cat: "" });
   const [err, setErr] = useState("");
   const set = (k) => (e) => setF((s) => ({ ...s, [k]: e.target.value }));
   const pickImg = (file) => { if (!file) return; const r = new FileReader(); r.onload = () => setF((s) => ({ ...s, img: r.result })); r.readAsDataURL(file); };
@@ -908,7 +1085,7 @@ function AddProduct({ state, setState, onClose }) {
     if (!f.name.trim()) return setErr("שם המוצר חובה");
     const kg = Math.max(1, +f.kg || 1);
     const cRaw = Math.max(0, +f.cost || 0), pRaw = Math.max(0, +f.price || 0);
-    const prod = { id: "p" + Date.now(), name: f.name.trim(), unit: f.unit, kg, units: Math.max(0, +f.units || 0), cost: f.unit === "carton" ? cRaw / kg : cRaw, price: f.noPrice ? 0 : (f.unit === "carton" ? pRaw / kg : pRaw), stock: Math.max(0, +f.stock || 0), emoji: f.emoji || "🥗", img: f.img, noPrice: f.noPrice, vatIncluded: f.vatIncluded };
+    const prod = { id: "p" + Date.now(), name: f.name.trim(), unit: f.unit, kg, units: Math.max(0, +f.units || 0), cost: f.unit === "carton" ? cRaw / kg : cRaw, price: f.noPrice ? 0 : (f.unit === "carton" ? pRaw / kg : pRaw), stock: Math.max(0, +f.stock || 0), emoji: f.emoji || "🥗", img: f.img, noPrice: f.noPrice, vatIncluded: f.vatIncluded, cat: f.cat };
     setState((s) => ({ ...s, products: [...s.products, prod] }));
     onClose();
   };
@@ -921,6 +1098,7 @@ function AddProduct({ state, setState, onClose }) {
       <div className="tp-2eq" style={{ display: "grid", gap: 10 }}>
         <Field label="שם המוצר *" value={f.name} onChange={set("name")} />
         <label style={{ display: "block", marginBottom: 10 }}><div style={{ fontSize: 13, color: C.sub, marginBottom: 4 }}>סוג יחידה</div><select value={f.unit} onChange={set("unit")} style={fieldStyle}><option value="weight">לפי משקל</option><option value="carton">לפי קרטון</option></select></label>
+        <label style={{ display: "block", marginBottom: 10 }}><div style={{ fontSize: 13, color: C.sub, marginBottom: 4 }}>קטגוריה</div><select value={f.cat} onChange={set("cat")} style={fieldStyle}><option value="">ללא קטגוריה</option>{(state.cats || []).map((cat) => <option key={cat} value={cat}>{cat}</option>)}</select></label>
         <Field label={'ק"ג לקרטון'} type="number" value={f.kg} onChange={set("kg")} />
         {f.unit === "carton" && <Field label="יחידות בקרטון" type="number" value={f.units} onChange={set("units")} />}
         <Field label="מלאי (קרטונים)" type="number" value={f.stock} onChange={set("stock")} />
@@ -977,7 +1155,7 @@ function StorePage({ supplier, state, setState, onLogin }) {
         {prods.length === 0 ? <div style={{ color: C.sub }}>הקטלוג יתעדכן בקרוב.</div> : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(150px,1fr))", gap: 12 }}>
             {prods.map((p) => (
-              <div key={p.id} style={{ border: `${Math.max(1, borderW)}px solid ${borderW > 0 ? color : C.line}`, borderRadius: 16, padding: 12, background: "#fff", boxShadow: SH }}>
+              <div key={p.id} style={{ border: `${Math.max(1.5, borderW)}px solid ${borderW > 0 ? color : C.line}`, borderRadius: 16, padding: 12, background: "#fff", boxShadow: SH }}>
                 <ProdThumb p={p} tint={color} /><div style={{ fontWeight: 700, marginTop: 8, fontSize: fs(14), color: C.ink }}>{p.name}</div>
                 <div style={{ fontSize: fs(12), color: C.sub }}>{p.unit === "carton" ? (p.units ? "קרטון · " + p.units + " יחידות" : "לפי קרטון") : "קרטון " + p.kg + " ק\"ג"}</div>
                 <div style={{ fontWeight: 800, marginTop: 4, color, fontSize: fs(15) }}>{noPrice(p) ? "לפי הצעת מחיר" : <>{NIS(cartonPriceGross(p))} <span style={{ fontSize: fs(11), color: C.sub, fontWeight: 500 }}>/ קרטון</span></>}</div>
@@ -996,7 +1174,7 @@ function StorePage({ supplier, state, setState, onLogin }) {
 function StoreDesign({ state, setState }) {
   const feat = state.features || { prizes: true, chat: true, minOrder: 5 };
   const b = state.brand || {};
-  const [f, setF] = useState({ name: state.name || "", tagline: b.tagline || "", category: state.category || "", regions: state.regions || "", color: b.color || C.green, bg: b.bg || "soft", bgColor: b.bgColor || "#F4F7F1", fontColor: b.fontColor || C.ink, font: b.font || "Rubik", fontScale: b.fontScale || 1, borderW: b.borderW == null ? 1.5 : b.borderW });
+  const [f, setF] = useState({ name: state.name || "", tagline: b.tagline || "", category: state.category || "", regions: state.regions || "", color: b.color || C.green, bg: b.bg || "soft", bgColor: b.bgColor || "#F4F7F1", fontColor: b.fontColor || C.ink, font: b.font || "Rubik", fontScale: b.fontScale || 1, borderW: b.borderW == null ? 2.5 : b.borderW });
   const [copied, setCopied] = useState(false);
   useEffect(() => { if (f.font === "Rubik") return; const id = "gf-" + f.font.replace(/\s+/g, ""); if (document.getElementById(id)) return; const l = document.createElement("link"); l.id = id; l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=" + f.font.replace(/\s+/g, "+") + ":wght@400;600;700;800&display=swap"; document.head.appendChild(l); }, [f.font]);
   const pickLogo = (file) => { if (!file) return; const r = new FileReader(); r.onload = () => setState((s) => ({ ...s, brand: { ...(s.brand || {}), logo: r.result } })); r.readAsDataURL(file); };
@@ -1004,6 +1182,8 @@ function StoreDesign({ state, setState }) {
   const setFeat = (k, v) => setState((s) => ({ ...s, features: { ...(s.features || { prizes: true, chat: true, minOrder: 5 }), [k]: v } }));
   const storeUrl = (typeof window !== "undefined" ? window.location.origin + window.location.pathname : "") + "?store=" + state.id;
   const copy = () => { try { navigator.clipboard.writeText(storeUrl); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch {} };
+  const shareMsg = "בואו להזמין מ" + state.name + " 🛒\n" + storeUrl;
+  const shareBtn = (bg) => ({ display: "inline-flex", alignItems: "center", gap: 6, background: bg, color: "#fff", fontWeight: 700, fontSize: 13, padding: "9px 14px", borderRadius: 10, textDecoration: "none", border: "none", cursor: "pointer", fontFamily: "inherit" });
   const swatches = ["#1F7A4D", "#2C6E9B", "#B23B3B", "#B4791F", "#6D3B8E", "#0E7C86", "#C2410C", "#334155"];
   const fam = `'${f.font}', ${FONT}`;
   return (
@@ -1044,20 +1224,12 @@ function StoreDesign({ state, setState }) {
         </div>
         <Field label="סלוגן" value={f.tagline} onChange={(e) => setF({ ...f, tagline: e.target.value })} placeholder="למשל: ירקות ופירות טריים לעסקים" />
         <Field label="אזורי עבודה (מופרדים בפסיק)" value={f.regions} onChange={(e) => setF({ ...f, regions: e.target.value })} placeholder="למשל: מרכז, השרון, ירושלים" />
-        <div style={{ fontSize: 13, color: C.sub, margin: "6px 0 6px" }}>צבע החנות</div>
+        <div style={{ fontSize: 13, color: C.sub, margin: "6px 0 6px" }}>צבע מסגרות המוצרים</div>
         <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
           {swatches.map((sw) => <button key={sw} onClick={() => setF({ ...f, color: sw })} style={{ width: 30, height: 30, borderRadius: 8, background: sw, border: f.color === sw ? "3px solid #182620" : "2px solid #fff", boxShadow: "0 0 0 1px #ddd", cursor: "pointer" }} />)}
           <input type="color" value={f.color} onChange={(e) => setF({ ...f, color: e.target.value })} style={{ width: 38, height: 32, border: "none", background: "none", cursor: "pointer" }} />
         </div>
-        <div style={{ fontSize: 13, color: C.sub, margin: "14px 0 6px" }}>רקע החנות</div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>{[["soft", "רך"], ["white", "לבן"], ["cream", "קרם"], ["tint", "גוון המותג"], ["custom", "צבע חופשי"]].map(([k, lbl]) => <button key={k} onClick={() => setF({ ...f, bg: k })} style={{ border: `1.5px solid ${f.bg === k ? C.green : C.line}`, background: f.bg === k ? C.greenSoft : "#fff", color: f.bg === k ? C.greenDeep : C.sub, borderRadius: 20, padding: "6px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>{lbl}</button>)}{f.bg === "custom" && <input type="color" value={f.bgColor} onChange={(e) => setF({ ...f, bgColor: e.target.value })} style={{ width: 38, height: 32, border: "none", background: "none", cursor: "pointer" }} />}</div>
-        <div style={{ fontSize: 13, color: C.sub, margin: "14px 0 6px" }}>צבע גופן</div>
-        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>{["#182620", "#FFFFFF", "#124A2B", "#4A2B1A", "#333F52"].map((cc) => <button key={cc} onClick={() => setF({ ...f, fontColor: cc })} style={{ width: 30, height: 30, borderRadius: 8, background: cc, border: f.fontColor === cc ? "3px solid " + C.green : "2px solid #fff", boxShadow: "0 0 0 1px #ddd", cursor: "pointer" }} />)}<input type="color" value={f.fontColor} onChange={(e) => setF({ ...f, fontColor: e.target.value })} style={{ width: 38, height: 32, border: "none", background: "none", cursor: "pointer" }} /></div>
-        <div className="tp-2eq" style={{ display: "grid", gap: 10, marginTop: 12 }}>
-          <label style={{ display: "block" }}><div style={{ fontSize: 13, color: C.sub, marginBottom: 4 }}>גופן</div><select value={f.font} onChange={(e) => setF({ ...f, font: e.target.value })} style={fieldStyle}><option value="Rubik">Rubik</option><option value="Heebo">Heebo</option><option value="Assistant">Assistant</option><option value="Secular One">Secular One</option><option value="Frank Ruhl Libre">Frank Ruhl Libre</option></select></label>
-          <div><div style={{ fontSize: 13, color: C.sub, marginBottom: 4 }}>גודל טקסט: {Math.round(f.fontScale * 100)}%</div><input type="range" min="90" max="115" step="1" value={Math.round(f.fontScale * 100)} onChange={(e) => setF({ ...f, fontScale: (+e.target.value) / 100 })} style={{ width: "100%", accentColor: f.color }} /></div>
-          <div><div style={{ fontSize: 13, color: C.sub, marginBottom: 4 }}>עובי מסגרת המוצרים: {f.borderW} פיקסל</div><input type="range" min="0" max="5" step="0.5" value={f.borderW} onChange={(e) => setF({ ...f, borderW: +e.target.value })} style={{ width: "100%", accentColor: f.color }} /></div>
-        </div>
+
         <button onClick={save} style={{ width: "100%", marginTop: 8, padding: 12, borderRadius: 12, border: "none", background: f.color, color: "#fff", fontWeight: 800, fontSize: 15, cursor: "pointer" }}>שמור עיצוב</button>
       </Panel>
       <Panel style={{ boxShadow: SH }}>
@@ -1083,26 +1255,86 @@ function StoreDesign({ state, setState }) {
           <input readOnly value={storeUrl} onFocus={(e) => e.target.select()} style={{ flex: 1, minWidth: 220, border: `1px solid ${C.line}`, borderRadius: 10, padding: "10px 12px", fontSize: 13, background: "#F7F9F5", color: C.ink, fontFamily: "inherit" }} />
           <button onClick={copy} style={{ border: "none", background: copied ? C.greenDeep : C.green, color: "#fff", fontWeight: 800, padding: "0 20px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>{copied ? <Check size={16} /> : <Download size={16} />}{copied ? "הועתק!" : "העתק קישור"}</button>
         </div>
+        <div style={{ fontSize: 13, color: C.sub, margin: "14px 0 8px" }}>שיתוף מהיר:</div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <a href={`https://wa.me/?text=${encodeURIComponent(shareMsg)}`} target="_blank" rel="noopener noreferrer" style={shareBtn("#25D366")}><MessageCircle size={16} /> וואטסאפ</a>
+          <a href={`mailto:?subject=${encodeURIComponent(state.name)}&body=${encodeURIComponent(shareMsg)}`} style={shareBtn("#5A6B80")}><Mail size={16} /> מייל</a>
+          <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(storeUrl)}`} target="_blank" rel="noopener noreferrer" style={shareBtn("#1877F2")}><Facebook size={16} /> פייסבוק</a>
+          <a href={`https://t.me/share/url?url=${encodeURIComponent(storeUrl)}&text=${encodeURIComponent(state.name)}`} target="_blank" rel="noopener noreferrer" style={shareBtn("#229ED9")}><Send size={16} /> טלגרם</a>
+          <a href={`sms:?&body=${encodeURIComponent(shareMsg)}`} style={shareBtn("#7A5AF8")}><MessageSquare size={16} /> SMS</a>
+          <button onClick={() => { try { if (navigator.share) { navigator.share({ title: state.name, text: shareMsg, url: storeUrl }); } else { copy(); } } catch (e) {} }} style={shareBtn(C.green)}><Share2 size={16} /> עוד…</button>
+        </div>
       </Panel>
     </div>
+  );
+}
+function downloadInvoice(order, state) {
+  const c = state.clients.find((x) => x.id === order.clientId);
+  const biz = state.biz || {};
+  const color = (state.brand && state.brand.color) || "#0B2A63";
+  const gross = orderTotal(order, state.products);
+  const net = gross / (1 + VAT), vat = gross - net;
+  const rows = order.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); if (!p) return ""; const isC = p.unit === "carton"; const w = isC ? "—" : (it.actualKg != null ? KGL(it.actualKg) : "~" + KGL(it.cartons * p.kg)); const amt = noPrice(p) ? "לפי הצעה" : NIS(lineTotal(it, p)); return `<tr><td>${p.emoji} ${p.name}</td><td>${it.cartons} קרטונים</td><td>${w}</td><td>${amt}</td></tr>`; }).join("");
+  const html = `<!doctype html><html dir="rtl" lang="he"><head><meta charset="utf-8"><title>חשבונית ${order.invNo || order.id}</title><style>body{font-family:system-ui,Arial;padding:32px;color:#182620}h1{color:${color};margin:0;font-size:24px}table{width:100%;border-collapse:collapse;margin-top:16px}td,th{border-bottom:1px solid #E4E9DE;padding:8px;text-align:right}thead tr{background:${color};color:#fff}.tot{margin-top:16px;text-align:left;line-height:1.8}.tot b{font-size:20px;color:${color}}.hd{display:flex;justify-content:space-between;border-bottom:3px solid ${color};padding-bottom:10px}</style></head><body><div class="hd"><div><h1>${state.name}</h1><div style="color:#5B6B60;font-size:13px">${biz.taxId ? "ע.מ/ח.פ: " + biz.taxId + "<br>" : ""}${biz.address || ""}${biz.phone ? "<br>טל' " + biz.phone : ""}</div></div><div style="text-align:left"><div style="font-weight:800;color:${color};font-size:18px">חשבונית מס</div><div style="color:#5B6B60;font-size:13px">מס' ${order.invNo || order.id}<br>${new Date(order.date).toLocaleDateString("he-IL")}</div></div></div><div style="margin-top:12px">לכבוד: <b>${c ? c.name : ""}</b>${c && c.taxId ? " · ע.מ/ח.פ " + c.taxId : ""}<br>${c && c.address ? c.address : ""}</div><table><thead><tr><th>מוצר</th><th>כמות</th><th>משקל</th><th>סכום</th></tr></thead><tbody>${rows}</tbody></table><div class="tot">סכום לפני מע"מ: ${NIS(net)}<br>מע"מ ${Math.round(VAT * 100)}%: ${NIS(vat)}<br><b>סה"כ לתשלום: ${NIS(gross)}</b></div><p style="color:#5B6B60;font-size:12px">תשלום ב${(PAY[c ? c.pay : "cash"] || PAY.cash).label} · מופק ע"י ${state.name}</p></body></html>`;
+  try { const blob = new Blob([html], { type: "text/html;charset=utf-8" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "invoice-" + (order.invNo || order.id) + ".html"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); } catch (e) {}
+}
+function InvoiceModal({ order, state, onClose, withAddress }) {
+  const c = state.clients.find((x) => x.id === order.clientId);
+  const priced = order.status === "delivered" || order.status === "picked";
+  const color = (state.brand && state.brand.color) || C.greenDeep;
+  const biz = state.biz || {};
+  const pay = PAY[c ? c.pay : "cash"] || PAY.cash;
+  const gross = orderTotal(order, state.products);
+  const net = gross / (1 + VAT), vat = gross - net;
+  const anyNoPrice = order.items.some((it) => { const p = state.products.find((x) => x.id === it.pid); return p && noPrice(p); });
+  return (
+    <Modal onClose={onClose} title={priced ? "חשבונית" : "פרטי הזמנה"}>
+      <div style={{ border: `1px solid ${C.line}`, borderRadius: 14, padding: 18, background: "#fff" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: `2px solid ${color}`, paddingBottom: 12, marginBottom: 12, gap: 10, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <Logo size={42} img={state.brand && state.brand.logo} name={state.name} />
+            <div style={{ fontSize: 12, color: C.sub, lineHeight: 1.6 }}>
+              <div style={{ fontWeight: 800, fontSize: 15, color: C.ink }}>{state.name}</div>
+              {biz.taxId ? <div>ע.מ / ח.פ: {biz.taxId}</div> : null}
+              {biz.address ? <div>{biz.address}</div> : null}
+              {biz.phone ? <div>טלפון: {biz.phone}</div> : null}
+            </div>
+          </div>
+          <div style={{ textAlign: "left" }}>
+            <div style={{ fontWeight: 800, fontSize: 16, color }}>{priced ? "חשבונית מס" : "אישור הזמנה"}</div>
+            <div style={{ fontSize: 12, color: C.sub, marginTop: 4 }}>מס' {order.invNo || order.id}<br />{new Date(order.date).toLocaleDateString("he-IL")}<br /><span style={{ color: STATUS[order.status].color, fontWeight: 700 }}>{STATUS[order.status].label}</span></div>
+          </div>
+        </div>
+        <div style={{ fontSize: 13, marginBottom: 10 }}><span style={{ color: C.sub }}>לכבוד:</span> <b>{c ? c.name : ""}</b>{c && c.taxId ? " · ע.מ/ח.פ " + c.taxId : ""}{c && c.contact ? " · " + c.contact : ""}{withAddress && c && c.address ? <div style={{ fontSize: 12.5, color: C.sub, marginTop: 2, display: "flex", gap: 5, alignItems: "center" }}><MapPin size={13} /> {c.address} · {c.phone}</div> : null}</div>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
+          <thead><tr style={{ background: color, color: "#fff", textAlign: "right" }}><Th>מוצר</Th><Th>כמות</Th><Th>משקל</Th><Th>סכום</Th></tr></thead>
+          <tbody>{order.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); if (!p) return null; const isC = p.unit === "carton"; return (<tr key={it.pid} style={{ borderBottom: `1px solid ${C.line}` }}><Td>{p.emoji} {p.name}</Td><Td>{it.cartons} קרטונים{suppliedOf(it) < it.cartons ? " (סופקו " + suppliedOf(it) + ")" : ""}</Td><Td>{isC ? "—" : (it.actualKg != null ? KGL(it.actualKg) : "~" + KGL(it.cartons * p.kg))}</Td><Td strong>{noPrice(p) ? "לפי הצעה" : NIS(lineTotal(it, p))}</Td></tr>); })}</tbody>
+        </table>
+        <div style={{ marginInlineStart: "auto", maxWidth: 280, marginTop: 12 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginTop: 6 }}><span>סכום לפני מע"מ</span><span style={{ fontWeight: 700 }}>{NIS(net)}</span></div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginTop: 6 }}><span>מע"מ {Math.round(VAT * 100)}%</span><span style={{ fontWeight: 700 }}>{NIS(vat)}</span></div>
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, paddingTop: 8, borderTop: `2px solid ${color}`, fontWeight: 800, fontSize: 18 }}><span>סה"כ לתשלום</span><span style={{ color }}>{NIS(gross)}</span></div>
+        </div>
+        {anyNoPrice && <div style={{ fontSize: 12, color: C.amber, marginTop: 8 }}>* פריטים המסומנים "לפי הצעה" יתומחרו בנפרד ואינם כלולים בסכום.</div>}
+        <div style={{ fontSize: 12, color: C.sub, marginTop: 10, display: "flex", alignItems: "center", gap: 5 }}><pay.icon size={13} /> תשלום ב{pay.label}{!priced ? " · הסכום ייקבע בשקילה" : ""}</div>
+      </div>
+      <button onClick={() => downloadInvoice(order, state)} style={{ width: "100%", marginTop: 14, padding: 11, borderRadius: 12, border: `1px solid ${color}`, background: "#fff", color, fontWeight: 800, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}><Download size={16} /> הורדת חשבונית (להדפסה / PDF)</button>
+    </Modal>
   );
 }
 function MgrPrizes({ state, setState }) {
   const [open, setOpen] = useState(null);
   const perClient = state.clients.filter((c) => c.status === "active").map((c) => ({ ...c, pts: pointsOf(c.id, state.orders, state.products, state.kgPerPoint, state.periodMonths) }));
   const tiers = sortTiers(state.prizeTiers);
-  const monthOrders = state.orders.filter((o) => monthKey(o.date) === nowMonth);
-  const grossProfit = monthOrders.reduce((s, o) => s + orderProfit(o, state.products), 0);
-  const prizeCost = perClient.reduce((s, c) => { const t = reachedTier(c.pts, tiers); return s + (t ? t.cost : 0); }, 0);
-  const net = grossProfit - prizeCost;
   const updateTier = (id, k, v) => setState((s) => ({ ...s, prizeTiers: s.prizeTiers.map((t) => t.id === id ? { ...t, [k]: v } : t) }));
   const addTier = () => setState((s) => { const mx = s.prizeTiers.reduce((m, t) => Math.max(m, t.points), 0); return { ...s, prizeTiers: [...s.prizeTiers, { id: "t" + Date.now(), points: mx + 100, title: "פרס חדש", detail: "", cost: 0 }] }; });
   const removeTier = (id) => setState((s) => ({ ...s, prizeTiers: s.prizeTiers.filter((t) => t.id !== id) }));
+  const prizeCost = perClient.reduce((s, c) => { const t = reachedTier(c.pts, tiers); return s + (t ? t.cost || 0 : 0); }, 0);
   return (
     <Panel style={{ boxShadow: SH }}>
       <SectionTitle icon={<Gift size={18} />} extra={<button onClick={addTier} style={{ display: "flex", alignItems: "center", gap: 5, border: `1px solid ${C.line}`, background: "#fff", color: C.green, fontWeight: 700, fontSize: 13, padding: "6px 12px", borderRadius: 9, cursor: "pointer" }}><Plus size={15} /> הוסף יעד</button>}>תוכנית היעדים והפרסים · {periodLabel(state.periodMonths)}</SectionTitle>
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
-        <span style={{ fontSize: 13, color: C.sub }}>{state.kgPerPoint} ק"ג = נקודה · מתאפס בתחילת כל תקופה · לחיצה על מספר הלקוחות מציגה מי הגיע.</span>
+        <span style={{ fontSize: 13, color: C.sub }}>{state.kgPerPoint} ק"ג = נקודה · מתאפס בכל תקופה · לחיצה על מספר הלקוחות מציגה מי הגיע.</span>
         <div style={{ flex: 1 }} />
         <span style={{ fontSize: 13, color: C.sub, fontWeight: 700 }}>תקופת היעדים:</span>
         <select value={state.periodMonths || 1} onChange={(e) => setState((s) => ({ ...s, periodMonths: +e.target.value }))} style={{ border: `1px solid ${C.line}`, borderRadius: 8, padding: "6px 10px", fontSize: 13, fontFamily: "inherit" }}><option value={1}>כל חודש</option><option value={2}>כל חודשיים</option></select>
@@ -1113,8 +1345,8 @@ function MgrPrizes({ state, setState }) {
             <div style={{ display: "grid", gridTemplateColumns: "78px 1fr 1fr 92px 34px", gap: 8, alignItems: "end" }}>
               <TierIn label="נקודות" val={t.points} onChange={(v) => updateTier(t.id, "points", Math.max(1, +v))} />
               <TierTxt label="הפרס" val={t.title} onChange={(v) => updateTier(t.id, "title", v)} />
-              <TierTxt label="פרט חודשי (יעד/מלון)" val={t.detail} onChange={(v) => updateTier(t.id, "detail", v)} placeholder="החודש: …" />
-              <TierIn label="עלות ₪" val={t.cost} onChange={(v) => updateTier(t.id, "cost", Math.max(0, +v))} />
+              <TierTxt label="פרט (יעד/מלון)" val={t.detail} onChange={(v) => updateTier(t.id, "detail", v)} placeholder="החודש: …" />
+              <TierIn label="עלות ₪" val={t.cost || 0} onChange={(v) => updateTier(t.id, "cost", Math.max(0, +v))} />
               <button onClick={() => removeTier(t.id)} style={{ border: "none", background: C.redSoft, color: C.red, borderRadius: 8, height: 36, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Trash2 size={15} /></button>
             </div>
             <button onClick={() => setOpen(isOpen ? null : t.id)} style={{ marginTop: 8, border: "none", background: "transparent", cursor: "pointer", padding: 0 }}><Badge tone="plum">{winners.length} לקוחות הגיעו · {isOpen ? "הסתר" : "הצג"}</Badge></button>
@@ -1122,11 +1354,10 @@ function MgrPrizes({ state, setState }) {
           </div>
         ); })}
       </div>
-      <div style={{ marginTop: 14, padding: 12, background: C.amberSoft, borderRadius: 12, fontSize: 12.5, color: "#7A5A17", lineHeight: 1.6 }}>החודש: רווח גולמי <b>{NIS(grossProfit)}</b> · עלות פרסים <b>{NIS(prizeCost)}</b> · נטו <b style={{ color: net < 0 ? C.red : C.greenDeep }}>{NIS(net)}</b>.</div>
+      <div style={{ marginTop: 14, padding: 12, background: C.amberSoft, borderRadius: 12, fontSize: 12.5, color: "#7A5A17", lineHeight: 1.6 }}>עלות הפרסים המשוערת לתקופה: <b>{NIS(prizeCost)}</b>.</div>
     </Panel>
   );
 }
-
 function MgrClients({ state, setState }) {
   const [open, setOpen] = useState(null); const [q, setQ] = useState(""); const [adding, setAdding] = useState(false);
   const pending = state.clients.filter((c) => c.status === "pending");
@@ -1139,12 +1370,12 @@ function MgrClients({ state, setState }) {
       {pending.length > 0 && (
         <Panel style={{ borderColor: "#E4D3A8", background: "#FFFDF6", boxShadow: SH }}>
           <SectionTitle icon={<Clock size={18} />} extra={<Badge tone="amber">{pending.length}</Badge>}>בקשות הרשמת עסקים</SectionTitle>
-          <div style={{ display: "grid", gap: 10 }}>{pending.map((c) => (<div key={c.id} style={{ border: `1px solid ${C.line}`, borderRadius: 12, padding: 14, background: "#fff", display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}><div style={{ flex: 1, minWidth: 200 }}><div style={{ fontWeight: 800 }}>{c.name}</div><div style={{ fontSize: 13, color: C.sub }}>{c.contact} · {c.phone} · {c.email}</div><div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}><Badge>{c.structure}</Badge><Badge>{c.category}</Badge><Badge icon={<PayIcon pay={c.pay} size={11} />}>{PAY[c.pay].label}</Badge>{(c.docs || []).map((d, i) => <Badge key={i} icon={<FileText size={11} />}>{d}</Badge>)}</div></div><div style={{ display: "flex", gap: 8 }}><button onClick={() => approve(c.id)} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 700, padding: "9px 16px", borderRadius: 10, cursor: "pointer", display: "flex", gap: 5, alignItems: "center" }}><Check size={16} /> אשר</button><button onClick={() => reject(c.id)} style={{ border: `1px solid ${C.line}`, background: "#fff", color: C.red, fontWeight: 700, padding: "9px 14px", borderRadius: 10, cursor: "pointer", display: "flex", gap: 5, alignItems: "center" }}><X size={16} /> דחה</button></div></div>))}</div>
+          <div style={{ display: "grid", gap: 10 }}>{pending.map((c) => (<div key={c.id} style={{ border: `1px solid ${C.line}`, borderRadius: 12, padding: 14, background: "#fff", display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}><div style={{ flex: 1, minWidth: 200 }}><div style={{ fontWeight: 800 }}>{c.name}</div><div style={{ fontSize: 13, color: C.sub }}>{c.contact} · {c.phone} · {c.email}</div><div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}><Badge>{c.structure}</Badge><Badge>{c.category}</Badge><Badge icon={<PayIcon pay={c.pay} size={11} />}>{PAY[c.pay].label}</Badge></div></div><div style={{ display: "flex", gap: 8 }}><button onClick={() => approve(c.id)} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 700, padding: "9px 16px", borderRadius: 10, cursor: "pointer", display: "flex", gap: 5, alignItems: "center" }}><Check size={16} /> אשר</button><button onClick={() => reject(c.id)} style={{ border: `1px solid ${C.line}`, background: "#fff", color: C.red, fontWeight: 700, padding: "9px 14px", borderRadius: 10, cursor: "pointer", display: "flex", gap: 5, alignItems: "center" }}><X size={16} /> דחה</button></div></div>))}</div>
         </Panel>
       )}
       <Panel style={{ boxShadow: SH }}>
         <SectionTitle icon={<Users size={18} />} extra={<button onClick={() => setAdding(true)} style={{ display: "flex", alignItems: "center", gap: 5, border: `1px solid ${C.line}`, background: "#fff", color: C.green, fontWeight: 700, fontSize: 13, padding: "6px 12px", borderRadius: 9, cursor: "pointer" }}><UserPlus size={15} /> לקוח חדש</button>}>לקוחות</SectionTitle>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1px solid ${C.line}`, borderRadius: 10, padding: "0 10px", marginBottom: 12 }}><Search size={15} color={C.sub} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="חיפוש מהיר: שם / טלפון / ח.פ / אימייל" style={{ border: "none", outline: "none", padding: "9px 4px", fontSize: 13, width: "100%", fontFamily: "inherit", background: "transparent" }} /></div>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1px solid ${C.line}`, borderRadius: 10, padding: "0 10px", marginBottom: 12 }}><Search size={15} color={C.sub} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="חיפוש: שם / טלפון / ח.פ / אימייל" style={{ border: "none", outline: "none", padding: "9px 4px", fontSize: 13, width: "100%", fontFamily: "inherit", background: "transparent" }} /></div>
         <div style={{ display: "grid", gap: 8 }}>
           {active.map((c) => { const pts = pointsOf(c.id, state.orders, state.products, state.kgPerPoint, state.periodMonths); const prize = reachedTier(pts, sortTiers(state.prizeTiers)); const cnt = state.orders.filter((o) => o.clientId === c.id).length; const debt = outstandingOf(c.id, state.orders, state.products); return (
             <button key={c.id} onClick={() => setOpen(c)} style={{ textAlign: "right", border: `1px solid ${C.line}`, borderRadius: 12, padding: "12px 14px", background: "#fff", cursor: "pointer" }}>
@@ -1160,7 +1391,6 @@ function MgrClients({ state, setState }) {
     </div>
   );
 }
-
 function MgrStaff({ state, setState }) {
   const [f, setF] = useState({ name: "", role: "picker", email: "", password: "" }); const [err, setErr] = useState("");
   const [edit, setEdit] = useState(null);
@@ -1196,7 +1426,6 @@ function MgrStaff({ state, setState }) {
     </Panel>
   );
 }
-
 function MgrMessages({ state, setState }) {
   const [open, setOpen] = useState(null); const [bc, setBc] = useState("");
   const clients = state.clients.filter((c) => c.status === "active");
@@ -1208,14 +1437,12 @@ function MgrMessages({ state, setState }) {
         <div style={{ display: "grid", gap: 6, marginTop: 12 }}>{state.broadcasts.map((b) => <div key={b.id} style={{ background: C.amberSoft, color: "#7A5A17", borderRadius: 10, padding: "8px 12px", fontSize: 13 }}><b>{b.text}</b> <span style={{ color: C.sub, fontSize: 11 }}>· {dayStr(b.ts)}</span></div>)}</div>
       </Panel>
       <Panel style={{ boxShadow: SH }}><SectionTitle icon={<MessageSquare size={18} />}>שיחות עם לקוחות</SectionTitle>
-        <div style={{ display: "grid", gap: 8 }}>{clients.map((c) => { const msgs = state.messages.filter((m) => m.clientId === c.id); const last = msgs[msgs.length - 1]; return (<button key={c.id} onClick={() => setOpen(c)} style={{ textAlign: "right", border: `1px solid ${C.line}`, borderRadius: 12, padding: "10px 14px", background: "#fff", cursor: "pointer" }}><div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ fontWeight: 700 }}>{c.name}</span>{last && <span style={{ fontSize: 11, color: C.sub }}>{dayStr(last.ts)}</span>}</div><div style={{ fontSize: 13, color: C.sub, marginTop: 3 }}>{last ? last.text : "אין הודעות עדיין"}</div></button>); })}</div>
+        <div style={{ display: "grid", gap: 8 }}>{clients.map((c) => { const msgs = state.messages.filter((m) => m.clientId === c.id); const last = msgs[msgs.length - 1]; const unread = msgs.some((m) => m.fromRole === "client" && !m.readBySup); return (<button key={c.id} onClick={() => { setOpen(c); setState((s) => ({ ...s, messages: s.messages.map((m) => m.clientId === c.id && m.fromRole === "client" ? { ...m, readBySup: true } : m) })); }} style={{ textAlign: "right", border: `1px solid ${C.line}`, borderRadius: 12, padding: "10px 14px", background: "#fff", cursor: "pointer" }}><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><span style={{ fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>{c.name}{unread && <span style={{ width: 9, height: 9, borderRadius: "50%", background: C.amber, display: "inline-block" }} />}</span>{last && <span style={{ fontSize: 11, color: C.sub }}>{dayStr(last.ts)}</span>}</div><div style={{ fontSize: 13, color: C.sub, marginTop: 3 }}>{last ? last.text : "אין הודעות עדיין"}</div></button>); })}</div>
       </Panel>
       {open && <Modal onClose={() => setOpen(null)} title={"שיחה · " + open.name}><Chat state={state} setState={setState} clientId={open.id} meRole="manager" meName="מנהל" embedded /></Modal>}
     </div>
   );
 }
-
-/* ============ PICKER ============ */
 function PickerView({ state, setState, me }) {
   const [tab, setTab] = useState("home");
   const [open, setOpen] = useState(null);
@@ -1266,12 +1493,7 @@ function PickModal({ order, state, setState, onClose, me }) {
   const [weights, setWeights] = useState(() => { const w = {}; order.items.forEach((it) => { const p = state.products.find((x) => x.id === it.pid); w[it.pid] = p.unit === "carton" ? null : it.cartons * p.kg; }); return w; });
   const [checked, setChecked] = useState({});
   const c = state.clients.find((x) => x.id === order.clientId);
-  const setSup = (pid, d, max) => {
-    const p = state.products.find((x) => x.id === pid);
-    const v = Math.max(0, Math.min(max, (supplied[pid] || 0) + d));
-    setSupplied((s) => ({ ...s, [pid]: v }));
-    if (p.unit !== "carton") setWeights((w) => ({ ...w, [pid]: v * p.kg }));
-  };
+  const setSup = (pid, d, max) => { const p = state.products.find((x) => x.id === pid); const v = Math.max(0, Math.min(max, (supplied[pid] || 0) + d)); setSupplied((s) => ({ ...s, [pid]: v })); if (p.unit !== "carton") setWeights((w) => ({ ...w, [pid]: v * p.kg })); };
   const active = order.items.filter((it) => (supplied[it.pid] || 0) > 0);
   const allChecked = active.length > 0 && active.every((it) => checked[it.pid]);
   const total = order.items.reduce((s, it) => { const p = state.products.find((x) => x.id === it.pid); const eff = p.unit === "carton" ? { ...it, supplied: supplied[it.pid] } : { ...it, supplied: supplied[it.pid], actualKg: +weights[it.pid] || 0 }; return s + lineTotal(eff, p); }, 0);
@@ -1281,9 +1503,9 @@ function PickModal({ order, state, setState, onClose, me }) {
     onClose();
   };
   return (
-    <Modal onClose={onClose} title={"ליקוט · #" + order.id + " · " + c?.name}>
+    <Modal onClose={onClose} title={"ליקוט · #" + order.id + " · " + (c ? c.name : "")}>
       <div style={{ display: "grid", gap: 10 }}>
-        {order.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); if (!p) return null; const isC = p.unit === "carton"; const sup = supplied[it.pid] || 0; const short = it.cartons - sup; const gone = sup === 0; return (
+        {order.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); const isC = p.unit === "carton"; const sup = supplied[it.pid] || 0; const short = it.cartons - sup; const gone = sup === 0; return (
           <div key={it.pid} style={{ border: `1px solid ${gone ? C.red : checked[it.pid] ? C.green : C.line}`, background: gone ? C.redSoft : checked[it.pid] ? C.greenSoft : "#fff", borderRadius: 12, padding: 12 }}>
             <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
               <ProdThumb p={p} size={42} />
@@ -1303,8 +1525,6 @@ function PickModal({ order, state, setState, onClose, me }) {
     </Modal>
   );
 }
-
-/* ============ DRIVER ============ */
 function DriverView({ state, setState, me }) {
   const [tab, setTab] = useState("home");
   const mine = state.orders.filter((o) => (o.status === "assigned" || o.status === "collected") && o.driverId === me.id).sort((a, b) => a.date - b.date);
@@ -1328,20 +1548,16 @@ function DriverView({ state, setState, me }) {
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}><MapPin size={14} color={C.green} /> {c?.address || "אין כתובת"}</div>
                   <div style={{ display: "flex", alignItems: "center", gap: 6 }}><Phone size={14} color={C.green} /> {c?.contact} · {c?.phone}</div>
                 </div>
-                <div style={{ border: `1px dashed ${C.line}`, borderRadius: 10, padding: 8, margin: "6px 0", fontSize: 13 }}>{o.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); if (!p) return null; return <div key={it.pid} style={{ display: "flex", justifyContent: "space-between" }}><span>{p?.emoji} {p?.name} × {it.cartons}</span><span style={{ color: C.sub }}>{it.actualKg != null ? KGL(it.actualKg) : (p.unit === "carton" ? "" : "~" + KGL(it.cartons * p.kg))}</span></div>; })}<div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800, borderTop: `1px solid ${C.line}`, marginTop: 4, paddingTop: 4 }}><span>סה"כ</span><span style={{ color: C.greenDeep }}>{NIS(orderTotal(o, state.products))}</span></div></div>
                 {o.status === "assigned" ? <button onClick={() => setStatus(o.id, "collected")} style={dvBtn(C.blue)}><Package size={16} /> אספתי מהמחסן</button> : <button onClick={() => setStatus(o.id, "delivered")} style={dvBtn(C.green)}><Check size={16} /> נמסר ללקוח · בוצע</button>}
               </div>
             ); })}</div>}
           </Panel>
-          {done.length > 0 && <Panel style={{ boxShadow: SH }}><SectionTitle icon={<ClipboardCheck size={18} />}>נמסרו</SectionTitle><div style={{ display: "grid", gap: 6 }}>{done.slice(0, 8).map((o) => { const c = state.clients.find((x) => x.id === o.clientId); return <div key={o.id} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: C.sub, padding: "6px 0", borderBottom: `1px dashed ${C.line}` }}><span>#{o.id} · {c?.name}</span><span>{dayStr(o.date)}</span></div>; })}</div></Panel>}
         </div>
       )}
     </div>
   );
 }
-const dvBtn = (bg) => ({ width: "100%", border: "none", background: bg, color: "#fff", fontWeight: 800, fontSize: 14, padding: "11px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 });
-
-/* ============ AGENT ============ */
+const dvBtn = (bg) => ({ width: "100%", border: "none", background: bg, color: "#fff", fontWeight: 800, fontSize: 14, padding: "11px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 4 });
 function AgentView({ state, setState, me }) {
   const [tab, setTab] = useState("home"); const [chatClient, setChatClient] = useState(null); const [orderClient, setOrderClient] = useState("");
   const [q, setQ] = useState(""); const [edit, setEdit] = useState(null); const [view, setView] = useState(null); const [cq, setCq] = useState("");
@@ -1383,8 +1599,6 @@ function AgentView({ state, setState, me }) {
     </div>
   );
 }
-
-/* ============ Chat / Invoice / Modals ============ */
 function Chat({ state, setState, clientId, meRole, meName, embedded }) {
   const [text, setText] = useState("");
   const msgs = state.messages.filter((m) => m.clientId === clientId).sort((a, b) => a.ts - b.ts);
@@ -1395,71 +1609,14 @@ function Chat({ state, setState, clientId, meRole, meName, embedded }) {
       {!embedded && meRole === "client" && state.broadcasts.length > 0 && <div style={{ marginBottom: 12 }}>{state.broadcasts.slice(0, 2).map((b) => <div key={b.id} style={{ background: C.amberSoft, color: "#7A5A17", borderRadius: 10, padding: "8px 12px", fontSize: 13, marginBottom: 6, display: "flex", gap: 6, alignItems: "center" }}><Megaphone size={15} /> <b>{b.text}</b></div>)}</div>}
       <div style={{ background: embedded ? "transparent" : C.surface, border: embedded ? "none" : `1px solid ${C.line}`, borderRadius: 16, padding: embedded ? 0 : 16, boxShadow: embedded ? "none" : SH }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 340, overflow: "auto", marginBottom: 12, padding: 4 }}>
-          {msgs.length === 0 && <Empty>אין הודעות. כתוב הודעה לצוות התמיכה.</Empty>}
-          {msgs.map((m) => (<div key={m.id} style={{ alignSelf: mine(m) ? "flex-start" : "flex-end", maxWidth: "82%" }}><div style={{ background: mine(m) ? C.green : "#EEF1EC", color: mine(m) ? "#fff" : C.ink, borderRadius: 14, padding: "8px 12px", fontSize: 14 }}>{m.text}</div><div style={{ fontSize: 10.5, color: C.sub, marginTop: 3, textAlign: mine(m) ? "right" : "left" }}>{m.fromRole !== meRole ? (ROLE_LABEL[m.fromRole] + " · ") : ""}{dayStr(m.ts)}</div></div>))}
+          {msgs.length === 0 && <Empty>אין הודעות עדיין.</Empty>}
+          {msgs.map((m) => (<div key={m.id} style={{ alignSelf: mine(m) ? "flex-start" : "flex-end", maxWidth: "82%" }}><div style={{ background: mine(m) ? C.green : "#EEF1EC", color: mine(m) ? "#fff" : C.ink, borderRadius: 14, padding: "8px 12px", fontSize: 14 }}>{m.text}</div><div style={{ fontSize: 10.5, color: C.sub, marginTop: 3, textAlign: mine(m) ? "right" : "left" }}>{m.fromRole !== meRole ? (ROLE_LABEL[m.fromRole] || "") + " · " : ""}{dayStr(m.ts)}</div></div>))}
         </div>
         <div style={{ display: "flex", gap: 8 }}><input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send()} placeholder="כתוב הודעה…" style={{ ...fieldStyle, flex: 1 }} /><button onClick={send} style={{ border: "none", background: C.green, color: "#fff", borderRadius: 10, padding: "0 16px", cursor: "pointer", display: "flex", alignItems: "center" }}><Send size={17} /></button></div>
       </div>
     </div>
   );
 }
-
-function downloadInvoice(order, state) {
-  const c = state.clients.find((x) => x.id === order.clientId);
-  const biz = state.biz || {};
-  const color = (state.brand && state.brand.color) || "#124A2B";
-  const gross = orderTotal(order, state.products);
-  const net = gross / (1 + VAT), vat = gross - net;
-  const rows = order.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); if (!p) return ""; const isC = p.unit === "carton"; const w = isC ? "\u2014" : (it.actualKg != null ? KGL(it.actualKg) : "~" + KGL(it.cartons * p.kg)); const amt = noPrice(p) ? "\u05dc\u05e4\u05d9 \u05d4\u05e6\u05e2\u05d4" : NIS(lineTotal(it, p)); return `<tr><td>${p.emoji} ${p.name}</td><td>${it.cartons} \u05e7\u05e8\u05d8\u05d5\u05e0\u05d9\u05dd</td><td>${w}</td><td>${amt}</td></tr>`; }).join("");
-  const html = `<!doctype html><html dir="rtl" lang="he"><head><meta charset="utf-8"><title>\u05d7\u05e9\u05d1\u05d5\u05e0\u05d9\u05ea ${order.invNo || order.id}</title><style>body{font-family:system-ui,Arial;padding:32px;color:#182620}h1{color:${color};margin:0;font-size:24px}table{width:100%;border-collapse:collapse;margin-top:16px}td,th{border-bottom:1px solid #E4E9DE;padding:8px;text-align:right}thead tr{background:${color};color:#fff}.tot{margin-top:16px;text-align:left;line-height:1.8}.tot b{font-size:20px;color:${color}}.hd{display:flex;justify-content:space-between;border-bottom:3px solid ${color};padding-bottom:10px}</style></head><body><div class="hd"><div><h1>${state.name}</h1><div style="color:#5B6B60;font-size:13px">${biz.taxId ? "\u05e2.\u05de/\u05d7.\u05e4: " + biz.taxId + "<br>" : ""}${biz.address || ""}${biz.phone ? "<br>\u05d8\u05dc' " + biz.phone : ""}</div></div><div style="text-align:left"><div style="font-weight:800;color:${color};font-size:18px">\u05d7\u05e9\u05d1\u05d5\u05e0\u05d9\u05ea \u05de\u05e1</div><div style="color:#5B6B60;font-size:13px">\u05de\u05e1' ${order.invNo || order.id}<br>${new Date(order.date).toLocaleDateString("he-IL")}</div></div></div><div style="margin-top:12px">\u05dc\u05db\u05d1\u05d5\u05d3: <b>${c ? c.name : ""}</b>${c && c.taxId ? " \u00b7 \u05e2.\u05de/\u05d7.\u05e4 " + c.taxId : ""}<br>${c && c.address ? c.address : ""}</div><table><thead><tr><th>\u05de\u05d5\u05e6\u05e8</th><th>\u05db\u05de\u05d5\u05ea</th><th>\u05de\u05e9\u05e7\u05dc</th><th>\u05e1\u05db\u05d5\u05dd</th></tr></thead><tbody>${rows}</tbody></table><div class="tot">\u05e1\u05db\u05d5\u05dd \u05dc\u05e4\u05e0\u05d9 \u05de\u05e2"\u05de: ${NIS(net)}<br>\u05de\u05e2"\u05de ${Math.round(VAT * 100)}%: ${NIS(vat)}<br><b>\u05e1\u05d4"\u05db \u05dc\u05ea\u05e9\u05dc\u05d5\u05dd: ${NIS(gross)}</b></div><p style="color:#5B6B60;font-size:12px">\u05ea\u05e9\u05dc\u05d5\u05dd \u05d1${(PAY[c ? c.pay : "cash"] || PAY.cash).label} \u00b7 \u05de\u05d5\u05e4\u05e7 \u05e2"\u05d9 ${state.name}</p></body></html>`;
-  try { const blob = new Blob([html], { type: "text/html;charset=utf-8" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "invoice-" + (order.invNo || order.id) + ".html"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); } catch (e) {}
-}
-
-function InvoiceModal({ order, state, onClose, withAddress }) {
-  const c = state.clients.find((x) => x.id === order.clientId);
-  const priced = order.status === "delivered" || order.status === "picked";
-  const color = (state.brand && state.brand.color) || C.greenDeep;
-  const biz = state.biz || {};
-  const pay = PAY[c ? c.pay : "cash"] || PAY.cash;
-  const gross = orderTotal(order, state.products);
-  const net = gross / (1 + VAT), vat = gross - net;
-  const anyNoPrice = order.items.some((it) => { const p = state.products.find((x) => x.id === it.pid); return p && noPrice(p); });
-  return (
-    <Modal onClose={onClose} title={priced ? "חשבונית" : "פרטי הזמנה"}>
-      <div style={{ border: `1px solid ${C.line}`, borderRadius: 14, padding: 18, background: "#fff" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: `2px solid ${color}`, paddingBottom: 12, marginBottom: 12, gap: 10, flexWrap: "wrap" }}>
-          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            <Logo size={42} img={state.brand && state.brand.logo} name={state.name} />
-            <div style={{ fontSize: 12, color: C.sub, lineHeight: 1.6 }}>
-              <div style={{ fontWeight: 800, fontSize: 15, color: C.ink }}>{state.name}</div>
-              {biz.taxId ? <div>ע.מ / ח.פ: {biz.taxId}</div> : null}
-              {biz.address ? <div>{biz.address}</div> : null}
-              {biz.phone ? <div>טלפון: {biz.phone}</div> : null}
-            </div>
-          </div>
-          <div style={{ textAlign: "left" }}>
-            <div style={{ fontWeight: 800, fontSize: 16, color }}>{priced ? "חשבונית מס" : "אישור הזמנה"}</div>
-            <div style={{ fontSize: 12, color: C.sub, marginTop: 4 }}>מס' {order.invNo || order.id}<br />{new Date(order.date).toLocaleDateString("he-IL")}<br /><span style={{ color: STATUS[order.status].color, fontWeight: 700 }}>{STATUS[order.status].label}</span></div>
-          </div>
-        </div>
-        <div style={{ fontSize: 13, marginBottom: 10 }}><span style={{ color: C.sub }}>לכבוד:</span> <b>{c ? c.name : ""}</b>{c && c.taxId ? " · ע.מ/ח.פ " + c.taxId : ""}{c && c.contact ? " · " + c.contact : ""}{withAddress && c && c.address ? <div style={{ fontSize: 12.5, color: C.sub, marginTop: 2, display: "flex", gap: 5, alignItems: "center" }}><MapPin size={13} /> {c.address} · {c.phone}</div> : null}</div>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
-          <thead><tr style={{ background: color, color: "#fff", textAlign: "right" }}><Th>מוצר</Th><Th>כמות</Th><Th>משקל</Th><Th>סכום</Th></tr></thead>
-          <tbody>{order.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); if (!p) return null; const isC = p.unit === "carton"; return (<tr key={it.pid} style={{ borderBottom: `1px solid ${C.line}` }}><Td>{p.emoji} {p.name}</Td><Td>{it.cartons} קרטונים{suppliedOf(it) < it.cartons ? " (סופקו " + suppliedOf(it) + ")" : ""}</Td><Td>{isC ? "—" : (it.actualKg != null ? KGL(it.actualKg) : "~" + KGL(it.cartons * p.kg))}</Td><Td strong>{noPrice(p) ? "לפי הצעה" : NIS(lineTotal(it, p))}</Td></tr>); })}</tbody>
-        </table>
-        <div style={{ marginInlineStart: "auto", maxWidth: 280, marginTop: 12 }}>
-          <Row label={'סכום לפני מע"מ'} value={NIS(net)} />
-          <Row label={'מע"מ ' + Math.round(VAT * 100) + "%"} value={NIS(vat)} />
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, paddingTop: 8, borderTop: `2px solid ${color}`, fontWeight: 800, fontSize: 18 }}><span>סה"כ לתשלום</span><span style={{ color }}>{NIS(gross)}</span></div>
-        </div>
-        {anyNoPrice && <div style={{ fontSize: 12, color: C.amber, marginTop: 8 }}>* פריטים המסומנים "לפי הצעה" יתומחרו בנפרד ואינם כלולים בסכום.</div>}
-        <div style={{ fontSize: 12, color: C.sub, marginTop: 10, display: "flex", alignItems: "center", gap: 5 }}><pay.icon size={13} /> תשלום ב{pay.label}{!priced ? " · הסכום ייקבע בשקילה" : ""}</div>
-      </div>
-      <button onClick={() => downloadInvoice(order, state)} style={{ width: "100%", marginTop: 14, padding: 11, borderRadius: 12, border: `1px solid ${color}`, background: "#fff", color, fontWeight: 800, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}><Download size={16} /> הורדת חשבונית (להדפסה / PDF)</button>
-    </Modal>
-  );
-}
-
 function ClientModal({ client, state, setState, onClose }) {
   const [inv, setInv] = useState(null);
   const [editing, setEditing] = useState(false);
@@ -1477,7 +1634,7 @@ function ClientModal({ client, state, setState, onClose }) {
         <Field label="שם העסק" value={f.name || ""} onChange={set("name")} />
         <Field label="איש קשר" value={f.contact || ""} onChange={set("contact")} />
         <Field label="טלפון" value={f.phone || ""} onChange={set("phone")} />
-        <Field label="כתובת למשלוח" value={f.address || ""} onChange={set("address")} />
+        <Field label="כתובת" value={f.address || ""} onChange={set("address")} />
         <Field label="אימייל" value={f.email || ""} onChange={set("email")} />
         <Field label="מספר עוסק / ח.פ" value={f.taxId || ""} onChange={set("taxId")} />
         <Field label="סיסמה" value={f.password || ""} onChange={set("password")} />
