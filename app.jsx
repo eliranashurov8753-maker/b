@@ -106,7 +106,7 @@ const supplierData = () => ({
   broadcasts: [{ id: "b1", text: "מבצע השבוע: 10% הנחה על פלפל אדום! 🫑", ts: Date.now() - 86400000 }],
 });
 
-const secondSupplier = () => ({ id: "s2", name: "מאפיית הבוקר", category: "מאפייה ולחמים", regions: "ירושלים, שפלה, מרכז", status: "active", biz: { taxId: "302998877", address: "יפו 100, ירושלים", phone: "02-5559876", email: "" }, invoiceSeq: 2000, owner: { email: "admin@boker.co.il", password: "1234", contact: "בעל המאפייה", phone: "02-0000000" }, brand: { logo: LOGO_IMG, tagline: "טרי מהתנור כל בוקר", color: "#B4791F", borderW: 2.5 }, sub: { plan: "basic", status: "trial", method: "none", since: Date.now() - 86400000 * 10, invoices: [] }, cats: ["מאפים", "חד פעמי"], features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [ { id: "b1", name: "לחמניות", unit: "carton", cost: 0.8, price: 1.6, kg: 4, units: 24, stock: 50, emoji: "🥐", img: "" }, { id: "b2", name: "חלות", unit: "carton", cost: 6, price: 12, kg: 6, units: 6, stock: 30, emoji: "🍞", img: "" }, { id: "b3", name: "בורקסים", unit: "carton", cost: 2, price: 4, kg: 5, units: 12, stock: 40, emoji: "🥧", img: "" }, { id: "b4", name: "עוגיות", unit: "weight", cost: 15, price: 28, kg: 2, stock: 25, emoji: "🍪", img: "" }, { id: "b5", name: "כלים חד פעמי", unit: "carton", cost: 20, price: 38, kg: 3, units: 100, stock: 40, emoji: "🥡", img: "", cat: "חד פעמי" } ], clients: [ { id: "c1b", name: "מסעדת הגן", contact: "יוסי לוי", phone: "050-1234567", address: "הרצל 15, תל אביב", email: "gan@demo.co.il", password: "1234", taxId: "514112233", structure: "עוסק מורשה", category: "מסעדה", pay: "credit", status: "active", target: 15, docs: [], createdAt: Date.now() - 86400000 * 10 } ], staff: [], orders: [], messages: [], broadcasts: [{ id: "b2x", text: "מבצע השבוע: 10% הנחה על חלות 🍞!", ts: Date.now() - 86400000 }] });
+const secondSupplier = () => ({ id: "s2", name: "מאפיית הבוקר", category: "מאפייה ולחמים", regions: "ירושלים, שפלה, מרכז", status: "active", biz: { taxId: "302998877", address: "יפו 100, ירושלים", phone: "02-5559876", email: "" }, invoiceSeq: 2000, owner: { email: "admin@boker.co.il", password: "1234", contact: "בעל המאפייה", phone: "02-0000000" }, brand: { logo: "", tagline: "טרי מהתנור כל בוקר", color: "#B4791F", borderW: 2.5 }, sub: { plan: "basic", status: "trial", method: "none", since: Date.now() - 86400000 * 10, invoices: [] }, cats: ["מאפים", "חד פעמי"], features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [ { id: "b1", name: "לחמניות", unit: "carton", cost: 0.8, price: 1.6, kg: 4, units: 24, stock: 50, emoji: "🥐", img: "" }, { id: "b2", name: "חלות", unit: "carton", cost: 6, price: 12, kg: 6, units: 6, stock: 30, emoji: "🍞", img: "" }, { id: "b3", name: "בורקסים", unit: "carton", cost: 2, price: 4, kg: 5, units: 12, stock: 40, emoji: "🥧", img: "" }, { id: "b4", name: "עוגיות", unit: "weight", cost: 15, price: 28, kg: 2, stock: 25, emoji: "🍪", img: "" }, { id: "b5", name: "כלים חד פעמי", unit: "carton", cost: 20, price: 38, kg: 3, units: 100, stock: 40, emoji: "🥡", img: "", cat: "חד פעמי" } ], clients: [ { id: "c1b", name: "מסעדת הגן", contact: "יוסי לוי", phone: "050-1234567", address: "הרצל 15, תל אביב", email: "gan@demo.co.il", password: "1234", taxId: "514112233", structure: "עוסק מורשה", category: "מסעדה", pay: "credit", status: "active", target: 15, docs: [], createdAt: Date.now() - 86400000 * 10 } ], staff: [], orders: [], messages: [], broadcasts: [{ id: "b2x", text: "מבצע השבוע: 10% הנחה על חלות 🍞!", ts: Date.now() - 86400000 }] });
 const AREAS = {
   "מרכז": ["תל אביב", "רמת גן", "גבעתיים", "פתח תקווה", "ראשון לציון", "חולון", "בת ים", "אור יהודה", "יהוד"],
   "השרון": ["נתניה", "רעננה", "כפר סבא", "הוד השרון", "הרצליה", "רמת השרון", "כפר יונה"],
@@ -189,7 +189,7 @@ const demoSupplier = (kind) => { const now = Date.now(); const id = "demo" + now
   biz: { taxId: "500000000", address: "רחוב הדוגמה 1, תל אביב", phone: "03-0000000", email: "" },
   invoiceSeq: 5000,
   owner: { email: "demo-" + now + "@b2bplus.co.il", password: "1234", contact: "מנהל הדגמה", phone: "050-0000000" },
-  brand: { logo: LOGO_IMG, tagline: t.tagline, color: t.color, borderW: 2.5 },
+  brand: { logo: "", tagline: t.tagline, color: t.color, borderW: 2.5 },
   cats: t.cats, features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(),
   products: t.products.map((pr, i) => ({ id: "dp" + i, img: "", ...pr })),
   clients: [
@@ -212,21 +212,31 @@ const demoSupplier = (kind) => { const now = Date.now(); const id = "demo" + now
 const seed = () => ({
   superPw: SUPER_PW,
   superAgents: [{ id: "sa1", role: "superagent", name: "תמיכה B2B+", email: "support@b2bplus.co.il", password: "1234" }],
-  suppliers: [{ id: "s1", name: "שיווק השדה", category: "ירקות ופירות טריים", regions: "מרכז, השרון, תל אביב", status: "active", biz: { taxId: "515123456", address: "המסגר 20, תל אביב", phone: "03-5551234", email: "billing@sadeh.co.il" }, invoiceSeq: 1000, owner: { email: "admin@sadeh.co.il", password: "1234", contact: "בעל העסק", phone: "050-0000000" }, brand: { logo: LOGO_IMG, tagline: "ירקות ופירות טריים לעסקים", color: "#1F7A4D", borderW: 2.5 }, sub: { plan: "pro", status: "active", method: "credit", since: Date.now() - 86400000 * 40, last4: "4417", invoices: [] }, cats: ["ירקות", "פירות"], features: { prizes: true, chat: true, minOrder: 5 }, ...supplierData() }, secondSupplier()],
+  suppliers: [{ id: "s1", name: "שיווק השדה", category: "ירקות ופירות טריים", regions: "מרכז, השרון, תל אביב", status: "active", biz: { taxId: "515123456", address: "המסגר 20, תל אביב", phone: "03-5551234", email: "billing@sadeh.co.il" }, invoiceSeq: 1000, owner: { email: "admin@sadeh.co.il", password: "1234", contact: "בעל העסק", phone: "050-0000000" }, brand: { logo: "", tagline: "ירקות ופירות טריים לעסקים", color: "#1F7A4D", borderW: 2.5 }, sub: { plan: "pro", status: "active", method: "credit", since: Date.now() - 86400000 * 40, last4: "4417", invoices: [] }, cats: ["ירקות", "פירות"], features: { prizes: true, chat: true, minOrder: 5 }, ...supplierData() }, secondSupplier()],
 });
 
+// מקטין נתונים ישנים: מסיר עותקים של לוגו ברירת המחדל שנשמרו אצל כל ספק
+const slimState = (st) => { if (!st || !st.suppliers) return st; let ch = false; const suppliers = st.suppliers.map((sp) => { if (sp.brand && sp.brand.logo === LOGO_IMG) { ch = true; return { ...sp, brand: { ...sp.brand, logo: "" } }; } return sp; }); return ch ? { ...st, suppliers } : st; };
+// מכווץ תמונה שמועלית (לוגו / מוצר) לפני שמירה
+const pickImage = (file, maxW, cb) => { if (!file) return; compressImage(file, maxW, 0.72).then(cb).catch(() => { const r = new FileReader(); r.onload = () => cb(r.result); r.readAsDataURL(file); }); };
 function useAppState() {
   const [state, setState] = useState(null);
-  const lastSaveRef = React.useRef(0);
-  useEffect(() => { let live = true; (async () => { try { const r = await window.storage.get(KEY); if (live) setState(r && r.value ? JSON.parse(r.value) : seed()); } catch { if (live) setState(seed()); } })(); return () => { live = false; }; }, []);
-  useEffect(() => { if (!state) return; lastSaveRef.current = Date.now(); (async () => { try { await window.storage.set(KEY, JSON.stringify(state)); } catch {} })(); }, [state]);
-  // סנכרון בין מכשירים: כשחוזרים לאפליקציה, טוענים מחדש את המצב העדכני מהענן
+  const lastSaveRef = React.useRef(0); const pendingRef = React.useRef(null); const latestRef = React.useRef(null);
+  useEffect(() => { let live = true; (async () => { try { const r = await window.storage.get(KEY); if (live) setState(r && r.value ? slimState(JSON.parse(r.value)) : seed()); } catch { if (live) setState(seed()); } })(); return () => { live = false; }; }, []);
+  // שמירה מושהית: נשמר חצי שנייה אחרי השינוי האחרון, ולא בכל הקשה
   useEffect(() => {
-    const reload = async () => { if (Date.now() - lastSaveRef.current < 3000) return; try { const r = await window.storage.get(KEY); if (r && r.value) { const remote = JSON.parse(r.value); setState((cur) => JSON.stringify(cur) === r.value ? cur : remote); } } catch {} };
+    if (!state) return; latestRef.current = state;
+    if (pendingRef.current) clearTimeout(pendingRef.current);
+    pendingRef.current = setTimeout(async () => { pendingRef.current = null; lastSaveRef.current = Date.now(); try { await window.storage.set(KEY, JSON.stringify(latestRef.current)); } catch {} }, 600);
+  }, [state]);
+  // שמירה מיידית לפני סגירת הדף, כדי לא לאבד שינוי אחרון
+  useEffect(() => { const flush = () => { if (pendingRef.current && latestRef.current) { clearTimeout(pendingRef.current); pendingRef.current = null; try { window.storage.set(KEY, JSON.stringify(latestRef.current)); } catch {} } }; window.addEventListener("pagehide", flush); return () => window.removeEventListener("pagehide", flush); }, []);
+  // סנכרון בין מכשירים: רק כשחוזרים לאפליקציה (בלי בדיקה קבועה ברקע)
+  useEffect(() => {
+    const reload = async () => { if (pendingRef.current || Date.now() - lastSaveRef.current < 3000) return; try { const r = await window.storage.get(KEY); if (r && r.value) { const remote = slimState(JSON.parse(r.value)); setState((cur) => JSON.stringify(cur) === JSON.stringify(remote) ? cur : remote); } } catch {} };
     const onVis = () => { if (document.visibilityState === "visible") reload(); };
-    window.addEventListener("focus", reload); document.addEventListener("visibilitychange", onVis);
-    const iv = setInterval(() => { if (document.visibilityState === "visible") reload(); }, 25000);
-    return () => { window.removeEventListener("focus", reload); document.removeEventListener("visibilitychange", onVis); clearInterval(iv); };
+    document.addEventListener("visibilitychange", onVis);
+    return () => { document.removeEventListener("visibilitychange", onVis); };
   }, []);
   return [state, setState];
 }
@@ -468,7 +478,7 @@ function SupplierRegister({ state, setState, back, byAdmin, onDone }) {
     if (!byAdmin && !agree) return setErr("יש לאשר את התקנון כדי להמשיך");
     const em = f.email.trim().toLowerCase();
     if (state.suppliers.some((sp) => sp.owner && sp.owner.email.trim().toLowerCase() === em)) return setErr("אימייל זה כבר רשום כספק");
-    const sup = { id: "s" + Date.now(), name: f.name, category: f.category || "כללי", regions: f.regions || "", status: byAdmin ? "active" : "pending", owner: { email: f.email, password: f.password, contact: f.contact, phone: f.phone }, terms: byAdmin ? null : { version: TERMS_VERSION, acceptedAt: Date.now() }, brand: { logo: LOGO_IMG, tagline: "", color: "#1F7A4D" }, sub: { plan: "basic", status: "trial", method: "none", since: Date.now(), invoices: [] }, biz: { taxId: "", address: "", phone: f.phone || "", email: f.email || "" }, cats: f.cats || [], invoiceSeq: 1000, features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [], clients: [], staff: [], orders: [], messages: [], broadcasts: [] };
+    const sup = { id: "s" + Date.now(), name: f.name, category: f.category || "כללי", regions: f.regions || "", status: byAdmin ? "active" : "pending", owner: { email: f.email, password: f.password, contact: f.contact, phone: f.phone }, terms: byAdmin ? null : { version: TERMS_VERSION, acceptedAt: Date.now() }, brand: { logo: "", tagline: "", color: "#1F7A4D" }, sub: { plan: "basic", status: "trial", method: "none", since: Date.now(), invoices: [] }, biz: { taxId: "", address: "", phone: f.phone || "", email: f.email || "" }, cats: f.cats || [], invoiceSeq: 1000, features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [], clients: [], staff: [], orders: [], messages: [], broadcasts: [] };
     setState((root) => ({ ...root, suppliers: [...root.suppliers, sup] }));
     if (byAdmin && onDone) return onDone();
     setDone(true);
@@ -1007,7 +1017,7 @@ function ProfileModal({ session, state, setState, sup, onClose, onGo }) {
       {kind === "supplier" && sup && (
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
           <Logo size={52} img={sup.brand && sup.brand.logo} name={f.name || sup.name} />
-          <label style={{ display: "inline-flex", alignItems: "center", gap: 6, border: `1.5px dashed ${C.line}`, borderRadius: 10, padding: "10px 14px", cursor: "pointer", color: C.green, fontWeight: 700, fontSize: 13 }}><ImageIcon size={15} /> העלה לוגו של החנות<input type="file" accept="image/*" onChange={(e) => { const file = e.target.files[0]; if (!file) return; const r = new FileReader(); r.onload = () => setState((st) => ({ ...st, suppliers: st.suppliers.map((s2) => s2.id === sup.id ? { ...s2, brand: { ...(s2.brand || {}), logo: r.result } } : s2) })); r.readAsDataURL(file); }} style={{ display: "none" }} /></label>
+          <label style={{ display: "inline-flex", alignItems: "center", gap: 6, border: `1.5px dashed ${C.line}`, borderRadius: 10, padding: "10px 14px", cursor: "pointer", color: C.green, fontWeight: 700, fontSize: 13 }}><ImageIcon size={15} /> העלה לוגו של החנות<input type="file" accept="image/*" onChange={(e) => pickImage(e.target.files[0], 360, (d) => setState((st) => ({ ...st, suppliers: st.suppliers.map((s2) => s2.id === sup.id ? { ...s2, brand: { ...(s2.brand || {}), logo: d } } : s2) })))} style={{ display: "none" }} /></label>
         </div>
       )}
       {kind === "supplier" && sup && onGo && <button onClick={() => onGo("finance")} style={{ width: "100%", marginBottom: 12, border: `1px solid ${C.line}`, background: "#F7F9FC", borderRadius: 12, padding: "11px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: 10, textAlign: "right" }}><Receipt size={18} color={C.plum} /><div style={{ flex: 1 }}><div style={{ fontWeight: 800, fontSize: 14 }}>החשבוניות וההוצאות שלי</div><div style={{ fontSize: 12, color: C.sub }}>{(sup.purchaseInvoices || []).length} חשבוניות קנייה · מסודרות לפי חודשים</div></div><ChevronLeft size={16} color={C.sub} /></button>}
@@ -1032,7 +1042,7 @@ function BusinessHub({ state, setState, email, onEnter, onJoin }) {
   const anyRec = state.suppliers.map((sp) => sp.clients.find((c) => c.email.trim().toLowerCase() === emL)).find(Boolean) || null;
   const [pf, setPf] = useState({ name: anyRec ? anyRec.name : "", contact: anyRec ? anyRec.contact || "" : "", phone: anyRec ? anyRec.phone || "" : "", address: anyRec ? anyRec.address || "" : "", taxId: anyRec ? anyRec.taxId || "" : "" });
   const patchAll = (patch) => setState((root) => ({ ...root, suppliers: root.suppliers.map((sp) => ({ ...sp, clients: sp.clients.map((c) => c.email.trim().toLowerCase() === emL ? { ...c, ...patch } : c) })) }));
-  const pickLogo = (file) => { if (!file) return; const r = new FileReader(); r.onload = () => patchAll({ logo: r.result }); r.readAsDataURL(file); };
+  const pickLogo = (file) => pickImage(file, 360, (d) => patchAll({ logo: d }));
   const em = (email || "").trim().toLowerCase();
   const recOf = (sp) => sp.clients.find((c) => c.email.trim().toLowerCase() === em);
   const active = state.suppliers.filter((s) => s.status === "active");
@@ -1858,7 +1868,7 @@ function MgrProducts({ state, setState }) {
   const upd = (pid, k, v) => setState((s) => ({ ...s, products: s.products.map((p) => p.id === pid ? { ...p, [k]: v } : p) }));
   const num = (pid, k, v) => upd(pid, k, Math.max(0, v));
   const del = (pid) => setState((s) => ({ ...s, products: s.products.filter((p) => p.id !== pid) }));
-  const pickImg = (pid, file) => { if (!file) return; const r = new FileReader(); r.onload = () => upd(pid, "img", r.result); r.readAsDataURL(file); };
+  const pickImg = (pid, file) => pickImage(file, 480, (d) => upd(pid, "img", d));
   const low = products.filter((p) => p.stock <= LOW);
   return (
     <div style={{ display: "grid", gap: 20 }}>
@@ -1895,7 +1905,7 @@ function AddProduct({ state, setState, onClose }) {
   const [f, setF] = useState({ name: "", unit: "weight", kg: 10, units: "", cost: "", price: "", stock: "", emoji: "🥗", img: "", noPrice: false, vatIncluded: true, cat: "" });
   const [err, setErr] = useState("");
   const set = (k) => (e) => setF((s) => ({ ...s, [k]: e.target.value }));
-  const pickImg = (file) => { if (!file) return; const r = new FileReader(); r.onload = () => setF((s) => ({ ...s, img: r.result })); r.readAsDataURL(file); };
+  const pickImg = (file) => pickImage(file, 480, (d) => setF((s) => ({ ...s, img: d })));
   const unitTxt = f.unit === "carton" ? "קרטון" : "ק\"ג";
   const save = () => {
     if (!f.name.trim()) return setErr("שם המוצר חובה");
@@ -1992,7 +2002,7 @@ function StoreDesign({ state, setState }) {
   const b = state.brand || {};
   const [f, setF] = useState({ name: state.name || "", tagline: b.tagline || "", category: state.category || "", regions: state.regions || "", color: b.color || C.green, bg: b.bg || "soft", bgColor: b.bgColor || "#F4F7F1", fontColor: b.fontColor || C.ink, font: b.font || "Rubik", fontScale: b.fontScale || 1, borderW: b.borderW == null ? 2.5 : b.borderW });
   useEffect(() => { if (f.font === "Rubik") return; const id = "gf-" + f.font.replace(/\s+/g, ""); if (document.getElementById(id)) return; const l = document.createElement("link"); l.id = id; l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=" + f.font.replace(/\s+/g, "+") + ":wght@400;600;700;800&display=swap"; document.head.appendChild(l); }, [f.font]);
-  const pickLogo = (file) => { if (!file) return; const r = new FileReader(); r.onload = () => setState((s) => ({ ...s, brand: { ...(s.brand || {}), logo: r.result } })); r.readAsDataURL(file); };
+  const pickLogo = (file) => pickImage(file, 360, (d) => setState((s) => ({ ...s, brand: { ...(s.brand || {}), logo: d } })));
   const save = () => setState((s) => ({ ...s, name: f.name || s.name, category: f.category, regions: f.regions, brand: { ...(s.brand || {}), tagline: f.tagline, color: f.color, bg: f.bg, bgColor: f.bgColor, fontColor: f.fontColor, font: f.font, fontScale: f.fontScale, borderW: f.borderW } }));
   const setFeat = (k, v) => setState((s) => ({ ...s, features: { ...(s.features || { prizes: true, chat: true, minOrder: 5 }), [k]: v } }));
   const swatches = ["#1F7A4D", "#2C6E9B", "#B23B3B", "#B4791F", "#6D3B8E", "#0E7C86", "#C2410C", "#334155"];
