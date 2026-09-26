@@ -1,4 +1,3 @@
-import "./storage.js";
 import React, { useState, useEffect } from "react";
 import {
   ShoppingCart, Package, Plus, Minus, Check, Wallet, Star, BarChart3, LogIn, LogOut,
@@ -7,6 +6,16 @@ import {
   Users, Send, Megaphone, ClipboardCheck, MapPin, Receipt, Image as ImageIcon,
   ChevronLeft, Search, Pencil, Save, Download, Paperclip, ClipboardList, Phone, Mail, Home, Bell, User, KeyRound, MessageCircle, Share2, Facebook
 } from "lucide-react";
+
+// תאימות: מחוץ ל-Claude אין window.storage — משתמשים ב-localStorage של הדפדפן במקום
+if (typeof window !== "undefined" && !window.storage) {
+  window.storage = {
+    get: async (k) => { const v = window.localStorage.getItem(k); return v == null ? null : { key: k, value: v }; },
+    set: async (k, v) => { window.localStorage.setItem(k, v); return { key: k, value: v }; },
+    delete: async (k) => { window.localStorage.removeItem(k); return { key: k, deleted: true }; },
+    list: async (prefix = "") => ({ keys: Object.keys(window.localStorage).filter((k) => k.startsWith(prefix)) }),
+  };
+}
 
 const C = {
   bg: "#EEF3F8", surface: "#FFFFFF", ink: "#0F1B2D", sub: "#5A6B80", line: "#DCE5EE",
@@ -97,7 +106,7 @@ const supplierData = () => ({
   broadcasts: [{ id: "b1", text: "מבצע השבוע: 10% הנחה על פלפל אדום! 🫑", ts: Date.now() - 86400000 }],
 });
 
-const secondSupplier = () => ({ id: "s2", name: "מאפיית הבוקר", category: "מאפייה ולחמים", regions: "ירושלים, שפלה, מרכז", status: "active", biz: { taxId: "302998877", address: "יפו 100, ירושלים", phone: "02-5559876", email: "" }, invoiceSeq: 2000, owner: { email: "admin@boker.co.il", password: "1234", contact: "בעל המאפייה", phone: "02-0000000" }, brand: { logo: LOGO_IMG, tagline: "טרי מהתנור כל בוקר", color: "#B4791F", borderW: 2.5 }, sub: { plan: "basic", status: "trial", method: "none", since: Date.now() - 86400000 * 10, invoices: [] }, cats: ["מאפים", "חד פעמי"], features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [ { id: "b1", name: "לחמניות", unit: "carton", cost: 0.8, price: 1.6, kg: 4, units: 24, stock: 50, emoji: "🥐", img: "" }, { id: "b2", name: "חלות", unit: "carton", cost: 6, price: 12, kg: 6, units: 6, stock: 30, emoji: "🍞", img: "" }, { id: "b3", name: "בורקסים", unit: "carton", cost: 2, price: 4, kg: 5, units: 12, stock: 40, emoji: "🥧", img: "" }, { id: "b4", name: "עוגיות", unit: "weight", cost: 15, price: 28, kg: 2, stock: 25, emoji: "🍪", img: "" }, { id: "b5", name: "כלים חד פעמי", unit: "carton", cost: 20, price: 38, kg: 3, units: 100, stock: 40, emoji: "🥡", img: "", cat: "חד פעמי" } ], clients: [ { id: "c1b", name: "מסעדת הגן", contact: "יוסי לוי", phone: "050-1234567", address: "הרצל 15, תל אביב", email: "gan@demo.co.il", password: "1234", taxId: "514112233", structure: "עוסק מורשה", category: "מסעדה", pay: "credit", status: "active", target: 15, docs: [], createdAt: Date.now() - 86400000 * 10 } ], staff: [], orders: [], messages: [], broadcasts: [] });
+const secondSupplier = () => ({ id: "s2", name: "מאפיית הבוקר", category: "מאפייה ולחמים", regions: "ירושלים, שפלה, מרכז", status: "active", biz: { taxId: "302998877", address: "יפו 100, ירושלים", phone: "02-5559876", email: "" }, invoiceSeq: 2000, owner: { email: "admin@boker.co.il", password: "1234", contact: "בעל המאפייה", phone: "02-0000000" }, brand: { logo: LOGO_IMG, tagline: "טרי מהתנור כל בוקר", color: "#B4791F", borderW: 2.5 }, sub: { plan: "basic", status: "trial", method: "none", since: Date.now() - 86400000 * 10, invoices: [] }, cats: ["מאפים", "חד פעמי"], features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [ { id: "b1", name: "לחמניות", unit: "carton", cost: 0.8, price: 1.6, kg: 4, units: 24, stock: 50, emoji: "🥐", img: "" }, { id: "b2", name: "חלות", unit: "carton", cost: 6, price: 12, kg: 6, units: 6, stock: 30, emoji: "🍞", img: "" }, { id: "b3", name: "בורקסים", unit: "carton", cost: 2, price: 4, kg: 5, units: 12, stock: 40, emoji: "🥧", img: "" }, { id: "b4", name: "עוגיות", unit: "weight", cost: 15, price: 28, kg: 2, stock: 25, emoji: "🍪", img: "" }, { id: "b5", name: "כלים חד פעמי", unit: "carton", cost: 20, price: 38, kg: 3, units: 100, stock: 40, emoji: "🥡", img: "", cat: "חד פעמי" } ], clients: [ { id: "c1b", name: "מסעדת הגן", contact: "יוסי לוי", phone: "050-1234567", address: "הרצל 15, תל אביב", email: "gan@demo.co.il", password: "1234", taxId: "514112233", structure: "עוסק מורשה", category: "מסעדה", pay: "credit", status: "active", target: 15, docs: [], createdAt: Date.now() - 86400000 * 10 } ], staff: [], orders: [], messages: [], broadcasts: [{ id: "b2x", text: "מבצע השבוע: 10% הנחה על חלות 🍞!", ts: Date.now() - 86400000 }] });
 const AREAS = {
   "מרכז": ["תל אביב", "רמת גן", "גבעתיים", "פתח תקווה", "ראשון לציון", "חולון", "בת ים", "אור יהודה", "יהוד"],
   "השרון": ["נתניה", "רעננה", "כפר סבא", "הוד השרון", "הרצליה", "רמת השרון", "כפר יונה"],
@@ -148,7 +157,31 @@ const DEMO_TEMPLATES = {
     { name: "שקיות אשפה (רול)", unit: "carton", cost: 18, price: 32, kg: 5, units: 10, stock: 50, emoji: "🗑️", cat: "ניקיון" },
   ] },
 };
+const SUP_DOMAINS = [
+  { id: "veg", label: "ירקות ופירות", emoji: "🥬", cats: ["ירקות", "פירות", "עלים"], sample: "עגבניות" },
+  { id: "meat", label: "בשר ועוף", emoji: "🥩", cats: ["בקר", "עוף", "מעובד"], sample: "חזה עוף" },
+  { id: "fish", label: "דגים ופירות ים", emoji: "🐟", cats: ["דגים טריים", "קפואים", "פירות ים"], sample: "פילה סלמון" },
+  { id: "dairy", label: "ביצים ומוצרי חלב", emoji: "🥚", cats: ["ביצים", "חלב", "גבינות"], sample: "ביצים L" },
+  { id: "bakery", label: "מאפייה ולחמים", emoji: "🥐", cats: ["לחמים", "מאפים", "עוגות"], sample: "לחמניות" },
+  { id: "drinks", label: "שתייה ומשקאות", emoji: "🥤", cats: ["קר", "מים", "אלכוהול"], sample: "מים מינרלים" },
+  { id: "dry", label: "מזון יבש ומכולת", emoji: "🥫", cats: ["יבשים", "שימורים", "תבלינים"], sample: "אורז" },
+  { id: "frozen", label: "קפואים", emoji: "🧊", cats: ["ירקות קפואים", "בצקים", "מוכנים"], sample: "בצק עלים" },
+  { id: "disposable", label: "חד פעמי ואריזות", emoji: "🍽️", cats: ["כלים", "אריזות", "ניקיון"], sample: "מגשי אלומיניום" },
+  { id: "cleaning", label: "ניקיון ותחזוקה", emoji: "🧴", cats: ["חומרי ניקוי", "נייר", "ציוד"], sample: "נוזל כלים" },
+];
+const domainOf = (category) => { const c = (category || "").trim(); if (!c) return null; return SUP_DOMAINS.find((d) => c.includes(d.label) || d.label.includes(c) || c.includes(d.label.split(" ")[0])) || null; };
+// מה הלקוח רואה בכפתור "הזמנה חדשה" — לפי התחום והקטגוריות של הספק
+const orderPitch = (sup) => { const cat = (sup.category || "").trim(); if (cat && cat !== "כללי") return "הזמן " + cat; const cs = (sup.cats || []).filter(Boolean); if (cs.length) return "הזמן " + cs.slice(0, 3).join(", "); return "הזמן מהקטלוג של " + (sup.name || "הספק"); };
+// דוגמאות להודעה כללית — לפי המוצרים של הספק עצמו
+const broadcastIdeas = (sup) => { const ps = (sup.products || []).filter((p) => p.name); const pick = (i) => ps.length ? ps[i % ps.length] : null; const d = domainOf(sup.category); const a = pick(0), b = pick(1), c = pick(2); const nm = (p, fb) => p ? p.name + (p.emoji ? " " + p.emoji : "") : fb; const fb = d ? d.sample : "מוצר נבחר"; return [
+  "מבצע השבוע: 10% הנחה על " + nm(a, fb) + "!",
+  "חדש בקטלוג: " + nm(b || a, fb) + " — מזמינים כבר היום",
+  "קנו 5 קרטונים " + (c || a ? (c || a).name : fb) + " וקבלו קרטון שישי במתנה 🎁",
+  "תזכורת: הזמנות למחר נסגרות היום ב-18:00 ⏰",
+]; };
 const DEMO_KINDS = [["veg", "ירקות ופירות", "🥬"], ["eggs", "ביצים וחלב", "🥚"], ["drinks", "שתייה", "🥤"], ["meat", "בשר ועוף", "🥩"], ["food", "מזון יבש", "🥫"], ["disposable", "חד פעמי", "🍽️"]];
+const TERMS_VERSION = "2026-09";
+const TERMS = "תקנון ותנאי שימוש — B2B+ Marketplace\n(גרסה " + "2026-09" + ")\n\n1. כללי והסכמה\n1.1 B2B+ Marketplace (\"המערכת\" / \"B2B+\" / \"אנחנו\") היא פלטפורמה טכנולוגית המאפשרת לספקים לנהל חנות מקוונת, ולעסקים (\"לקוחות\") להזמין מהם סחורה.\n1.2 ההרשמה, הכניסה או כל שימוש במערכת מהווים הסכמה מלאה לתקנון זה. מי שאינו מסכים — אינו רשאי להשתמש במערכת.\n1.3 המשתמש מצהיר כי הוא בן 18 ומעלה, וכי הוא מוסמך לפעול ולהתחייב בשם העסק שאותו רשם.\n\n2. מעמד B2B+ — פלטפורמה בלבד\n2.1 B2B+ אינה צד לעסקה בין ספק ללקוח, אינה מוכרת, קונה, מחזיקה או משנעת סחורה, ואינה סוכנת של אף צד.\n2.2 כל האחריות למוצרים, לטיבם, לתקינותם, לכשרותם, לבטיחותם, לתאריכי התפוגה, לעמידה בתקנים וברישוי, למחירים, לחשבוניות, למשלוחים ולגבייה — חלה על הספק ועל הלקוח בלבד.\n2.3 מחלוקת בין ספק ללקוח תיושב ביניהם ישירות. B2B+ לא תהיה צד לה ולא תישא בכל נזק הנובע ממנה.\n\n3. חשבון משתמש ואבטחה\n3.1 המשתמש מתחייב למסור פרטים נכונים, מלאים ומעודכנים, ולעדכנם בעת שינוי.\n3.2 המשתמש אחראי לשמירת סודיות הסיסמה ולכל פעולה שתתבצע בחשבונו, לרבות פעולות של עובדים שהוא הוסיף (מלקטים, נהגים, סוכנים).\n3.3 יש להודיע לנו מיד על כל חשד לשימוש לא מורשה בחשבון.\n\n4. מנוי, תשלומים וחיובים (לספקים)\n4.1 השימוש לספקים כרוך בדמי מנוי לפי המסלול שנבחר. המחירים אינם כוללים מע\"מ אלא אם צוין אחרת.\n4.2 הספק מאשר ל-B2B+ לחייב את אמצעי התשלום שמסר, באופן חודשי וחוזר, עד לביטול המנוי. התשלום מעובד באמצעות חברת סליקה חיצונית מורשית; B2B+ אינה שומרת את מספר הכרטיס המלא.\n4.3 ביטול מנוי ייכנס לתוקף בסוף תקופת החיוב הנוכחית. דמי מנוי ששולמו אינם מוחזרים, בכפוף לחוק הגנת הצרכן ככל שהוא חל.\n4.4 אי-תשלום עלול להביא להשעיית החשבון. B2B+ רשאית לעדכן מחירים בהודעה מראש של 30 יום.\n\n5. תוכן ומידע שהמשתמש מעלה\n5.1 המשתמש אחראי באופן בלעדי לכל תוכן שהוא מעלה: מוצרים, מחירים, תמונות, לוגו, הודעות, מבצעים, מסמכים וחשבוניות.\n5.2 המשתמש מצהיר כי יש לו את כל הזכויות בתוכן, וכי התוכן אינו מפר זכויות יוצרים, סימני מסחר, פרטיות או כל דין.\n5.3 המשתמש מעניק ל-B2B+ רישיון שימוש בתוכן לצורך תפעול השירות והצגתו בלבד.\n5.4 הודעות שיווקיות ומבצעים שספק שולח ללקוחותיו הם באחריותו בלבד, לרבות עמידה בחוק התקשורת (\"חוק הספאם\").\n\n6. כלים אוטומטיים (סריקת חשבוניות, דוחות, חישובים)\n6.1 המערכת מציעה כלים אוטומטיים, לרבות סריקת חשבוניות באמצעות בינה מלאכותית, חישובי רווח, נקודות, יעדים ודוחות הכנסות והוצאות.\n6.2 תוצרי הכלים הם עזר בלבד ועשויים לכלול טעויות. על המשתמש לבדוק כל נתון לפני שמירה או שימוש.\n6.3 הדוחות אינם מהווים ייעוץ חשבונאי, מס או משפטי, ואינם תחליף להנהלת חשבונות כדין או לרואה חשבון.\n\n7. תוכנית יעדים ופרסים\nתוכנית היעדים והפרסים מוגדרת ומנוהלת על ידי כל ספק. הספק לבדו אחראי להגדרת התנאים, לעמידה בהם ולמסירת הפרסים. B2B+ אינה מתחייבת לפרס כלשהו.\n\n8. זמינות השירות\n8.1 השירות ניתן \"כמות שהוא\" (AS IS) ו\"כפי שהוא זמין\". איננו מתחייבים שהשירות יפעל ללא הפסקות, תקלות או שגיאות.\n8.2 B2B+ רשאית לשנות, לעדכן, להשבית זמנית או להפסיק כל חלק מהשירות. מומלץ לשמור עותק של מידע חיוני, לרבות חשבוניות ודוחות.\n\n9. הגבלת אחריות\n9.1 B2B+ לא תהיה אחראית לכל נזק עקיף, תוצאתי, מיוחד או אובדן רווחים, הכנסות, מידע או מוניטין.\n9.2 בכל מקרה, אחריותה הכוללת של B2B+ לא תעלה על סך דמי המנוי ששילם המשתמש בשלושת החודשים שקדמו לאירוע.\n9.3 B2B+ אינה אחראית לשירותי צד שלישי (סליקה, מיילים, אחסון, מפות, בינה מלאכותית) ולתקלות בהם.\n\n10. שיפוי\nהמשתמש ישפה את B2B+, בעליה ועובדיה בגין כל תביעה, נזק, הוצאה או שכר טרחת עו\"ד הנובעים מהפרת התקנון, מהפרת דין, מתוכן שהעלה או מעסקה שביצע דרך המערכת.\n\n11. שימוש אסור\nאסור: להעתיק את המערכת או חלקים ממנה, לבצע הנדסה לאחור, לנסות לחדור לחשבונות אחרים, להעלות קוד זדוני, לאסוף מידע על משתמשים, להתחזות, לשלוח דואר זבל או למכור מוצרים אסורים על פי דין.\n\n12. פרטיות ומידע\n12.1 המידע נשמר ומעובד לצורך תפעול השירות, אבטחה, חיוב ושיפור המערכת, בהתאם לחוק הגנת הפרטיות.\n12.2 ספק מקבל גישה לפרטי הלקוחות שהצטרפו אליו, ומתחייב להשתמש בהם רק לצורך ההתקשרות העסקית ביניהם ולשמור עליהם כנדרש בחוק.\n12.3 משתמש רשאי לבקש לעיין במידע עליו, לתקנו או למחקו, בכפוף לחובות שמירת רשומות על פי דין.\n\n13. קניין רוחני\nכל הזכויות במערכת, בקוד, בעיצוב, בשם ובסימן B2B+ שמורות ל-B2B+. אין בשימוש במערכת כדי להעניק למשתמש זכות כלשהי בהם.\n\n14. השעיה וסגירת חשבון\nB2B+ רשאית להשעות או לסגור חשבון, לאלתר ולפי שיקול דעתה, בכל מקרה של הפרת התקנון, חשד להונאה, אי-תשלום או פגיעה במשתמשים אחרים או במערכת.\n\n15. שינויים בתקנון\nB2B+ רשאית לעדכן תקנון זה. הודעה על שינוי מהותי תימסר במערכת; המשך השימוש לאחר העדכון מהווה הסכמה לנוסח המעודכן.\n\n16. דין וסמכות שיפוט\nעל התקנון יחול הדין הישראלי בלבד. סמכות השיפוט הבלעדית נתונה לבתי המשפט המוסמכים במחוז תל אביב-יפו.\n\n17. יצירת קשר\nפניות בנוגע לתקנון, לפרטיות או לשירות: support@b2bplus.co.il";
 const PLANS = { basic: { id: "basic", name: "בסיסי", price: 99 }, pro: { id: "pro", name: "מקצועי", price: 199 }, premium: { id: "premium", name: "פרימיום", price: 349 } };
 const BILL_VAT = 0.18;
 const demoSupplier = (kind) => { const now = Date.now(); const id = "demo" + now; const t = DEMO_TEMPLATES[kind] || DEMO_TEMPLATES.veg; return {
@@ -174,7 +207,7 @@ const demoSupplier = (kind) => { const now = Date.now(); const id = "demo" + now
     { id: "D" + (now % 100000) + "2", clientId: "dc2", date: now - 3600000 * 5, status: "picked", pickedBy: "מלקט הדגמה", invNo: 5002, items: [{ pid: "dp2", cartons: 4, supplied: 4 }] },
     { id: "D" + (now % 100000) + "3", clientId: "dc1", date: now - 3600000 * 2, status: "new", items: [{ pid: "dp0", cartons: 2 }, { pid: "dp1", cartons: 3 }] },
   ],
-  messages: [], broadcasts: [{ id: "db1", text: "ברוכים הבאים לחנות ההדגמה של B2B+ 🎉", ts: now - 3600000 * 24 }],
+  messages: [], broadcasts: [{ id: "db2", text: "מבצע השבוע: 10% הנחה על " + t.products[0].name + " " + (t.products[0].emoji || "") + "!", ts: now - 3600000 * 6 }, { id: "db1", text: "ברוכים הבאים לחנות ההדגמה של B2B+ 🎉", ts: now - 3600000 * 24 }],
 }; };
 const seed = () => ({
   superPw: SUPER_PW,
@@ -217,10 +250,15 @@ const orderTotal = (o, ps) => o.items.reduce((s, it) => { const p = ps.find((x) 
 const orderProfit = (o, ps) => o.items.reduce((s, it) => { const p = ps.find((x) => x.id === it.pid); return s + (p ? lineProfit(it, p) : 0); }, 0);
 const monthOrdersOf = (cid, orders) => orders.filter((o) => o.clientId === cid && monthKey(o.date) === nowMonth);
 const monthKgOf = (cid, orders, ps) => monthOrdersOf(cid, orders).reduce((s, o) => s + orderKgEff(o, ps), 0);
-const periodStartMs = (pm) => { const n = new Date(); const m = pm === 2 ? Math.floor(n.getMonth() / 2) * 2 : n.getMonth(); return new Date(n.getFullYear(), m, 1).getTime(); };
-const periodLabel = (pm) => { const st = new Date(periodStartMs(pm)); if (pm === 2) { const e = new Date(st.getFullYear(), st.getMonth() + 1, 1); return st.toLocaleDateString("he-IL", { month: "long" }) + "–" + e.toLocaleDateString("he-IL", { month: "long", year: "numeric" }); } return st.toLocaleDateString("he-IL", { month: "long", year: "numeric" }); };
-const periodKgOf = (cid, orders, ps, pm) => orders.filter((o) => o.clientId === cid && o.date >= periodStartMs(pm)).reduce((s, o) => s + orderKgEff(o, ps), 0);
-const pointsOf = (cid, orders, ps, kgpp, pm = 1) => Math.floor(periodKgOf(cid, orders, ps, pm) / kgpp);
+// תקופת יעדים: מחודש ועד שנה. התקופות נספרות מנקודת עוגן (ברירת מחדל: 1 בינואר של השנה)
+const periodAnchorOf = (anchor) => { const a = anchor ? new Date(anchor) : new Date(new Date().getFullYear(), 0, 1); return new Date(a.getFullYear(), a.getMonth(), 1); };
+const periodStartMs = (pm, anchor) => { const n = Math.min(12, Math.max(1, +pm || 1)); const a = periodAnchorOf(anchor); const now = new Date(); const diff = (now.getFullYear() - a.getFullYear()) * 12 + (now.getMonth() - a.getMonth()); const k = Math.floor(diff / n) * n; return new Date(a.getFullYear(), a.getMonth() + k, 1).getTime(); };
+const periodEndMs = (pm, anchor) => { const n = Math.min(12, Math.max(1, +pm || 1)); const st = new Date(periodStartMs(pm, anchor)); return new Date(st.getFullYear(), st.getMonth() + n, 1).getTime(); };
+const periodLabel = (pm, anchor) => { const n = Math.min(12, Math.max(1, +pm || 1)); const st = new Date(periodStartMs(pm, anchor)); if (n === 1) return st.toLocaleDateString("he-IL", { month: "long", year: "numeric" }); const e = new Date(st.getFullYear(), st.getMonth() + n - 1, 1); const sameY = st.getFullYear() === e.getFullYear(); return st.toLocaleDateString("he-IL", sameY ? { month: "long" } : { month: "long", year: "numeric" }) + "–" + e.toLocaleDateString("he-IL", { month: "long", year: "numeric" }); };
+const periodName = (pm) => { const n = Math.min(12, Math.max(1, +pm || 1)); return ({ 1: "חודשי", 2: "דו-חודשי", 3: "רבעוני", 6: "חצי-שנתי", 12: "שנתי" })[n] || ("ל-" + n + " חודשים"); };
+const PERIOD_OPTS = [[1, "חודש"], [2, "חודשיים"], [3, "3 חודשים (רבעון)"], [4, "4 חודשים"], [5, "5 חודשים"], [6, "חצי שנה"], [7, "7 חודשים"], [8, "8 חודשים"], [9, "9 חודשים"], [10, "10 חודשים"], [11, "11 חודשים"], [12, "שנה"]];
+const periodKgOf = (cid, orders, ps, pm, anchor) => { const st = periodStartMs(pm, anchor); return orders.filter((o) => o.clientId === cid && o.date >= st).reduce((s, o) => s + orderKgEff(o, ps), 0); };
+const pointsOf = (cid, orders, ps, kgpp, pm = 1, anchor) => Math.floor(periodKgOf(cid, orders, ps, pm, anchor) / kgpp);
 const outstandingOf = (cid, orders, ps) => orders.filter((o) => o.clientId === cid && o.status === "delivered" && !o.paid).reduce((s, o) => s + orderTotal(o, ps), 0);
 const hasRole = (u, role) => u.role === role || (u.roles || []).includes(role);
 const sortTiers = (t) => [...t].sort((a, b) => a.points - b.points);
@@ -259,6 +297,34 @@ function PayMarkModal({ order, state, setState, onClose }) {
     </Modal>
   );
 }
+function applyAutoBilling(root) {
+  const nowMonth = new Date().toISOString().slice(0, 7);
+  let changed = false;
+  const suppliers = (root.suppliers || []).map((sp) => {
+    if (sp.id.indexOf("demo") === 0) return sp;
+    const sub = sp.sub; if (!sub || sub.status !== "active") return sp;
+    if (sub.method !== "credit" && sub.method !== "standing") return sp; // חיוב אוטומטי רק כשיש אמצעי חיוב
+    const invoices = sub.invoices || [];
+    if (invoices.some((iv) => iv.month === nowMonth)) return sp; // כבר חויב החודש
+    // חיוב רק אם עברו לפחות ~חודש מתחילת המנוי
+    const since = sub.since || 0; if (Date.now() - since < 24 * 3600 * 1000) return sp;
+    const plan = PLANS[sub.plan] || PLANS.basic; const net = plan.price; const vat = net * BILL_VAT; const gross = net + vat;
+    const inv = { id: "SV" + Date.now() + "-" + sp.id, month: nowMonth, plan: plan.id, planName: plan.name, net, vat, gross, method: sub.method, ts: Date.now(), paid: true, auto: true };
+    changed = true;
+    return { ...sp, sub: { ...sub, invoices: [inv, ...invoices], lastCharge: Date.now() } };
+  });
+  return changed ? { ...root, suppliers } : null;
+}
+function AutoBilling({ state, setState, active }) {
+  useEffect(() => {
+    if (!active || !state) return;
+    const run = () => setState((r) => applyAutoBilling(r) || r);
+    run();
+    const iv = setInterval(run, 6 * 3600 * 1000); // בדיקה כל כמה שעות כל עוד פתוח
+    return () => clearInterval(iv);
+  }, [active]);
+  return null;
+}
 function AlertSound({ count, active }) {
   const prev = React.useRef(null);
   useEffect(() => {
@@ -277,7 +343,7 @@ export default function App() {
   const [session, setSession] = useState({ kind: "none" });
   const [saved, setSaved] = useState(false);
   const [storeId] = useState(() => { try { return new URL(window.location.href).searchParams.get("store"); } catch { return null; } });
-  const [showProfile, setShowProfile] = useState(false); const [showBell, setShowBell] = useState(false);
+  const [showProfile, setShowProfile] = useState(false); const [showBell, setShowBell] = useState(false); const [mgrIntent, setMgrIntent] = useState(null);
   useEffect(() => { if (!document.getElementById("ff-rubik")) { const l = document.createElement("link"); l.id = "ff-rubik"; l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap"; document.head.appendChild(l); } if (!document.getElementById("tp-css")) { const st = document.createElement("style"); st.id = "tp-css"; st.textContent = ".tp-2col{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:20px}.tp-2eq{grid-template-columns:1fr 1fr}.tp-staff{grid-template-columns:1fr 1fr 1fr 1fr auto}@media(max-width:760px){.tp-2col{grid-template-columns:1fr}.tp-staff{grid-template-columns:1fr 1fr}}@media(max-width:560px){.tp-2eq{grid-template-columns:1fr}}"; document.head.appendChild(st); } }, []);
   if (!state) return <div dir="rtl" style={{ background: C.bg, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: C.sub }}>טוען…</div>;
   if (session.kind === "none") { const storeSup = storeId ? state.suppliers.find((x) => x.id === storeId && x.status === "active") : null; return storeSup ? <StorePage supplier={storeSup} state={state} setState={setState} onLogin={setSession} /> : <AuthScreen state={state} setState={setState} onLogin={setSession} />; }
@@ -289,11 +355,11 @@ export default function App() {
   if (!isSuper && !isAgent && !isHub && !sup) return <AuthScreen state={state} setState={setState} onLogin={setSession} />;
   const scopedSet = (u) => setState((root) => ({ ...root, suppliers: root.suppliers.map((s) => s.id === session.supplierId ? (typeof u === "function" ? u(s) : u) : s) }));
   const clientRec = (session.kind === "client" && sup) ? sup.clients.find((c) => c.email.trim().toLowerCase() === (session.email || "").trim().toLowerCase()) : null;
-  const joinSupplier = (supId) => setState((root) => { let prof = null; for (const sp of root.suppliers) { const c = sp.clients.find((x) => x.email.trim().toLowerCase() === (session.email || "").trim().toLowerCase()); if (c) prof = c; } if (!prof) return root; const tgt = root.suppliers.find((x) => x.id === supId); if (tgt && tgt.clients.some((c) => c.email.trim().toLowerCase() === session.email.trim().toLowerCase())) return root; const { id, readBc, ...rest } = prof; const nc = { ...rest, id: "c" + Date.now(), status: "pending", createdAt: Date.now() }; return { ...root, suppliers: root.suppliers.map((sp) => sp.id === supId ? { ...sp, clients: [...sp.clients, nc] } : sp) }; });
+  const joinSupplier = (supId, note) => setState((root) => { let prof = null; for (const sp of root.suppliers) { const c = sp.clients.find((x) => x.email.trim().toLowerCase() === (session.email || "").trim().toLowerCase()); if (c) prof = c; } if (!prof) return root; const tgt = root.suppliers.find((x) => x.id === supId); if (tgt && tgt.clients.some((c) => c.email.trim().toLowerCase() === session.email.trim().toLowerCase())) return root; const { id, readBc, ...rest } = prof; const ncId = "c" + Date.now(); const nc = { ...rest, id: ncId, status: "pending", createdAt: Date.now() }; const emL = session.email.trim().toLowerCase(); const inq = ((tgt && tgt.inquiries) || []).find((q) => q.email === emL); const old = inq ? inq.msgs.map((m) => ({ id: m.id, clientId: ncId, fromRole: m.from === "client" ? "client" : "manager", fromName: m.from === "client" ? nc.name : "מנהל", text: m.text, ts: m.ts, readBySup: true })) : []; const msgs = note && note.trim() ? [{ id: "m" + Date.now(), clientId: ncId, fromRole: "client", fromName: nc.name, text: note.trim(), ts: Date.now() }] : []; return { ...root, suppliers: root.suppliers.map((sp) => sp.id === supId ? { ...sp, clients: [...sp.clients, nc], messages: [...sp.messages, ...old, ...msgs], inquiries: (sp.inquiries || []).filter((q) => q.email !== emL) } : sp) }; });
   const me = isSuper ? { name: "מנהל-על" } : isAgent ? { name: "סוכן-על" } : isHub ? { name: "העסק שלי" } : session.kind === "supplier" ? { name: sup.name } : session.kind === "client" ? clientRec : (sup ? sup.staff.find((s) => s.id === session.userId) : null);
   const title = isSuper ? "פיקוח על כל הספקים" : isAgent ? "ניהול ותמיכה" : isHub ? "הספקים שלי" : session.kind === "supplier" ? "ניהול החנות" : (ROLE_LABEL[session.kind] || "") + " · " + (me ? me.name : "");
   const supNewOrders = session.kind === "supplier" && sup ? sup.orders.filter((o) => o.status === "new").length : 0;
-  const supUnreadMsgs = session.kind === "supplier" && sup ? sup.messages.filter((m) => m.fromRole === "client" && !m.readBySup).length : 0;
+  const supUnreadMsgs = session.kind === "supplier" && sup ? sup.messages.filter((m) => m.fromRole === "client" && !m.readBySup).length + (sup.inquiries || []).filter((q) => q.unread).length : 0;
   const supAlerts = supNewOrders + supUnreadMsgs;
   const bizRec = session.kind === "client" ? (state.suppliers.map((sp) => sp.clients.find((c) => c.email.trim().toLowerCase() === (session.email || "").trim().toLowerCase())).find(Boolean) || null) : null;
   const staffRoles = (me && me.role) ? [me.role, ...((me.roles) || [])].filter((v, i, a) => a.indexOf(v) === i) : [];
@@ -311,7 +377,11 @@ export default function App() {
     <div dir="rtl" style={{ background: pageBg, minHeight: "100vh", color: C.ink, fontFamily: pageFont }}>
       <div style={{ background: headerBg, color: "#fff", boxShadow: "0 2px 12px rgba(18,74,43,.18)", position: "sticky", top: 0, zIndex: 20 }}>
         <div style={{ maxWidth: 1160, margin: "0 auto", padding: "12px 20px", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-          <Logo size={32} light wordmark img={isHub && bizRec ? bizRec.logo : (sup && sup.brand && sup.brand.logo)} name={isHub ? (bizRec ? bizRec.name : "העסק שלי") : (sup ? sup.name : (isAgent ? "סוכן-על" : "מנהל-על"))} />
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <img src={LOGO_IMG} alt="B2B+" title="B2B+ Marketplace" style={{ width: 34, height: 34, borderRadius: 9, objectFit: "cover", boxShadow: "0 1px 4px rgba(0,0,0,.25)" }} />
+            {((isHub && bizRec && bizRec.logo) || (sup && sup.brand && sup.brand.logo)) && <span style={{ width: 1, height: 24, background: "rgba(255,255,255,.3)" }} />}
+            <Logo size={32} light wordmark img={isHub && bizRec ? bizRec.logo : (sup && sup.brand && sup.brand.logo)} name={isHub ? (bizRec ? bizRec.name : "העסק שלי") : (sup ? sup.name : (isAgent ? "סוכן-על" : "מנהל-על"))} />
+          </div>
           <div style={{ flex: 1 }} />
           <span style={{ fontSize: 13.5, opacity: .92, fontWeight: 600 }}>{title}</span>
           {session.kind === "client" && session.supplierId && <button onClick={() => setSession({ kind: "client", email: session.email, pw: session.pw })} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,.16)", color: "#fff", border: "none", borderRadius: 9, padding: "8px 13px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}><Building2 size={15} /> הספקים שלי</button>}
@@ -325,7 +395,7 @@ export default function App() {
         {isSuper && <SuperAdminView state={state} setState={setState} onEnter={(sid) => setSession({ kind: "supplier", supplierId: sid, asSuper: true, from: "super" })} onEnterAs={(sess) => setSession({ ...sess, asSuper: true, from: "super" })} />}
         {isAgent && <SuperAdminView state={state} setState={setState} agentMode onEnter={(sid) => setSession({ kind: "supplier", supplierId: sid, asSuper: true, from: "superagent" })} onEnterAs={(sess) => setSession({ ...sess, asSuper: true, from: "superagent" })} />}
         {isHub && <BusinessHub state={state} setState={setState} email={session.email} onEnter={(sid) => setSession({ ...session, supplierId: sid })} onJoin={joinSupplier} />}
-        {session.kind === "supplier" && <><FontLoader font={themeFont} /><ManagerView state={sup} setState={scopedSet} /></>}
+        {session.kind === "supplier" && <><FontLoader font={themeFont} /><ManagerView state={sup} setState={scopedSet} intent={mgrIntent} onIntentDone={() => setMgrIntent(null)} /></>}
         {session.kind === "client" && sup && clientRec && <div style={{ color: themeFontColor }}><FontLoader font={themeFont} /><ClientView state={sup} setState={scopedSet} clientId={clientRec.id} /></div>}
         {isStaffView && staffRoles.length > 1 && (
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16, background: "#fff", border: `1px solid ${C.line}`, borderRadius: 14, padding: 10, boxShadow: SH }}>
@@ -337,13 +407,27 @@ export default function App() {
         {session.kind === "driver" && <DriverView state={sup} setState={scopedSet} me={me} />}
         {session.kind === "agent" && <AgentView state={sup} setState={scopedSet} me={me} />}
       </div>
-      {showProfile && <ProfileModal session={session} state={state} setState={setState} sup={sup} onClose={() => setShowProfile(false)} onLoggedOut={() => { setShowProfile(false); setSession({ kind: "none" }); }} />}
+      {showProfile && <ProfileModal session={session} state={state} setState={setState} sup={sup} onClose={() => setShowProfile(false)} onLoggedOut={() => { setShowProfile(false); setSession({ kind: "none" }); }} onGo={(t) => { setShowProfile(false); setMgrIntent(t); }} />}
       <AlertSound count={supAlerts} active={session.kind === "supplier"} />
-      {showBell && <Modal title="עדכונים" onClose={() => setShowBell(false)}>
-        <div style={{ display: "grid", gap: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, border: `1px solid ${C.line}`, borderRadius: 12, padding: "12px 14px" }}><div style={{ width: 40, height: 40, borderRadius: 10, background: C.amberSoft, color: C.amber, display: "flex", alignItems: "center", justifyContent: "center" }}><ClipboardList size={20} /></div><div><div style={{ fontWeight: 800, fontSize: 16 }}>{supNewOrders} הזמנות חדשות</div><div style={{ fontSize: 13, color: C.sub }}>ממתינות לליקוט בלשונית "הזמנות"</div></div></div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, border: `1px solid ${C.line}`, borderRadius: 12, padding: "12px 14px" }}><div style={{ width: 40, height: 40, borderRadius: 10, background: C.blueSoft, color: C.blue, display: "flex", alignItems: "center", justifyContent: "center" }}><MessageSquare size={20} /></div><div><div style={{ fontWeight: 800, fontSize: 16 }}>{supUnreadMsgs} הודעות שלא נקראו</div><div style={{ fontSize: 13, color: C.sub }}>מלקוחות, בלשונית "הודעות"</div></div></div>
-        </div>
+      <AutoBilling state={state} setState={setState} active={isSuper} />
+      {showBell && <Modal title="עדכונים חדשים" onClose={() => setShowBell(false)}>
+        {(() => {
+          const items = [];
+          if (sup) {
+            sup.orders.filter((o) => o.status === "new").sort((a, b) => b.date - a.date).forEach((o) => { const c = sup.clients.find((x) => x.id === o.clientId); items.push({ key: "o" + o.id, icon: <ClipboardList size={18} />, tone: [C.amberSoft, C.amber], title: "הזמנה חדשה #" + o.id, sub: (c ? c.name : "לקוח") + " · " + orderCartons(o) + " קרטונים", tab: "orders" }); });
+            const byClient = {}; sup.messages.filter((m) => m.fromRole === "client" && !m.readBySup).forEach((m) => { byClient[m.clientId] = (byClient[m.clientId] || 0) + 1; });
+            (sup.inquiries || []).filter((q) => q.unread).forEach((q) => { items.push({ key: "q" + q.id, icon: <Mail size={18} />, tone: [C.plumSoft, C.plum], title: "פנייה מעסק חדש", sub: q.name + " · " + (q.msgs[q.msgs.length - 1] || {}).text, tab: "messages" }); });
+            Object.keys(byClient).forEach((cid) => { const c = sup.clients.find((x) => x.id === cid); items.push({ key: "m" + cid, icon: <MessageSquare size={18} />, tone: [C.blueSoft, C.blue], title: "הודעה מלקוח", sub: (c ? c.name : "לקוח") + " · " + byClient[cid] + " הודעות שלא נקראו", tab: "messages" }); });
+          }
+          if (items.length === 0) return <Empty>אין עדכונים חדשים 🎉</Empty>;
+          return <div style={{ display: "grid", gap: 8 }}>{items.map((it) => (
+            <button key={it.key} onClick={() => { setMgrIntent(it.tab); setShowBell(false); }} style={{ textAlign: "right", border: `1px solid ${C.line}`, borderRadius: 12, padding: "12px 14px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: it.tone[0], color: it.tone[1], display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{it.icon}</div>
+              <div style={{ flex: 1 }}><div style={{ fontWeight: 800, fontSize: 15 }}>{it.title}</div><div style={{ fontSize: 13, color: C.sub, marginTop: 2 }}>{it.sub}</div></div>
+              <ChevronLeft size={18} color={C.sub} />
+            </button>
+          ))}</div>;
+        })()}
       </Modal>}
     </div>
   );
@@ -372,17 +456,19 @@ function AuthScreen({ state, setState, onLogin }) {
   );
 }
 function SupplierRegister({ state, setState, back, byAdmin, onDone }) {
-  const [f, setF] = useState({ name: "", category: "", regions: "", contact: "", phone: "", email: "", password: "" });
+  const [f, setF] = useState({ name: "", category: "", cats: [], regions: "", contact: "", phone: "", email: "", password: "" });
   const [err, setErr] = useState(""); const [done, setDone] = useState(false);
   const set = (k) => (e) => setF((s) => ({ ...s, [k]: e.target.value }));
+  const [agree, setAgree] = useState(false); const [showTerms, setShowTerms] = useState(false);
   const regList = f.regions ? f.regions.split(",").map((x) => x.trim()).filter(Boolean) : [];
   const hasReg = (v) => regList.includes(v);
   const toggleReg = (v) => { const next = hasReg(v) ? regList.filter((x) => x !== v) : [...regList, v]; setF((s) => ({ ...s, regions: next.join(", ") })); };
   const submit = () => {
     if (!f.name || !f.email || !f.password) return setErr("שם, אימייל וסיסמה חובה");
+    if (!byAdmin && !agree) return setErr("יש לאשר את התקנון כדי להמשיך");
     const em = f.email.trim().toLowerCase();
     if (state.suppliers.some((sp) => sp.owner && sp.owner.email.trim().toLowerCase() === em)) return setErr("אימייל זה כבר רשום כספק");
-    const sup = { id: "s" + Date.now(), name: f.name, category: f.category || "כללי", regions: f.regions || "", status: byAdmin ? "active" : "pending", owner: { email: f.email, password: f.password, contact: f.contact, phone: f.phone }, brand: { logo: LOGO_IMG, tagline: "", color: "#1F7A4D" }, sub: { plan: "basic", status: "trial", method: "none", since: Date.now(), invoices: [] }, biz: { taxId: "", address: "", phone: f.phone || "", email: f.email || "" }, cats: [], invoiceSeq: 1000, features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [], clients: [], staff: [], orders: [], messages: [], broadcasts: [] };
+    const sup = { id: "s" + Date.now(), name: f.name, category: f.category || "כללי", regions: f.regions || "", status: byAdmin ? "active" : "pending", owner: { email: f.email, password: f.password, contact: f.contact, phone: f.phone }, terms: byAdmin ? null : { version: TERMS_VERSION, acceptedAt: Date.now() }, brand: { logo: LOGO_IMG, tagline: "", color: "#1F7A4D" }, sub: { plan: "basic", status: "trial", method: "none", since: Date.now(), invoices: [] }, biz: { taxId: "", address: "", phone: f.phone || "", email: f.email || "" }, cats: f.cats || [], invoiceSeq: 1000, features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [], clients: [], staff: [], orders: [], messages: [], broadcasts: [] };
     setState((root) => ({ ...root, suppliers: [...root.suppliers, sup] }));
     if (byAdmin && onDone) return onDone();
     setDone(true);
@@ -392,12 +478,14 @@ function SupplierRegister({ state, setState, back, byAdmin, onDone }) {
     <>
       <div className="tp-2eq" style={{ display: "grid", gap: 10 }}>
         <Field label="שם החנות / הספק *" value={f.name} onChange={set("name")} />
-        <Field label="קטגוריה" value={f.category} onChange={set("category")} placeholder="ירקות ופירות / מאפייה / בשרים" />
+        <Field label="תחום (אפשר גם לכתוב חופשי)" value={f.category} onChange={set("category")} placeholder="למשל: בשר ועוף" />
         <Field label="איש קשר" value={f.contact} onChange={set("contact")} />
         <Field label="טלפון" value={f.phone} onChange={set("phone")} />
         <Field label="אימייל (לכניסה) *" value={f.email} onChange={set("email")} />
         <Field label="סיסמה *" type="password" value={f.password} onChange={set("password")} />
       </div>
+      <DomainPicker value={f.category} onPick={(d) => setF((s) => ({ ...s, category: d.label, cats: d.cats }))} />
+      {f.cats && f.cats.length > 0 && <div style={{ fontSize: 12.5, color: C.greenDeep, marginBottom: 6 }}>קטגוריות מוצרים שייפתחו בחנות: {f.cats.join(" · ")} (אפשר לשנות אחר כך)</div>}
       <div style={{ marginTop: 12, border: `1px solid ${C.line}`, borderRadius: 12, padding: 14 }}>
         <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>אזורי פעילות</div>
         <div style={{ fontSize: 12.5, color: C.sub, marginBottom: 10 }}>סמנו את כל האזורים והערים שבהם אתם מספקים — כך לקוחות באזורים אלה ימצאו אתכם בחיפוש.</div>
@@ -409,12 +497,14 @@ function SupplierRegister({ state, setState, back, byAdmin, onDone }) {
         ))}
         {regList.length > 0 && <div style={{ fontSize: 12.5, color: C.greenDeep, marginTop: 6 }}>נבחרו: {regList.join(", ")}</div>}
       </div>
+      {!byAdmin && <TermsBox agree={agree} setAgree={setAgree} />}
       {err && <ErrBox>{err}</ErrBox>}<SubmitBtn onClick={submit}>{byAdmin ? "הוסף ספק" : "שליחת בקשה למנהל-על"}</SubmitBtn>
+      {showTerms && <Modal onClose={() => setShowTerms(false)} title="תקנון השימוש"><div style={{ whiteSpace: "pre-wrap", fontSize: 13, color: C.ink, lineHeight: 1.7, maxHeight: 360, overflow: "auto" }}>{TERMS}</div></Modal>}
     </>
   );
   return byAdmin ? body : <Card title="הרשמת ספק חדש" back={back} wide>{body}</Card>;
 }
-function BillingCenter({ state, setState }) {
+function BillingCenter({ state, setState, agentMode, byName }) {
   const sups = state.suppliers.filter((x) => x.id.indexOf("demo") !== 0);
   const setSub = (sid, patch) => setState((r) => ({ ...r, suppliers: r.suppliers.map((s2) => s2.id === sid ? { ...s2, sub: { ...(s2.sub || { plan: "basic", status: "trial", method: "none", invoices: [] }), ...patch } } : s2) }));
   const monthKeyNow = new Date().toISOString().slice(0, 7);
@@ -427,7 +517,8 @@ function BillingCenter({ state, setState }) {
   const chargeAll = () => { const due = sups.filter((sp) => (sp.sub && sp.sub.status === "active") && !(sp.sub.invoices || []).some((iv) => iv.month === monthKeyNow)); due.forEach(chargeOne); alert(due.length ? "בוצע חיוב חודשי ל-" + due.length + " ספקים." : "כל הספקים הפעילים כבר חויבו החודש."); };
   const totalMonth = sups.reduce((sum, sp) => sum + ((sp.sub && sp.sub.invoices) || []).filter((iv) => iv.month === monthKeyNow).reduce((a, iv) => a + iv.gross, 0), 0);
   const activeCount = sups.filter((sp) => sp.sub && sp.sub.status === "active").length;
-  const [openSup, setOpenSup] = useState(null);
+  const [openSup, setOpenSup] = useState(null); const [previewInv, setPreviewInv] = useState(null); const [chargeFor, setChargeFor] = useState(null);
+  const recordCharge = (sp, inv, saveCard) => setState((r) => ({ ...r, suppliers: r.suppliers.map((s2) => { if (s2.id !== sp.id) return s2; const sub = s2.sub || { plan: "basic", status: "trial", method: "none", invoices: [] }; return { ...s2, sub: { ...sub, invoices: [inv, ...(sub.invoices || [])], lastCharge: Date.now(), ...(saveCard ? { method: "credit", last4: inv.last4, cardBrand: inv.cardBrand, cardExp: inv.cardExp } : {}), ...(inv.kind === "sub" && sub.status !== "active" ? { status: "active", since: Date.now() } : {}) } }; }) }));
   return (
     <div style={{ display: "grid", gap: 16 }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 12 }}>
@@ -436,8 +527,8 @@ function BillingCenter({ state, setState }) {
         <Kpi icon={<Building2 size={17} />} label={'סה"כ ספקים'} value={sups.length} tone="plum" />
       </div>
       <Panel style={{ boxShadow: SH }}>
-        <SectionTitle icon={<Wallet size={18} />} extra={<button onClick={chargeAll} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 800, fontSize: 13, padding: "9px 16px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><CreditCard size={15} /> חיוב חודשי לכל הפעילים</button>}>מנויי הספקים</SectionTitle>
-        <div style={{ fontSize: 12.5, color: C.sub, marginBottom: 12, background: C.amberSoft, borderRadius: 10, padding: "8px 12px", lineHeight: 1.6 }}>💳 החיובים כאן פועלים במצב הדגמה (רישום חשבונית + סימון שולם). לחיוב אשראי חוזר אמיתי — יש לחבר חברת סליקה עם מנויים (Stripe Billing / PayPlus). כל חיוב מפיק חשבונית מסודרת מטעם B2B+.</div>
+        <SectionTitle icon={<Wallet size={18} />} extra={<div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}><button onClick={() => setChargeFor("pick")} style={{ border: `1px solid ${C.green}`, background: "#fff", color: C.greenDeep, fontWeight: 800, fontSize: 13, padding: "9px 14px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><CreditCard size={15} /> חיוב חדש באשראי</button>{!agentMode && <button onClick={chargeAll} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 800, fontSize: 13, padding: "9px 16px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><CreditCard size={15} /> חיוב חודשי לכל הפעילים</button>}</div>}>מנויי הספקים</SectionTitle>
+        <div style={{ fontSize: 12.5, color: C.sub, marginBottom: 12, background: C.amberSoft, borderRadius: 10, padding: "8px 12px", lineHeight: 1.6 }}>💳 "חיוב באשראי" פותח טופס סליקה: מזינים כרטיס, סכום ותיאור, והמערכת מפיקה חשבונית מס/קבלה. כרגע הסליקה פועלת במצב הדגמה (לא יורד כסף אמיתי) — להפעלה אמיתית מחברים חברת סליקה (טרנזילה / קארדקום / PayPlus). המערכת לעולם לא שומרת מספר כרטיס מלא או CVV — רק 4 ספרות אחרונות.</div>
         <div style={{ display: "grid", gap: 8 }}>
           {sups.map((sp) => { const sub = sp.sub || { plan: "basic", status: "trial", method: "none", invoices: [] }; const plan = PLANS[sub.plan] || PLANS.basic; const chargedThisMonth = (sub.invoices || []).some((iv) => iv.month === monthKeyNow); const stTone = sub.status === "active" ? "green" : sub.status === "trial" ? "amber" : "red"; const stLbl = sub.status === "active" ? "פעיל" : sub.status === "trial" ? "תקופת ניסיון" : "מבוטל"; return (
             <div key={sp.id} style={{ border: `1px solid ${C.line}`, borderRadius: 12, padding: "12px 14px" }}>
@@ -450,30 +541,152 @@ function BillingCenter({ state, setState }) {
                 {sub.method === "standing" && <Badge><Wallet size={11} /> הוראת קבע</Badge>}
                 {chargedThisMonth && <Badge tone="green"><Check size={11} /> חויב החודש</Badge>}
               </div>
-              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 10, alignItems: "center" }}>
+              {!agentMode && <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 10, alignItems: "center" }}>
                 <span style={{ fontSize: 12, color: C.sub }}>מסלול:</span>
                 {Object.values(PLANS).map((pl) => <button key={pl.id} onClick={() => setSub(sp.id, { plan: pl.id })} style={{ border: `1px solid ${sub.plan === pl.id ? C.green : C.line}`, background: sub.plan === pl.id ? C.greenSoft : "#fff", color: sub.plan === pl.id ? C.greenDeep : C.sub, borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>{pl.name}</button>)}
                 <span style={{ fontSize: 12, color: C.sub, marginInlineStart: 8 }}>אמצעי:</span>
                 {[["credit", "אשראי"], ["standing", "הוראת קבע"], ["none", "ללא"]].map(([m, lbl]) => <button key={m} onClick={() => setSub(sp.id, { method: m })} style={{ border: `1px solid ${sub.method === m ? C.blue : C.line}`, background: sub.method === m ? C.blueSoft : "#fff", color: sub.method === m ? C.blue : C.sub, borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>{lbl}</button>)}
-              </div>
+              </div>}
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 10 }}>
-                {sub.status !== "active" ? <button onClick={() => setSub(sp.id, { status: "active", since: Date.now() })} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 700, fontSize: 12.5, padding: "7px 14px", borderRadius: 9, cursor: "pointer" }}>הפעל מנוי</button>
+                <button onClick={() => setChargeFor(sp)} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 700, fontSize: 12.5, padding: "7px 14px", borderRadius: 9, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}><CreditCard size={13} /> חיוב באשראי</button>
+                {agentMode ? null : sub.status !== "active" ? <button onClick={() => setSub(sp.id, { status: "active", since: Date.now() })} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 700, fontSize: 12.5, padding: "7px 14px", borderRadius: 9, cursor: "pointer" }}>הפעל מנוי</button>
                   : <button onClick={() => setSub(sp.id, { status: "canceled" })} style={{ border: `1px solid ${C.red}`, background: "#fff", color: C.red, fontWeight: 700, fontSize: 12.5, padding: "7px 14px", borderRadius: 9, cursor: "pointer" }}>בטל מנוי</button>}
-                <button onClick={() => { if (chargedThisMonth) { alert("ספק זה כבר חויב החודש."); return; } chargeOne(sp); }} disabled={sub.status !== "active"} style={{ border: "none", background: sub.status === "active" ? C.greenDeep : "#C9D3C7", color: "#fff", fontWeight: 700, fontSize: 12.5, padding: "7px 14px", borderRadius: 9, cursor: sub.status === "active" ? "pointer" : "default", display: "flex", alignItems: "center", gap: 5 }}><CreditCard size={13} /> חייב עכשיו</button>
+                {!agentMode && <button onClick={() => { if (chargedThisMonth) { alert("ספק זה כבר חויב החודש."); return; } chargeOne(sp); }} disabled={sub.status !== "active"} style={{ border: "none", background: sub.status === "active" ? C.greenDeep : "#C9D3C7", color: "#fff", fontWeight: 700, fontSize: 12.5, padding: "7px 14px", borderRadius: 9, cursor: sub.status === "active" ? "pointer" : "default", display: "flex", alignItems: "center", gap: 5 }}><CreditCard size={13} /> רישום חיוב חודשי</button>}
                 <button onClick={() => setOpenSup(openSup === sp.id ? null : sp.id)} style={{ border: `1px solid ${C.line}`, background: "#fff", color: C.sub, fontWeight: 700, fontSize: 12.5, padding: "7px 14px", borderRadius: 9, cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}><Receipt size={13} /> חשבוניות ({(sub.invoices || []).length})</button>
               </div>
-              {openSup === sp.id && <div style={{ marginTop: 10, borderTop: `1px dashed ${C.line}`, paddingTop: 10, display: "grid", gap: 6 }}>{(sub.invoices || []).length === 0 ? <span style={{ fontSize: 12.5, color: C.sub }}>אין חשבוניות עדיין</span> : (sub.invoices || []).map((iv) => <div key={iv.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12.5, gap: 8, flexWrap: "wrap" }}><span>{iv.month} · {iv.planName} · {NIS(iv.gross)} {iv.paid ? "" : "(לא שולם)"}</span><button onClick={() => downloadSubInvoice(iv, sp, state)} style={{ border: `1px solid ${C.green}`, background: "#fff", color: C.greenDeep, fontWeight: 700, fontSize: 12, padding: "4px 10px", borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}><Download size={12} /> חשבונית</button></div>)}</div>}
+              {openSup === sp.id && <div style={{ marginTop: 10, borderTop: `1px dashed ${C.line}`, paddingTop: 10, display: "grid", gap: 6 }}>{(sub.invoices || []).length === 0 ? <span style={{ fontSize: 12.5, color: C.sub }}>אין חשבוניות עדיין</span> : (sub.invoices || []).map((iv) => <div key={iv.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12.5, gap: 8, flexWrap: "wrap" }}><span>{iv.month} · {iv.desc || iv.planName} · {NIS(iv.gross)} {iv.paid ? "" : "(לא שולם)"}{iv.last4 ? " · 💳 ••" + iv.last4 : ""}{iv.chargedBy ? " · " + iv.chargedBy : ""}</span><button onClick={() => setPreviewInv({ iv, sp })} style={{ border: `1px solid ${C.green}`, background: "#fff", color: C.greenDeep, fontWeight: 700, fontSize: 12, padding: "4px 10px", borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}><Receipt size={12} /> צפייה</button></div>)}</div>}
             </div>
           ); })}
           {sups.length === 0 && <Empty>אין ספקים עדיין</Empty>}
         </div>
       </Panel>
+      {previewInv && <SubInvoiceModal iv={previewInv.iv} sp={previewInv.sp} onClose={() => setPreviewInv(null)} />}
+      {chargeFor && <CardChargeModal sups={sups} sp={chargeFor === "pick" ? null : chargeFor} byName={byName || "מנהל-על"} onClose={() => setChargeFor(null)} onCharged={(sp, inv, saveCard) => { recordCharge(sp, inv, saveCard); }} onPreview={(sp, inv) => { setChargeFor(null); setPreviewInv({ iv: inv, sp }); }} />}
     </div>
+  );
+}
+const luhnOk = (num) => { const d = num.replace(/\D/g, ""); if (d.length < 12 || d.length > 19) return false; let sum = 0, alt = false; for (let i = d.length - 1; i >= 0; i--) { let n = +d[i]; if (alt) { n *= 2; if (n > 9) n -= 9; } sum += n; alt = !alt; } return sum % 10 === 0; };
+const cardBrandOf = (num) => { const d = num.replace(/\D/g, ""); if (/^4/.test(d)) return "Visa"; if (/^(5[1-5]|2[2-7])/.test(d)) return "Mastercard"; if (/^3[47]/.test(d)) return "Amex"; if (/^36|^30[0-5]|^38/.test(d)) return "Diners"; if (/^(3088|3096|3112|3158|3337|35)/.test(d)) return "JCB"; return "ישראכרט / אחר"; };
+function CardChargeModal({ sups, sp: fixedSp, byName, onClose, onCharged, onPreview }) {
+  const [spId, setSpId] = useState(fixedSp ? fixedSp.id : (sups[0] ? sups[0].id : ""));
+  const sp = sups.find((x) => x.id === spId) || fixedSp;
+  const plan = sp ? (PLANS[(sp.sub && sp.sub.plan) || "basic"] || PLANS.basic) : PLANS.basic;
+  const [kind, setKind] = useState("sub"); // sub | once
+  const [desc, setDesc] = useState(""); const [amount, setAmount] = useState(String(plan.price));
+  const [vatOn, setVatOn] = useState(true);
+  const [c, setC] = useState({ holder: "", idNum: "", num: "", exp: "", cvv: "", pay: 1 });
+  const [saveCard, setSaveCard] = useState(true); const [agreeOk, setAgreeOk] = useState(false);
+  const [err, setErr] = useState(""); const [stage, setStage] = useState("form"); const [result, setResult] = useState(null);
+  useEffect(() => { if (kind === "sub") setAmount(String(plan.price)); }, [spId, kind]);
+  const net = Math.max(0, +amount || 0); const vat = vatOn ? net * BILL_VAT : 0; const gross = net + vat;
+  const fmtNum = (v) => v.replace(/\D/g, "").slice(0, 19).replace(/(.{4})/g, "$1 ").trim();
+  const fmtExp = (v) => { const d = v.replace(/\D/g, "").slice(0, 4); return d.length > 2 ? d.slice(0, 2) + "/" + d.slice(2) : d; };
+  const submit = () => {
+    setErr("");
+    if (!sp) return setErr("בחר ספק לחיוב");
+    if (!(net > 0)) return setErr("סכום החיוב חייב להיות גדול מאפס");
+    if (kind === "once" && !desc.trim()) return setErr("נא לכתוב על מה החיוב");
+    if (!c.holder.trim()) return setErr("שם בעל הכרטיס חובה");
+    if (!/^\d{5,9}$/.test(c.idNum.replace(/\D/g, ""))) return setErr("מספר ת.ז / ח.פ של בעל הכרטיס לא תקין");
+    if (!luhnOk(c.num)) return setErr("מספר כרטיס לא תקין");
+    const m = c.exp.match(/^(\d{2})\/(\d{2})$/); if (!m) return setErr("תוקף בפורמט MM/YY");
+    const mm = +m[1], yy = 2000 + +m[2]; if (mm < 1 || mm > 12 || new Date(yy, mm, 1).getTime() <= Date.now()) return setErr("תוקף הכרטיס פג או לא תקין");
+    if (!/^\d{3,4}$/.test(c.cvv)) return setErr("CVV לא תקין");
+    if (!agreeOk) return setErr("יש לאשר שבעל הכרטיס הסכים לחיוב");
+    setStage("busy");
+    setTimeout(() => {
+      const d = c.num.replace(/\D/g, ""); const last4 = d.slice(-4); const brand = cardBrandOf(d);
+      const approval = String(Math.floor(1000000 + Math.random() * 9000000));
+      const inv = { id: "SV" + Date.now() + "-" + sp.id, month: new Date().toISOString().slice(0, 7), kind, plan: kind === "sub" ? plan.id : null, planName: kind === "sub" ? plan.name : "", desc: kind === "sub" ? "מנוי B2B+ — מסלול " + plan.name : desc.trim(), net, vat, gross, method: "credit", last4, cardBrand: brand, cardExp: c.exp, approval, installments: +c.pay || 1, holder: c.holder.trim(), chargedBy: byName, ts: Date.now(), paid: true, demo: true };
+      onCharged(sp, inv, saveCard);
+      setC({ holder: "", idNum: "", num: "", exp: "", cvv: "", pay: 1 }); // לא משאירים פרטי כרטיס בזיכרון
+      setResult({ inv, sp }); setStage("done");
+    }, 1300);
+  };
+  const inp = { ...fieldStyle, padding: "10px 11px" };
+  if (stage === "done" && result) return (
+    <Modal onClose={onClose} title="החיוב בוצע">
+      <div style={{ textAlign: "center", padding: "6px 0 12px" }}>
+        <div style={{ width: 58, height: 58, borderRadius: "50%", background: C.greenSoft, color: C.greenDeep, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}><Check size={30} /></div>
+        <div style={{ fontWeight: 800, fontSize: 22, color: C.greenDeep }}>{NIS(result.inv.gross)}</div>
+        <div style={{ fontSize: 13.5, color: C.sub, marginTop: 4, lineHeight: 1.7 }}>{result.sp.name} · {result.inv.desc}<br />{result.inv.cardBrand} ••{result.inv.last4}{result.inv.installments > 1 ? " · " + result.inv.installments + " תשלומים" : ""} · אישור {result.inv.approval}</div>
+        <div style={{ fontSize: 12, color: C.amber, marginTop: 8 }}>מצב הדגמה — לא בוצע חיוב אמיתי</div>
+      </div>
+      <SubmitBtn onClick={() => onPreview(result.sp, result.inv)}>צפייה בחשבונית</SubmitBtn>
+      <button onClick={onClose} style={{ width: "100%", marginTop: 8, border: "none", background: "transparent", color: C.sub, fontWeight: 700, cursor: "pointer", padding: 8 }}>סגור</button>
+    </Modal>
+  );
+  return (
+    <Modal onClose={stage === "busy" ? () => {} : onClose} title="חיוב באשראי">
+      {!fixedSp && <label style={{ display: "block", marginBottom: 10 }}><div style={{ fontSize: 13, color: C.sub, marginBottom: 4 }}>ספק לחיוב</div><select value={spId} onChange={(e) => setSpId(e.target.value)} style={fieldStyle}>{sups.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</select></label>}
+      {fixedSp && <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}><Logo size={34} img={fixedSp.brand && fixedSp.brand.logo} name={fixedSp.name} /><div style={{ fontWeight: 800 }}>{fixedSp.name}</div></div>}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
+        {[["sub", "מנוי — " + plan.name], ["once", "חיוב חד-פעמי"]].map(([k, lbl]) => <button key={k} onClick={() => setKind(k)} style={{ border: `1.5px solid ${kind === k ? C.green : C.line}`, background: kind === k ? C.greenSoft : "#fff", color: kind === k ? C.greenDeep : C.sub, borderRadius: 10, padding: "10px", fontWeight: 700, fontSize: 13.5, cursor: "pointer" }}>{lbl}</button>)}
+      </div>
+      {kind === "once" && <Field label="על מה החיוב? *" value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="למשל: דמי הקמה / הדרכה / עיצוב חנות" />}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 10, alignItems: "end" }}>
+        <Field label={'סכום לפני מע"מ (₪)'} type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
+        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: C.sub, marginBottom: 18 }}><input type="checkbox" checked={vatOn} onChange={(e) => setVatOn(e.target.checked)} /> + מע"מ</label>
+      </div>
+      <div style={{ background: "#F7F9FC", borderRadius: 10, padding: "8px 12px", fontSize: 13.5, marginBottom: 12, display: "flex", justifyContent: "space-between" }}><span>סה"כ לחיוב</span><b style={{ color: C.greenDeep, fontSize: 16 }}>{NIS(gross)}</b></div>
+      <div style={{ border: `1px solid ${C.line}`, borderRadius: 14, padding: 14, background: "linear-gradient(135deg,#F8FAFD,#fff)" }}>
+        <div style={{ fontWeight: 800, fontSize: 14, marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}><Lock size={15} color={C.greenDeep} /> פרטי כרטיס {c.num.replace(/\D/g, "").length >= 2 && <Badge>{cardBrandOf(c.num)}</Badge>}</div>
+        <Field label="מספר כרטיס" value={c.num} onChange={(e) => setC({ ...c, num: fmtNum(e.target.value) })} inputMode="numeric" autoComplete="cc-number" placeholder="0000 0000 0000 0000" dir="ltr" />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+          <Field label="תוקף" value={c.exp} onChange={(e) => setC({ ...c, exp: fmtExp(e.target.value) })} placeholder="MM/YY" inputMode="numeric" autoComplete="cc-exp" dir="ltr" />
+          <Field label="CVV" type="password" value={c.cvv} onChange={(e) => setC({ ...c, cvv: e.target.value.replace(/\D/g, "").slice(0, 4) })} inputMode="numeric" autoComplete="cc-csc" dir="ltr" />
+          <label style={{ display: "block", marginBottom: 10 }}><div style={{ fontSize: 13, color: C.sub, marginBottom: 4 }}>תשלומים</div><select value={c.pay} onChange={(e) => setC({ ...c, pay: +e.target.value })} style={inp}>{[1, 2, 3, 4, 5, 6, 10, 12].map((n) => <option key={n} value={n}>{n === 1 ? "רגיל" : n}</option>)}</select></label>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+          <Field label="שם בעל הכרטיס" value={c.holder} onChange={(e) => setC({ ...c, holder: e.target.value })} autoComplete="cc-name" />
+          <Field label="ת.ז / ח.פ בעל הכרטיס" value={c.idNum} onChange={(e) => setC({ ...c, idNum: e.target.value.replace(/\D/g, "").slice(0, 9) })} inputMode="numeric" dir="ltr" />
+        </div>
+        {kind === "sub" && <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: C.ink, cursor: "pointer" }}><input type="checkbox" checked={saveCard} onChange={(e) => setSaveCard(e.target.checked)} /> להגדיר ככרטיס לחיוב חודשי קבוע (נשמרות רק 4 ספרות אחרונות)</label>}
+      </div>
+      <label style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 12.5, color: C.ink, margin: "12px 0 0", cursor: "pointer" }}><input type="checkbox" checked={agreeOk} onChange={(e) => setAgreeOk(e.target.checked)} style={{ marginTop: 2 }} /> <span>אני מאשר/ת שבעל הכרטיס נתן הסכמה מפורשת לחיוב זה{kind === "sub" && saveCard ? " ולחיוב חודשי חוזר עד לביטול" : ""}.</span></label>
+      {err && <ErrBox>{err}</ErrBox>}
+      <button onClick={submit} disabled={stage === "busy"} style={{ width: "100%", marginTop: 12, padding: 13, borderRadius: 12, border: "none", background: C.green, color: "#fff", fontWeight: 800, fontSize: 15, cursor: stage === "busy" ? "default" : "pointer", opacity: stage === "busy" ? .7 : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}><CreditCard size={17} /> {stage === "busy" ? "מעבד חיוב…" : "חייב " + NIS(gross)}</button>
+      <div style={{ fontSize: 11.5, color: C.sub, textAlign: "center", marginTop: 8 }}>מצב הדגמה · בחיבור לחברת סליקה אמיתית פרטי הכרטיס יוזנו בדף מאובטח של חברת הסליקה (PCI-DSS)</div>
+    </Modal>
+  );
+}
+function SubInvoiceModal({ iv, sp, onClose }) {
+  const color = "#0B2A63";
+  return (
+    <Modal onClose={onClose} title="חשבונית מנוי">
+      <div style={{ border: `1px solid ${C.line}`, borderRadius: 14, padding: 18, background: "#fff" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: `2px solid ${color}`, paddingBottom: 12, marginBottom: 12, gap: 10, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <Logo size={40} img={LOGO_IMG} name="B2B+" />
+            <div style={{ fontSize: 12, color: C.sub, lineHeight: 1.6 }}>
+              <div style={{ fontWeight: 800, fontSize: 15, color: C.ink }}>B2B+ Marketplace</div>
+              <div>ממשק הזמנות מהספק לעסק</div>
+            </div>
+          </div>
+          <div style={{ textAlign: "left" }}>
+            <div style={{ fontWeight: 800, fontSize: 16, color }}>חשבונית מס / קבלה</div>
+            <div style={{ fontSize: 12, color: C.sub, marginTop: 4 }}>מס' {iv.id}<br />{new Date(iv.ts).toLocaleDateString("he-IL")}</div>
+          </div>
+        </div>
+        <div style={{ fontSize: 13, marginBottom: 10 }}><span style={{ color: C.sub }}>לכבוד:</span> <b>{sp.name}</b>{sp.biz && sp.biz.taxId ? " · ע.מ/ח.פ " + sp.biz.taxId : ""}<div style={{ fontSize: 12.5, color: C.sub, marginTop: 2 }}>{sp.owner ? sp.owner.email : ""}</div></div>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
+          <thead><tr style={{ background: color, color: "#fff", textAlign: "right" }}><Th>תיאור</Th><Th>חודש</Th><Th>סכום</Th></tr></thead>
+          <tbody><tr style={{ borderBottom: `1px solid ${C.line}` }}><Td>{iv.desc || ("מנוי B2B+ — מסלול " + iv.planName)}</Td><Td>{iv.month}</Td><Td strong>{NIS(iv.net)}</Td></tr></tbody>
+        </table>
+        <div style={{ marginInlineStart: "auto", maxWidth: 280, marginTop: 12 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginTop: 6 }}><span>סכום לפני מע"מ</span><span style={{ fontWeight: 700 }}>{NIS(iv.net)}</span></div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginTop: 6 }}><span>מע"מ 18%</span><span style={{ fontWeight: 700 }}>{NIS(iv.vat)}</span></div>
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, paddingTop: 8, borderTop: `2px solid ${color}`, fontWeight: 800, fontSize: 18 }}><span>סה"כ לתשלום</span><span style={{ color }}>{NIS(iv.gross)}</span></div>
+        </div>
+        <div style={{ fontSize: 12, color: C.sub, marginTop: 10 }}>{iv.paid ? "שולם ב" + (iv.method === "credit" ? "אשראי" + (iv.last4 ? " " + (iv.cardBrand || "") + " ••" + iv.last4 : "") + (iv.installments > 1 ? " · " + iv.installments + " תשלומים" : "") + (iv.approval ? " · אישור " + iv.approval : "") : iv.method === "standing" ? "הוראת קבע" : "") : "ממתין לתשלום"} · מופק ע"י B2B+ Marketplace</div>
+      </div>
+      <button onClick={() => downloadSubInvoice(iv, sp, {})} style={{ width: "100%", marginTop: 14, padding: 11, borderRadius: 12, border: `1px solid ${color}`, background: "#fff", color, fontWeight: 800, fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}><Download size={16} /> הורדת חשבונית (להדפסה / PDF)</button>
+    </Modal>
   );
 }
 function downloadSubInvoice(iv, sp, state) {
   const color = "#0B2A63";
-  const html = `<!doctype html><html dir="rtl" lang="he"><head><meta charset="utf-8"><title>חשבונית ${iv.id}</title><style>body{font-family:system-ui,Arial;padding:32px;color:#182620}h1{color:${color};margin:0}table{width:100%;border-collapse:collapse;margin-top:16px}td,th{border-bottom:1px solid #E4E9DE;padding:8px;text-align:right}thead tr{background:${color};color:#fff}.tot{margin-top:16px;text-align:left;line-height:1.8}.tot b{font-size:20px;color:${color}}.hd{display:flex;justify-content:space-between;border-bottom:3px solid ${color};padding-bottom:10px}</style></head><body><div class="hd"><div><h1>B2B+ Marketplace</h1><div style="color:#5B6B60;font-size:13px">ממשק הזמנות מהספק לעסק<br>ע.מ/ח.פ: 000000000</div></div><div style="text-align:left"><div style="font-weight:800;color:${color};font-size:18px">חשבונית מס / קבלה</div><div style="color:#5B6B60;font-size:13px">מס' ${iv.id}<br>${new Date(iv.ts).toLocaleDateString("he-IL")}</div></div></div><div style="margin-top:12px">לכבוד: <b>${sp.name}</b>${sp.biz && sp.biz.taxId ? " · ע.מ/ח.פ " + sp.biz.taxId : ""}<br>${sp.owner ? sp.owner.email : ""}</div><table><thead><tr><th>תיאור</th><th>חודש</th><th>סכום</th></tr></thead><tbody><tr><td>מנוי B2B+ — מסלול ${iv.planName}</td><td>${iv.month}</td><td>${NIS(iv.net)}</td></tr></tbody></table><div class="tot">סכום לפני מע"מ: ${NIS(iv.net)}<br>מע"מ 18%: ${NIS(iv.vat)}<br><b>סה"כ לתשלום: ${NIS(iv.gross)}</b></div><p style="color:#5B6B60;font-size:12px">${iv.paid ? "שולם ב" + (iv.method === "credit" ? "אשראי" : iv.method === "standing" ? "הוראת קבע" : "") : "ממתין לתשלום"} · מופק ע"י B2B+ Marketplace</p></body></html>`;
+  const html = `<!doctype html><html dir="rtl" lang="he"><head><meta charset="utf-8"><title>חשבונית ${iv.id}</title><style>body{font-family:system-ui,Arial;padding:32px;color:#182620}h1{color:${color};margin:0}table{width:100%;border-collapse:collapse;margin-top:16px}td,th{border-bottom:1px solid #E4E9DE;padding:8px;text-align:right}thead tr{background:${color};color:#fff}.tot{margin-top:16px;text-align:left;line-height:1.8}.tot b{font-size:20px;color:${color}}.hd{display:flex;justify-content:space-between;border-bottom:3px solid ${color};padding-bottom:10px}</style></head><body><div class="hd"><div><h1>B2B+ Marketplace</h1><div style="color:#5B6B60;font-size:13px">ממשק הזמנות מהספק לעסק<br>ע.מ/ח.פ: 000000000</div></div><div style="text-align:left"><div style="font-weight:800;color:${color};font-size:18px">חשבונית מס / קבלה</div><div style="color:#5B6B60;font-size:13px">מס' ${iv.id}<br>${new Date(iv.ts).toLocaleDateString("he-IL")}</div></div></div><div style="margin-top:12px">לכבוד: <b>${sp.name}</b>${sp.biz && sp.biz.taxId ? " · ע.מ/ח.פ " + sp.biz.taxId : ""}<br>${sp.owner ? sp.owner.email : ""}</div><table><thead><tr><th>תיאור</th><th>חודש</th><th>סכום</th></tr></thead><tbody><tr><td>${iv.desc || ("מנוי B2B+ — מסלול " + iv.planName)}</td><td>${iv.month}</td><td>${NIS(iv.net)}</td></tr></tbody></table><div class="tot">סכום לפני מע"מ: ${NIS(iv.net)}<br>מע"מ 18%: ${NIS(iv.vat)}<br><b>סה"כ לתשלום: ${NIS(iv.gross)}</b></div><p style="color:#5B6B60;font-size:12px">${iv.paid ? "שולם ב" + (iv.method === "credit" ? "אשראי" + (iv.last4 ? " ••" + iv.last4 : "") + (iv.approval ? " · אישור " + iv.approval : "") : iv.method === "standing" ? "הוראת קבע" : "") : "ממתין לתשלום"} · מופק ע"י B2B+ Marketplace</p></body></html>`;
   try { const blob = new Blob([html], { type: "text/html;charset=utf-8" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "b2b-invoice-" + iv.id + ".html"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); } catch (e) {}
 }
 function SuperAdminView({ state, setState, onEnter, onEnterAs, agentMode }) {
@@ -495,12 +708,14 @@ function SuperAdminView({ state, setState, onEnter, onEnterAs, agentMode }) {
   const reject = (id) => setState((r) => ({ ...r, suppliers: r.suppliers.filter((s) => s.id !== id) }));
   return (
     <div style={{ display: "grid", gap: 20 }}>
-      {!agentMode && (
-        <div style={{ display: "flex", gap: 8, background: C.surface, border: `1px solid ${C.line}`, borderRadius: 14, padding: 8, boxShadow: SH }}>
-          {[["main", "ספקים והדגמה", Building2], ["billing", "חיובים ומנויים", Wallet]].map(([id, label, Icon]) => { const on = saTab === id; return <button key={id} onClick={() => setSaTab(id)} style={{ display: "flex", alignItems: "center", gap: 7, border: "none", background: on ? C.green : "transparent", color: on ? "#fff" : C.sub, fontWeight: 700, fontSize: 14, padding: "9px 16px", borderRadius: 10, cursor: "pointer" }}><Icon size={16} />{label}</button>; })}
+      {(
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", background: C.surface, border: `1px solid ${C.line}`, borderRadius: 14, padding: 8, boxShadow: SH }}>
+          {[["main", "ספקים", Building2], ["demo", "הדגמה", Star], ["billing", "חיובים ומנויים", CreditCard]].map(([id, label, Icon]) => { const on = saTab === id; return <button key={id} onClick={() => setSaTab(id)} style={{ display: "flex", alignItems: "center", gap: 7, border: "none", background: on ? C.green : "transparent", color: on ? "#fff" : C.sub, fontWeight: 700, fontSize: 14, padding: "9px 16px", borderRadius: 10, cursor: "pointer" }}><Icon size={16} />{label}</button>; })}
         </div>
       )}
-      {saTab === "billing" && !agentMode ? <BillingCenter state={state} setState={setState} /> : <>
+      {saTab === "billing" && <BillingCenter state={state} setState={setState} agentMode={agentMode} byName={agentMode ? "סוכן-על" : "מנהל-על"} />}
+      {saTab === "demo" && <DemoCenter demoSup={demoSup} createDemo={createDemo} resetDemo={resetDemo} enterRole={enterRole} />}
+      {saTab === "main" && <>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 14 }}>
         <Kpi icon={<Building2 size={18} />} label="ספקים פעילים" value={active.length} tone="green" />
         <Kpi icon={<Clock size={18} />} label="ממתינים לאישור" value={pending.length} tone="amber" />
@@ -530,6 +745,28 @@ function SuperAdminView({ state, setState, onEnter, onEnterAs, agentMode }) {
           ); })}
         </div>
       </Panel>
+      {!agentMode && (
+        <Panel style={{ boxShadow: SH }}>
+          <SectionTitle icon={<ShieldCheck size={18} />}>סוכני-על / תמיכה</SectionTitle>
+          <div style={{ fontSize: 13, color: C.sub, marginBottom: 10 }}>סוכני-על יכולים להוסיף ספקים חדשים ולתת תמיכה (כניסה לניהול של כל ספק).</div>
+          <div style={{ display: "grid", gap: 8, marginBottom: 14 }}>{(state.superAgents || []).map((a) => (<div key={a.id} style={{ display: "flex", alignItems: "center", gap: 10, border: `1px solid ${C.line}`, borderRadius: 12, padding: "10px 14px" }}><Badge tone="plum">סוכן-על</Badge><div style={{ flex: 1 }}><div style={{ fontWeight: 700 }}>{a.name}</div><div style={{ fontSize: 12, color: C.sub }}>{a.email}</div></div><button onClick={() => delAgent(a.id)} style={{ border: "none", background: C.redSoft, color: C.red, borderRadius: 8, width: 32, height: 32, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Trash2 size={15} /></button></div>))}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 8, alignItems: "end" }}>
+            <MiniField label="שם" value={sf.name} onChange={(v) => setSf({ ...sf, name: v })} />
+            <MiniField label="אימייל" value={sf.email} onChange={(v) => setSf({ ...sf, email: v })} />
+            <MiniField label="סיסמה" value={sf.password} onChange={(v) => setSf({ ...sf, password: v })} />
+            <button onClick={addAgent} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 700, padding: "10px 16px", borderRadius: 10, cursor: "pointer", height: 40 }}>הוסף</button>
+          </div>
+          {saErr && <ErrBox>{saErr}</ErrBox>}
+        </Panel>
+      )}
+      {add && <Modal onClose={() => setAdd(false)} title="הוספת ספק חדש"><SupplierRegister state={state} setState={setState} byAdmin onDone={() => setAdd(false)} back={() => setAdd(false)} /></Modal>}
+      </>}
+    </div>
+  );
+}
+function DemoCenter({ demoSup, createDemo, resetDemo, enterRole }) {
+  return (
+    <div style={{ display: "grid", gap: 20 }}>
       <Panel style={{ boxShadow: SH, borderColor: "#BBD3F5", background: "#F5F9FF" }}>
         <SectionTitle icon={<Building2 size={18} />}>מרכז הדגמה — הצגת כל התהליך לספקים</SectionTitle>
         <div style={{ fontSize: 13, color: C.sub, marginBottom: 10, lineHeight: 1.6 }}>בחר סוג ספק ליצירת הדגמה — ייווצרו אוטומטית מוצרים, קטגוריות, לקוחות, צוות והזמנות מתאימים. לאחר מכן היכנס לכל תפקיד להצגת כל המסע.</div>
@@ -558,22 +795,6 @@ function SuperAdminView({ state, setState, onEnter, onEnterAs, agentMode }) {
           </div>
         )}
       </Panel>
-      {!agentMode && (
-        <Panel style={{ boxShadow: SH }}>
-          <SectionTitle icon={<ShieldCheck size={18} />}>סוכני-על / תמיכה</SectionTitle>
-          <div style={{ fontSize: 13, color: C.sub, marginBottom: 10 }}>סוכני-על יכולים להוסיף ספקים חדשים ולתת תמיכה (כניסה לניהול של כל ספק).</div>
-          <div style={{ display: "grid", gap: 8, marginBottom: 14 }}>{(state.superAgents || []).map((a) => (<div key={a.id} style={{ display: "flex", alignItems: "center", gap: 10, border: `1px solid ${C.line}`, borderRadius: 12, padding: "10px 14px" }}><Badge tone="plum">סוכן-על</Badge><div style={{ flex: 1 }}><div style={{ fontWeight: 700 }}>{a.name}</div><div style={{ fontSize: 12, color: C.sub }}>{a.email}</div></div><button onClick={() => delAgent(a.id)} style={{ border: "none", background: C.redSoft, color: C.red, borderRadius: 8, width: 32, height: 32, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Trash2 size={15} /></button></div>))}</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr auto", gap: 8, alignItems: "end" }}>
-            <MiniField label="שם" value={sf.name} onChange={(v) => setSf({ ...sf, name: v })} />
-            <MiniField label="אימייל" value={sf.email} onChange={(v) => setSf({ ...sf, email: v })} />
-            <MiniField label="סיסמה" value={sf.password} onChange={(v) => setSf({ ...sf, password: v })} />
-            <button onClick={addAgent} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 700, padding: "10px 16px", borderRadius: 10, cursor: "pointer", height: 40 }}>הוסף</button>
-          </div>
-          {saErr && <ErrBox>{saErr}</ErrBox>}
-        </Panel>
-      )}
-      {add && <Modal onClose={() => setAdd(false)} title="הוספת ספק חדש"><SupplierRegister state={state} setState={setState} byAdmin onDone={() => setAdd(false)} back={() => setAdd(false)} /></Modal>}
-      </>}
     </div>
   );
 }
@@ -638,9 +859,12 @@ function RegisterForm({ state, setState, back, byManager, onDone, lockSupplier }
   const suppliers = byManager ? [] : (state.suppliers || []).filter((x) => x.status === "active");
   const [f, setF] = useState({ name: "", contact: "", phone: "", address: "", email: "", password: "", taxId: "", structure: STRUCTURES[1], category: CATEGORIES[0], pay: "cash", docs: [], supId: lockSupplier || (suppliers[0] ? suppliers[0].id : "") });
   const [err, setErr] = useState(""); const [done, setDone] = useState(false);
+  const [stage, setStage] = useState("form"); const [genCode, setGenCode] = useState(""); const [codeInput, setCodeInput] = useState(""); const [sentTo, setSentTo] = useState("");
+  const [agree, setAgree] = useState(false); const [showTerms, setShowTerms] = useState(false);
+  const sendCode = () => { const code = String(Math.floor(100000 + Math.random() * 900000)); setGenCode(code); setSentTo(f.email.trim()); setCodeInput(""); setStage("verify"); /* חיבור עתידי: כאן תישלח הודעת מייל עם הקוד דרך שירות מייל (Supabase/Resend) */ };
   const set = (k) => (e) => setF((s) => ({ ...s, [k]: e.target.value }));
   const addDocs = (files) => { const names = Array.from(files).map((x) => x.name); setF((s) => ({ ...s, docs: [...s.docs, ...names] })); };
-  const mkClient = (status) => ({ id: "c" + Date.now(), name: f.name, contact: f.contact, phone: f.phone, address: f.address, email: f.email, password: f.password, taxId: f.taxId, structure: f.structure, category: f.category, pay: f.pay, docs: f.docs, status, target: 20, createdAt: Date.now() });
+  const mkClient = (status) => ({ id: "c" + Date.now(), name: f.name, contact: f.contact, phone: f.phone, address: f.address, email: f.email, password: f.password, taxId: f.taxId, structure: f.structure, category: f.category, pay: f.pay, docs: f.docs, status, target: 20, createdAt: Date.now(), terms: byManager ? null : { version: TERMS_VERSION, acceptedAt: Date.now() } });
   const submit = () => {
     if (!f.name || !f.email || !f.password) return setErr("שם העסק, אימייל וסיסמה הם שדות חובה");
     const em = f.email.trim().toLowerCase();
@@ -653,10 +877,29 @@ function RegisterForm({ state, setState, back, byManager, onDone, lockSupplier }
     if (!f.supId) return setErr("בחר ספק להזמנה");
     const sup = state.suppliers.find((x) => x.id === f.supId);
     if (sup && [...sup.clients, ...sup.staff].some((c) => c.email.trim().toLowerCase() === em)) return setErr("אימייל זה כבר רשום אצל הספק");
+    if (!byManager && !agree) return setErr("יש לאשר את התקנון כדי להמשיך");
+    setErr(""); sendCode();
+  };
+  const finalizeAfterVerify = () => {
     const client = mkClient("pending");
-    setState((root) => ({ ...root, suppliers: root.suppliers.map((sp) => sp.id === f.supId ? { ...sp, clients: [...sp.clients, client] } : sp) }));
+    setState((root) => ({ ...root, suppliers: root.suppliers.map((sp) => sp.id === f.supId ? { ...sp, clients: [...sp.clients, { ...client, emailVerified: true }] } : sp) }));
     setDone(true);
   };
+  const confirmCode = () => { if (codeInput.trim() !== genCode) return setErr("הקוד שגוי, נסה שוב"); setErr(""); finalizeAfterVerify(); };
+  if (stage === "verify" && !done) return (
+    <Card title="אימות אימייל" back={() => { setStage("form"); setErr(""); }} wide>
+      <div style={{ textAlign: "center", padding: "6px 0 2px" }}>
+        <div style={{ width: 54, height: 54, borderRadius: "50%", background: C.blueSoft, color: C.blue, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}><Mail size={26} /></div>
+        <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 4 }}>שלחנו קוד אימות</div>
+        <div style={{ fontSize: 13.5, color: C.sub, lineHeight: 1.6, marginBottom: 6 }}>הזן את הקוד בן 6 הספרות שנשלח לכתובת<br /><b style={{ color: C.ink }}>{sentTo}</b></div>
+      </div>
+      <div style={{ background: C.amberSoft, color: "#7A5A17", borderRadius: 10, padding: "8px 12px", fontSize: 12.5, textAlign: "center", marginBottom: 12, lineHeight: 1.6 }}>מצב הדגמה: שליחת מייל אמיתית תופעל בחיבור שירות מייל. הקוד שלך כעת: <b style={{ fontSize: 15 }}>{genCode}</b></div>
+      <input value={codeInput} onChange={(e) => setCodeInput(e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="______" inputMode="numeric" style={{ width: "100%", textAlign: "center", letterSpacing: 8, fontSize: 24, fontWeight: 800, border: `1px solid ${C.line}`, borderRadius: 12, padding: "12px", fontFamily: "inherit", boxSizing: "border-box" }} />
+      {err && <ErrBox>{err}</ErrBox>}
+      <SubmitBtn onClick={confirmCode}>אמת והמשך</SubmitBtn>
+      <button onClick={sendCode} style={{ width: "100%", marginTop: 8, border: "none", background: "transparent", color: C.blue, fontWeight: 700, fontSize: 13, cursor: "pointer" }}>שלח קוד מחדש</button>
+    </Card>
+  );
   if (done) return (<Card title={byManager ? "הלקוח נוסף" : "הבקשה נשלחה"} back={back}><div style={{ textAlign: "center", padding: "10px 0" }}><div style={{ width: 54, height: 54, borderRadius: "50%", background: C.amberSoft, color: C.amber, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}><Clock size={26} /></div><div style={{ fontWeight: 700, fontSize: 16, marginBottom: 6 }}>תודה, {f.name}!</div><div style={{ fontSize: 14, color: C.sub, lineHeight: 1.6 }}>{byManager ? "הלקוח נוסף בהצלחה." : "הבקשה ממתינה לאישור הספק. לאחר האישור תוכל להתחבר ולהזמין."}</div></div><SubmitBtn onClick={back}>חזרה</SubmitBtn></Card>);
   const body = (
     <>
@@ -679,10 +922,32 @@ function RegisterForm({ state, setState, back, byManager, onDone, lockSupplier }
         <label style={{ display: "inline-flex", alignItems: "center", gap: 6, border: `1.5px dashed ${C.line}`, borderRadius: 10, padding: "10px 14px", cursor: "pointer", color: C.green, fontWeight: 700, fontSize: 13 }}><Paperclip size={15} /> צרף קבצים<input type="file" multiple onChange={(e) => addDocs(e.target.files)} style={{ display: "none" }} /></label>
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>{f.docs.map((d, i) => <Badge key={i} icon={<FileText size={11} />}>{d}</Badge>)}</div>
       </div>
+      {!byManager && <TermsBox agree={agree} setAgree={setAgree} />}
       {err && <ErrBox>{err}</ErrBox>}<SubmitBtn onClick={submit}>{byManager ? "הוסף לקוח" : "שליחת בקשה לספק"}</SubmitBtn>
+      {showTerms && <Modal onClose={() => setShowTerms(false)} title="תקנון השימוש"><div style={{ whiteSpace: "pre-wrap", fontSize: 13, color: C.ink, lineHeight: 1.7, maxHeight: 360, overflow: "auto" }}>{TERMS}</div></Modal>}
     </>
   );
   return byManager ? body : <Card title="הרשמת עסק (לקוח)" back={back} wide>{body}</Card>;
+}
+function DomainPicker({ value, onPick }) {
+  const cur = domainOf(value);
+  return (
+    <div style={{ marginBottom: 10 }}>
+      <div style={{ fontSize: 13, color: C.sub, marginBottom: 6 }}>תחום הפעילות — מה אתם מוכרים? (קובע מה הלקוח רואה ב"הזמנה חדשה")</div>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+        {SUP_DOMAINS.map((d) => { const on = cur && cur.id === d.id; return <button key={d.id} type="button" onClick={() => onPick(d)} style={{ border: `1.5px solid ${on ? C.green : C.line}`, background: on ? C.greenSoft : "#fff", color: on ? C.greenDeep : C.ink, borderRadius: 20, padding: "6px 12px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>{d.emoji} {d.label}</button>; })}
+      </div>
+    </div>
+  );
+}
+function TermsBox({ agree, setAgree }) {
+  return (
+    <div style={{ margin: "12px 0" }}>
+      <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>תקנון ותנאי שימוש</div>
+      <div style={{ whiteSpace: "pre-wrap", fontSize: 12, color: C.ink, lineHeight: 1.65, maxHeight: 170, overflow: "auto", border: `1px solid ${C.line}`, borderRadius: 10, padding: "10px 12px", background: "#F7F9FC" }}>{TERMS}</div>
+      <label style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 13, color: C.ink, marginTop: 8, cursor: "pointer" }}><input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} style={{ marginTop: 3 }} /> <span>קראתי את התקנון ואני מסכים/ה לו, לרבות סעיפי הגבלת האחריות והשיפוי. אני מצהיר/ה שאני מוסמך/ת לפעול בשם העסק.</span></label>
+    </div>
+  );
 }
 function Card({ title, children, back, wide }) { return (<div style={{ width: "100%", maxWidth: wide ? 580 : 380, background: C.surface, border: `1px solid ${C.line}`, borderRadius: 18, padding: 24, boxShadow: SH }}><div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>{back && <button onClick={back} style={{ border: "none", background: "#EEF1EC", borderRadius: 8, width: 30, height: 30, cursor: "pointer", color: C.sub, display: "flex", alignItems: "center", justifyContent: "center" }}><X size={16} /></button>}<h2 style={{ margin: 0, fontSize: 19, fontWeight: 800 }}>{title}</h2></div>{children}</div>); }
 
@@ -711,7 +976,7 @@ function StaffRolePicker({ me, onPick }) {
     </div>
   );
 }
-function ProfileModal({ session, state, setState, sup, onClose }) {
+function ProfileModal({ session, state, setState, sup, onClose, onGo }) {
   const kind = session.kind;
   const roleLabel = kind === "super" ? "מנהל-על" : ROLE_LABEL[kind] || kind;
   let rec = null;
@@ -745,6 +1010,7 @@ function ProfileModal({ session, state, setState, sup, onClose }) {
           <label style={{ display: "inline-flex", alignItems: "center", gap: 6, border: `1.5px dashed ${C.line}`, borderRadius: 10, padding: "10px 14px", cursor: "pointer", color: C.green, fontWeight: 700, fontSize: 13 }}><ImageIcon size={15} /> העלה לוגו של החנות<input type="file" accept="image/*" onChange={(e) => { const file = e.target.files[0]; if (!file) return; const r = new FileReader(); r.onload = () => setState((st) => ({ ...st, suppliers: st.suppliers.map((s2) => s2.id === sup.id ? { ...s2, brand: { ...(s2.brand || {}), logo: r.result } } : s2) })); r.readAsDataURL(file); }} style={{ display: "none" }} /></label>
         </div>
       )}
+      {kind === "supplier" && sup && onGo && <button onClick={() => onGo("finance")} style={{ width: "100%", marginBottom: 12, border: `1px solid ${C.line}`, background: "#F7F9FC", borderRadius: 12, padding: "11px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: 10, textAlign: "right" }}><Receipt size={18} color={C.plum} /><div style={{ flex: 1 }}><div style={{ fontWeight: 800, fontSize: 14 }}>החשבוניות וההוצאות שלי</div><div style={{ fontSize: 12, color: C.sub }}>{(sup.purchaseInvoices || []).length} חשבוניות קנייה · מסודרות לפי חודשים</div></div><ChevronLeft size={16} color={C.sub} /></button>}
       {showName && <Field label={kind === "supplier" || kind === "client" ? "שם העסק" : "שם"} value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />}
       {showContact && <Field label="איש קשר" value={f.contact} onChange={(e) => setF({ ...f, contact: e.target.value })} />}
       {showContact && <Field label="טלפון" value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} />}
@@ -760,7 +1026,7 @@ function ProfileModal({ session, state, setState, sup, onClose }) {
   );
 }
 function BusinessHub({ state, setState, email, onEnter, onJoin }) {
-  const [tab, setTab] = useState("mine");
+  const [tab, setTab] = useState("mine"); const [joinTo, setJoinTo] = useState(null); const [joinNote, setJoinNote] = useState(""); const [msgTo, setMsgTo] = useState(null);
   const [q, setQ] = useState(""); const [area, setArea] = useState(""); const [city, setCity] = useState(""); const [cat, setCat] = useState("");
   const emL = (email || "").trim().toLowerCase();
   const anyRec = state.suppliers.map((sp) => sp.clients.find((c) => c.email.trim().toLowerCase() === emL)).find(Boolean) || null;
@@ -805,7 +1071,7 @@ function BusinessHub({ state, setState, email, onEnter, onJoin }) {
       {tab === "mine" && (mine.length === 0 ? <Empty>עדיין לא הצטרפת לספקים. עבור ל"מצא ספקים".</Empty> :
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 14 }}>
           {mine.map((sp) => { const rec = recOf(sp); const color = (sp.brand && sp.brand.color) || C.green; return card(sp, rec.status !== "active"
-            ? <Badge tone="amber"><Clock size={12} /> ממתין לאישור הספק</Badge>
+            ? <div style={{ display: "grid", gap: 8 }}><Badge tone="amber"><Clock size={12} /> ממתין לאישור הספק</Badge><button onClick={() => setMsgTo(sp)} style={{ width: "100%", border: `1px solid ${color}`, background: "#fff", color, fontWeight: 800, padding: "9px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}><MessageSquare size={15} /> הודעה לספק</button></div>
             : <button onClick={() => onEnter(sp.id)} style={{ width: "100%", border: "none", background: color, color: "#fff", fontWeight: 800, padding: "10px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}><ShoppingCart size={16} /> כניסה לחנות</button>); })}
         </div>)}
       {tab === "find" && (
@@ -833,12 +1099,18 @@ function BusinessHub({ state, setState, email, onEnter, onJoin }) {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 14 }}>
               {dir.map((sp) => { const color = (sp.brand && sp.brand.color) || C.green; const rec = recOf(sp); const mp = matchedProducts(sp); const cta = rec ? (rec.status === "active"
                 ? <button onClick={() => onEnter(sp.id)} style={{ width: "100%", border: "none", background: color, color: "#fff", fontWeight: 800, padding: "10px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}><ShoppingCart size={16} /> כניסה לחנות</button>
-                : <Badge tone="amber"><Clock size={12} /> ממתין לאישור</Badge>)
-                : <button onClick={() => onJoin(sp.id)} style={{ width: "100%", border: `1px solid ${color}`, background: "#fff", color, fontWeight: 800, padding: "10px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}><UserPlus size={16} /> בקש להצטרף</button>;
+                : <div style={{ display: "grid", gap: 8 }}><Badge tone="amber"><Clock size={12} /> ממתין לאישור</Badge><button onClick={() => setMsgTo(sp)} style={{ width: "100%", border: `1px solid ${color}`, background: "#fff", color, fontWeight: 800, padding: "9px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}><MessageSquare size={15} /> הודעה לספק</button></div>)
+                : <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}><button onClick={() => { setJoinTo(sp); setJoinNote(""); }} style={{ border: "none", background: color, color: "#fff", fontWeight: 800, padding: "10px 6px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 13.5 }}><UserPlus size={15} /> בקש להצטרף</button><button onClick={() => setMsgTo(sp)} style={{ border: `1px solid ${color}`, background: "#fff", color, fontWeight: 800, padding: "10px 6px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 13.5 }}><MessageSquare size={15} /> שלח הודעה</button></div>;
                 return card(sp, <div>{mp.length > 0 && <div style={{ fontSize: 12, color: C.greenDeep, background: C.greenSoft, borderRadius: 8, padding: "5px 8px", marginBottom: 8 }}>נמצא: {mp.slice(0, 3).join(", ")}</div>}{cta}</div>); })}
             </div>}
         </div>
       )}
+      {joinTo && <Modal onClose={() => setJoinTo(null)} title={"בקשת הצטרפות · " + joinTo.name}>
+        <div style={{ fontSize: 13, color: C.sub, marginBottom: 10 }}>ההודעה תגיע לספק יחד עם הבקשה ותופיע אצלו בצ'אט — למשל סוג העסק, כמויות משוערות, ימי אספקה או בקשה מיוחדת.</div>
+        <textarea value={joinNote} onChange={(e) => setJoinNote(e.target.value)} placeholder={"שלום, אנחנו " + businessName + ". נשמח לעבוד איתכם…"} rows={4} style={{ width: "100%", border: `1px solid ${C.line}`, borderRadius: 10, padding: "10px 12px", fontSize: 14, fontFamily: "inherit", boxSizing: "border-box", resize: "vertical" }} />
+        <SubmitBtn onClick={() => { onJoin(joinTo.id, joinNote); setJoinTo(null); }}>שלח בקשת הצטרפות</SubmitBtn>
+      </Modal>}
+      {msgTo && <HubMessage sp={state.suppliers.find((x) => x.id === msgTo.id) || msgTo} rec={recOf(state.suppliers.find((x) => x.id === msgTo.id) || msgTo)} me={anyRec} email={em} setState={setState} onClose={() => setMsgTo(null)} />}
       {tab === "profile" && (
         <div style={{ display: "grid", gap: 16 }}>
           <Panel style={{ boxShadow: SH }}>
@@ -859,6 +1131,43 @@ function BusinessHub({ state, setState, email, onEnter, onJoin }) {
           </Panel>
         </div>
       )}
+    </div>
+  );
+}
+// הודעה לספק מתוך "מצא ספקים": לקוח קיים/ממתין → צ'אט רגיל; עסק שעוד לא הצטרף → פנייה (inquiry)
+function HubMessage({ sp, rec, me, email, setState, onClose }) {
+  const [text, setText] = useState("");
+  const spSet = (u) => setState((root) => ({ ...root, suppliers: root.suppliers.map((x) => x.id === sp.id ? (typeof u === "function" ? u(x) : u) : x) }));
+  const inq = (sp.inquiries || []).find((q) => q.email === email);
+  const thread = rec ? null : (inq ? inq.msgs : []);
+  useEffect(() => { if (inq && inq.unreadClient) spSet((x) => ({ ...x, inquiries: (x.inquiries || []).map((q) => q.email === email ? { ...q, unreadClient: false } : q) })); }, []);
+  const sendInquiry = () => { const t = text.trim(); if (!t) return; const m = { id: "iq" + Date.now(), from: "client", text: t, ts: Date.now() }; spSet((x) => { const list = x.inquiries || []; const ex = list.find((q) => q.email === email); const nq = ex ? { ...ex, msgs: [...ex.msgs, m], unread: true, ts: Date.now() } : { id: "q" + Date.now(), email, name: (me && me.name) || email, contact: (me && me.contact) || "", phone: (me && me.phone) || "", category: (me && me.category) || "", msgs: [m], unread: true, ts: Date.now() }; return { ...x, inquiries: ex ? list.map((q) => q.email === email ? nq : q) : [nq, ...list] }; }); setText(""); };
+  return (
+    <Modal onClose={onClose} title={"הודעה ל" + sp.name}>
+      {rec ? <Chat state={sp} setState={spSet} clientId={rec.id} meRole="client" meName={rec.name} embedded /> : (
+        <div>
+          <div style={{ fontSize: 13, color: C.sub, marginBottom: 10, lineHeight: 1.6 }}>אפשר לשאול את הספק שאלות לפני שמצטרפים — מחירים, אזורי חלוקה, מינימום הזמנה. התשובה תופיע כאן.</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 300, overflow: "auto", marginBottom: 12, padding: 4 }}>
+            {thread.length === 0 && <Empty>עדיין אין הודעות</Empty>}
+            {thread.map((m) => <div key={m.id} style={{ alignSelf: m.from === "client" ? "flex-start" : "flex-end", maxWidth: "82%" }}><div style={{ background: m.from === "client" ? C.green : "#EEF1EC", color: m.from === "client" ? "#fff" : C.ink, borderRadius: 14, padding: "8px 12px", fontSize: 14 }}>{m.text}</div><div style={{ fontSize: 10.5, color: C.sub, marginTop: 3 }}>{m.from === "client" ? "" : sp.name + " · "}{dayStr(m.ts)}</div></div>)}
+          </div>
+          <div style={{ display: "flex", gap: 8 }}><input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && sendInquiry()} placeholder="כתוב הודעה לספק…" style={{ ...fieldStyle, flex: 1 }} /><button onClick={sendInquiry} style={{ border: "none", background: C.green, color: "#fff", borderRadius: 10, padding: "0 16px", cursor: "pointer", display: "flex", alignItems: "center" }}><Send size={17} /></button></div>
+        </div>
+      )}
+    </Modal>
+  );
+}
+function InquiryChat({ q, state, setState }) {
+  const [text, setText] = useState("");
+  const reply = () => { const t = text.trim(); if (!t) return; setState((s) => ({ ...s, inquiries: (s.inquiries || []).map((x) => x.id === q.id ? { ...x, msgs: [...x.msgs, { id: "iq" + Date.now(), from: "supplier", text: t, ts: Date.now() }], unreadClient: true } : x) })); setText(""); };
+  const cur = (state.inquiries || []).find((x) => x.id === q.id) || q;
+  return (
+    <div>
+      <div style={{ fontSize: 12.5, color: C.sub, marginBottom: 10, background: "#F7F9FC", borderRadius: 10, padding: "8px 12px", lineHeight: 1.6 }}>{cur.contact ? cur.contact + " · " : ""}{cur.phone ? cur.phone + " · " : ""}{cur.email}{cur.category ? " · " + cur.category : ""}<br />העסק עוד לא לקוח שלך. כשישלח בקשת הצטרפות — השיחה תעבור אוטומטית לצ'אט הרגיל.</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, maxHeight: 300, overflow: "auto", marginBottom: 12, padding: 4 }}>
+        {cur.msgs.map((m) => <div key={m.id} style={{ alignSelf: m.from === "supplier" ? "flex-start" : "flex-end", maxWidth: "82%" }}><div style={{ background: m.from === "supplier" ? C.green : "#EEF1EC", color: m.from === "supplier" ? "#fff" : C.ink, borderRadius: 14, padding: "8px 12px", fontSize: 14 }}>{m.text}</div><div style={{ fontSize: 10.5, color: C.sub, marginTop: 3 }}>{dayStr(m.ts)}</div></div>)}
+      </div>
+      <div style={{ display: "flex", gap: 8 }}><input value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && reply()} placeholder="תשובה לעסק…" style={{ ...fieldStyle, flex: 1 }} /><button onClick={reply} style={{ border: "none", background: C.green, color: "#fff", borderRadius: 10, padding: "0 16px", cursor: "pointer", display: "flex", alignItems: "center" }}><Send size={17} /></button></div>
     </div>
   );
 }
@@ -911,13 +1220,13 @@ function RoleHome({ name, prompt, cards, onOpen, accent }) {
 }
 function ClientHome({ state, clientId, unread, onOpen }) {
   const client = state.clients.find((c) => c.id === clientId);
-  const pts = pointsOf(clientId, state.orders, state.products, state.kgPerPoint, state.periodMonths);
+  const pts = pointsOf(clientId, state.orders, state.products, state.kgPerPoint, state.periodMonths, state.periodAnchor);
   const debt = outstandingOf(clientId, state.orders, state.products);
   const mo = monthOrdersOf(clientId, state.orders).length;
   const nxt = nextTier(pts, sortTiers(state.prizeTiers));
   const feat = state.features || {};
   const cards = [
-    { id: "order", title: "הזמנה חדשה", desc: "הזמן ירקות ופירות טריים", Icon: ShoppingCart, tone: "green" },
+    { id: "order", title: "הזמנה חדשה", desc: orderPitch(state), Icon: ShoppingCart, tone: "green" },
     { id: "orders", title: "הזמנות וקבלות", desc: mo ? `${mo} הזמנות החודש` : "היסטוריה וחשבוניות", Icon: Receipt, tone: "blue", badge: debt > 0 ? "חוב " + NIS(debt) : null },
     { id: "prizes", title: "יעדים ופרסים", desc: nxt ? `עוד ${nxt.points - pts} נק' ל${nxt.title}` : "צבור נקודות וזכה בפרסים", Icon: Trophy, tone: "plum", stat: pts + " נק'" },
     { id: "inbox", title: "תיבת דואר", desc: "הודעות ומבצעים", Icon: Mail, tone: "amber", badge: unread ? unread + " חדשות" : null },
@@ -975,7 +1284,7 @@ function OrderForm({ state, setState, clientId, agentName }) {
     <>
     <div className="tp-2col" style={{ paddingBottom: cartons > 0 ? 88 : 0 }}>
       <Panel style={{ boxShadow: SH }}>
-        <SectionTitle icon={<Package size={18} />} extra={<span style={{ fontSize: 12, color: C.sub }}>מינימום {minOrder} קרטונים</span>}>קטלוג</SectionTitle>
+        <SectionTitle icon={<Package size={18} />} extra={<span style={{ fontSize: 12, color: C.sub }}>מינימום {minOrder} קרטונים</span>}>{state.category ? "הזמנת " + state.category : ((state.cats && state.cats.length) ? "הזמנת " + state.cats.join(" · ") : "קטלוג המוצרים")}</SectionTitle>
         <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1px solid ${C.line}`, borderRadius: 10, padding: "0 10px", marginBottom: 12 }}><Search size={15} color={C.sub} /><input value={pq} onChange={(e) => setPq(e.target.value)} placeholder="חיפוש מוצר בקטלוג" style={{ border: "none", outline: "none", padding: "9px 4px", fontSize: 13, width: "100%", fontFamily: "inherit", background: "transparent" }} /></div>
           {(state.cats || []).length > 0 && <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>{[["", "הכל"], ...(state.cats || []).map((c) => [c, c])].map(([id, lbl]) => { const on = pcat === id; return <button key={id || "all"} onClick={() => setPcat(id)} style={{ border: `1.5px solid ${on ? themeColor : C.line}`, background: on ? themeColor : "#fff", color: on ? "#fff" : C.sub, borderRadius: 20, padding: "6px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>{lbl}</button>; })}</div>}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(158px,1fr))", gap: 12 }}>
@@ -1057,20 +1366,20 @@ function ClientOrders({ state, setState, clientId, canEdit, editorRole }) {
 
 function PrizeLadder({ state, clientId }) {
   const client = state.clients.find((c) => c.id === clientId); const tiers = sortTiers(state.prizeTiers);
-  const pts = pointsOf(clientId, state.orders, state.products, state.kgPerPoint, state.periodMonths);
+  const pts = pointsOf(clientId, state.orders, state.products, state.kgPerPoint, state.periodMonths, state.periodAnchor);
   const cur = reachedTier(pts, tiers); const nxt = nextTier(pts, tiers);
   const base = cur ? cur.points : 0; const span = nxt ? nxt.points - base : 1; const barPct = nxt ? Math.min(100, Math.round(((pts - base) / span) * 100)) : 100;
   return (
     <div style={{ display: "grid", gap: 20 }}>
       <Panel pad={0} style={{ overflow: "hidden", boxShadow: SH }}>
         <div style={{ padding: 24, background: `linear-gradient(125deg, ${C.plumSoft} 0%, #fff 70%)` }}>
-          <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}><div style={{ fontSize: 13, color: C.sub, fontWeight: 600 }}>שלום, {client.name}</div><Badge tone="plum" icon={<RotateCcw size={12} />}>מתאפס בתחילת התקופה · {periodLabel(state.periodMonths)}</Badge></div>
+          <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}><div style={{ fontSize: 13, color: C.sub, fontWeight: 600 }}>שלום, {client.name}</div><Badge tone="plum" icon={<RotateCcw size={12} />}>מתאפס בתחילת התקופה · {periodLabel(state.periodMonths, state.periodAnchor)}</Badge></div>
           <div style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "6px 0 2px" }}><Star size={28} style={{ color: C.plum }} fill={C.plum} /><span style={{ fontSize: 44, fontWeight: 800, color: C.plum, lineHeight: 1 }}>{NUM(pts)}</span><span style={{ fontSize: 15, color: C.sub, fontWeight: 600 }}>נקודות ({state.kgPerPoint} ק"ג = נקודה)</span></div>
           <div style={{ fontSize: 14, marginTop: 8, fontWeight: 700, color: cur ? C.greenDeep : C.sub }}>{cur ? <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><Trophy size={16} style={{ color: C.amber }} /> זכית עד כה: {cur.title}</span> : "עדיין לא הגעת לפרס הראשון"}</div>
           {nxt && (<><div style={{ background: "#E8DCF0", height: 10, borderRadius: 6, overflow: "hidden", marginTop: 10 }}><div style={{ width: barPct + "%", height: "100%", background: `linear-gradient(90deg, ${C.plum}, #9159b8)` }} /></div><div style={{ fontSize: 13, color: C.sub, marginTop: 6 }}>עוד <b style={{ color: C.plum }}>{nxt.points - pts}</b> נקודות לפרס: <b>{nxt.title}</b>{nxt.detail ? ` · ${nxt.detail}` : ""}</div></>)}
         </div>
       </Panel>
-      <Panel style={{ boxShadow: SH }}><SectionTitle icon={<Gift size={18} />}>מסלול הפרסים החודשי</SectionTitle>
+      <Panel style={{ boxShadow: SH }}><SectionTitle icon={<Gift size={18} />}>מסלול הפרסים {periodName(state.periodMonths)} · מתאפס ב-{new Date(periodEndMs(state.periodMonths, state.periodAnchor)).toLocaleDateString("he-IL")}</SectionTitle>
         <div style={{ display: "grid", gap: 10 }}>{tiers.map((t) => { const got = pts >= t.points; const isNext = nxt && nxt.id === t.id; return (
           <div key={t.id} style={{ display: "flex", alignItems: "center", gap: 12, border: `1.5px solid ${got ? C.green : isNext ? C.plum : C.line}`, background: got ? C.greenSoft : isNext ? C.plumSoft : "#fff", borderRadius: 14, padding: "12px 14px" }}>
             <div style={{ width: 42, height: 42, borderRadius: 11, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: got ? C.green : isNext ? C.plum : "#EEF1EC", color: got || isNext ? "#fff" : C.sub }}>{got ? <Check size={20} /> : isNext ? <Trophy size={18} /> : <Lock size={16} />}</div>
@@ -1120,31 +1429,83 @@ function EditOrder({ order, state, setState, onClose }) {
 }
 
 /* ============ MANAGER ============ */
-function ManagerView({ state, setState }) {
+function ManagerView({ state, setState, intent, onIntentDone }) {
   const [tab, setTab] = useState("home");
+  useEffect(() => { if (intent) { setTab(intent); if (onIntentDone) onIntentDone(); } }, [intent]);
   const lowCount = state.products.filter((p) => p.stock <= LOW).length;
   const newCount = state.orders.filter((o) => o.status === "new").length;
   const pendCount = state.clients.filter((c) => c.status === "pending").length;
-  const tabs = [["home", "בית", Home], ["orders", "הזמנות", ClipboardList], ["mystore", "החנות שלי", Building2], ["clients", "לקוחות", Users], ["staff", "צוות", ShieldCheck], ["messages", "הודעות", MessageSquare]];
-  return (<div><Tabs tabs={tabs} active={tab} onChange={setTab} badges={{ orders: newCount, clients: pendCount }} />
+  const tabs = [["home", "בית", Home], ["orders", "הזמנות", ClipboardList], ["mystore", "החנות שלי", Building2], ["finance", "הכנסות והוצאות", Wallet], ["clients", "לקוחות", Users], ["staff", "צוות", ShieldCheck], ["messages", "הודעות", MessageSquare]];
+  const unreadInq = (state.inquiries || []).filter((q) => q.unread).length;
+  return (<div><Tabs tabs={tabs} active={tab} onChange={setTab} badges={{ orders: newCount, clients: pendCount, messages: unreadInq }} />
     {tab === "home" && <RoleHome name="מנהל" prompt="ניהול החנות" cards={[
       { id: "orders", title: "הזמנות", desc: newCount ? `${newCount} לליקוט` : "כל ההזמנות", Icon: ClipboardList, tone: "amber", badge: newCount ? newCount + " חדשות" : null },
       { id: "mystore", title: "החנות שלי", desc: lowCount ? `${lowCount} מוצרים במלאי נמוך` : "מוצרים · עיצוב · יעדים", Icon: Building2, tone: "blue", badge: lowCount ? lowCount + " נמוך" : null },
+      { id: "finance", title: "הכנסות והוצאות", desc: "סריקת חשבוניות קנייה · דוח חודשי", Icon: Wallet, tone: "plum", stat: NIS(monthExpenses(state, nowMonth)) },
       { id: "clients", title: "לקוחות", desc: pendCount ? `${pendCount} ממתינים לאישור` : "ניהול לקוחות", Icon: Users, tone: "green", badge: pendCount ? pendCount + " ממתינים" : null },
       { id: "staff", title: "צוות", desc: "מלקטים, נהגים וסוכנים", Icon: ShieldCheck, tone: "blue" },
       { id: "messages", title: "הודעות", desc: "צ'אט ומבצעים ללקוחות", Icon: MessageSquare, tone: "amber" },
     ]} onOpen={setTab} />}
     {tab === "orders" && <MgrOrders state={state} setState={setState} />}
     {tab === "mystore" && <MyStore state={state} setState={setState} />}
+    {tab === "finance" && <FinanceView state={state} setState={setState} />}
     {tab === "clients" && <MgrClients state={state} setState={setState} />}
     {tab === "staff" && <MgrStaff state={state} setState={setState} />}
     {tab === "messages" && <MgrMessages state={state} setState={setState} />}
   </div>);
 }
+function SupplierInvoices({ state }) {
+  const [pv, setPv] = useState(null);
+  const sub = state.sub || { plan: "basic", status: "trial", invoices: [] };
+  const invs = sub.invoices || [];
+  const plan = PLANS[sub.plan] || PLANS.basic;
+  const stLbl = sub.status === "active" ? "פעיל" : sub.status === "trial" ? "תקופת ניסיון" : "מבוטל";
+  return (
+    <Panel style={{ boxShadow: SH }}>
+      <SectionTitle icon={<Receipt size={18} />}>חשבוניות המנוי שלי</SectionTitle>
+      <div style={{ fontSize: 13, color: C.sub, marginBottom: 12, background: "#F7F9FC", borderRadius: 10, padding: "10px 12px", lineHeight: 1.7 }}>מסלול נוכחי: <b style={{ color: C.ink }}>{plan.name}</b> · {NIS(plan.price)} לחודש · סטטוס: <b style={{ color: C.ink }}>{stLbl}</b><br />כאן מרוכזות החשבוניות שהופקו עבורך ע"י B2B+. לחיצה על חשבונית פותחת תצוגה מקדימה לפני הורדה.</div>
+      {invs.length === 0 ? <Empty>עדיין לא הופקו חשבוניות מנוי</Empty> : <div style={{ display: "grid", gap: 8 }}>{invs.map((iv) => (
+        <button key={iv.id} onClick={() => setPv(iv)} style={{ textAlign: "right", border: `1px solid ${C.line}`, borderRadius: 12, padding: "12px 14px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+          <div style={{ width: 38, height: 38, borderRadius: 10, background: C.greenSoft, color: C.greenDeep, display: "flex", alignItems: "center", justifyContent: "center" }}><Receipt size={18} /></div>
+          <div style={{ flex: 1, minWidth: 120 }}><div style={{ fontWeight: 800 }}>חשבונית {iv.month}</div><div style={{ fontSize: 12, color: C.sub }}>{iv.desc || ("מסלול " + iv.planName)} · {new Date(iv.ts).toLocaleDateString("he-IL")}{iv.last4 ? " · ••" + iv.last4 : ""}</div></div>
+          {iv.paid ? <Badge tone="green"><Check size={11} /> שולם</Badge> : <Badge tone="amber">ממתין</Badge>}
+          <span style={{ fontWeight: 800, color: C.greenDeep }}>{NIS(iv.gross)}</span>
+        </button>
+      ))}</div>}
+      {pv && <SubInvoiceModal iv={pv} sp={state} onClose={() => setPv(null)} />}
+    </Panel>
+  );
+}
+function ShareStore({ state }) {
+  const [copied, setCopied] = useState(false);
+  const storeUrl = (typeof window !== "undefined" ? window.location.origin + window.location.pathname : "") + "?store=" + state.id;
+  const copy = () => { try { navigator.clipboard.writeText(storeUrl); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch {} };
+  const shareMsg = "בואו להזמין מ" + state.name + " 🛒\n" + storeUrl;
+  const shareBtn = (bg) => ({ display: "inline-flex", alignItems: "center", gap: 6, background: bg, color: "#fff", fontWeight: 700, fontSize: 13, padding: "9px 14px", borderRadius: 10, textDecoration: "none", border: "none", cursor: "pointer", fontFamily: "inherit" });
+  return (
+    <Panel style={{ boxShadow: SH }}>
+      <SectionTitle icon={<Send size={18} />}>שיתוף החנות שלך</SectionTitle>
+      <div style={{ fontSize: 13, color: C.sub, marginBottom: 10 }}>שלח את הקישור ללקוחות — הוא פותח את החנות שלך עם הקטלוג וכפתורי הרשמה/כניסה.</div>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <input readOnly value={storeUrl} onFocus={(e) => e.target.select()} style={{ flex: 1, minWidth: 220, border: `1px solid ${C.line}`, borderRadius: 10, padding: "10px 12px", fontSize: 13, background: "#F7F9F5", color: C.ink, fontFamily: "inherit" }} />
+        <button onClick={copy} style={{ border: "none", background: copied ? C.greenDeep : C.green, color: "#fff", fontWeight: 800, padding: "0 20px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>{copied ? <Check size={16} /> : <Download size={16} />}{copied ? "הועתק!" : "העתק קישור"}</button>
+      </div>
+      <div style={{ fontSize: 13, color: C.sub, margin: "14px 0 8px" }}>שיתוף מהיר:</div>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <a href={`https://wa.me/?text=${encodeURIComponent(shareMsg)}`} target="_blank" rel="noopener noreferrer" style={shareBtn("#25D366")}><MessageCircle size={16} /> וואטסאפ</a>
+        <a href={`mailto:?subject=${encodeURIComponent(state.name)}&body=${encodeURIComponent(shareMsg)}`} style={shareBtn("#5A6B80")}><Mail size={16} /> מייל</a>
+        <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(storeUrl)}`} target="_blank" rel="noopener noreferrer" style={shareBtn("#1877F2")}><Facebook size={16} /> פייסבוק</a>
+        <a href={`https://t.me/share/url?url=${encodeURIComponent(storeUrl)}&text=${encodeURIComponent(state.name)}`} target="_blank" rel="noopener noreferrer" style={shareBtn("#229ED9")}><Send size={16} /> טלגרם</a>
+        <a href={`sms:?&body=${encodeURIComponent(shareMsg)}`} style={shareBtn("#7A5AF8")}><MessageSquare size={16} /> SMS</a>
+        <button onClick={() => { try { if (navigator.share) { navigator.share({ title: state.name, text: shareMsg, url: storeUrl }); } else { copy(); } } catch (e) {} }} style={shareBtn(C.green)}><Share2 size={16} /> עוד…</button>
+      </div>
+    </Panel>
+  );
+}
 function MyStore({ state, setState }) {
   const [sub, setSub] = useState("products");
   const lowCount = state.products.filter((p) => p.stock <= LOW).length;
-  const subs = [["products", "מוצרים ומלאי", Boxes], ["design", "עיצוב החנות", ImageIcon], ["prizes", "יעדים ופרסים", Gift]];
+  const subs = [["products", "מוצרים ומלאי", Boxes], ["design", "עיצוב החנות", ImageIcon], ["share", "שיתוף החנות", Send], ["prizes", "יעדים ופרסים", Gift], ["billing", "חשבוניות מנוי", Receipt]];
   return (
     <div>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 18, background: C.surface, border: `1px solid ${C.line}`, borderRadius: 14, padding: 8, boxShadow: SH }}>
@@ -1152,7 +1513,9 @@ function MyStore({ state, setState }) {
       </div>
       {sub === "products" && <MgrProducts state={state} setState={setState} />}
       {sub === "design" && <StoreDesign state={state} setState={setState} />}
+      {sub === "share" && <ShareStore state={state} />}
       {sub === "prizes" && <MgrPrizes state={state} setState={setState} />}
+      {sub === "billing" && <SupplierInvoices state={state} />}
     </div>
   );
 }
@@ -1243,8 +1606,251 @@ function MgrOrders({ state, setState }) {
   );
 }
 
+/* ============ PURCHASE INVOICES · EXPENSES & INCOME ============ */
+const PINV_KEY = (id) => KEY + ":pinv:" + id; // תמונת החשבונית נשמרת בנפרד כדי לא להכביד על הנתונים הראשיים
+const monthLabelOf = (mk) => { const [y, m] = mk.split("-").map(Number); return new Date(y, m, 1).toLocaleDateString("he-IL", { month: "long", year: "numeric" }); };
+const lastMonths = (n) => { const out = []; const d = new Date(); for (let i = 0; i < n; i++) { out.push(monthKey(new Date(d.getFullYear(), d.getMonth() - i, 1))); } return out; };
+const pinvDate = (iv) => { const d = iv.date ? new Date(iv.date) : null; return d && !isNaN(d.getTime()) ? d.getTime() : iv.ts; };
+const pinvTotal = (iv) => iv.total != null ? iv.total : 0;
+const monthIncome = (state, mk) => state.orders.filter((o) => monthKey(o.date) === mk).reduce((s, o) => s + orderTotal(o, state.products), 0);
+const monthInvoices = (state, mk) => (state.purchaseInvoices || []).filter((iv) => monthKey(pinvDate(iv)) === mk).sort((a, b) => pinvDate(b) - pinvDate(a));
+const monthExpenses = (state, mk) => monthInvoices(state, mk).reduce((s, iv) => s + pinvTotal(iv), 0);
+const normName = (t) => (t || "").replace(/["'״׳().,\-]/g, " ").replace(/\s+/g, " ").trim().toLowerCase();
+const guessMatch = (name, products) => { const n = normName(name); if (!n) return "new"; const exact = products.find((p) => normName(p.name) === n); if (exact) return exact.id; const part = products.find((p) => { const pn = normName(p.name); return pn.length > 2 && (n.includes(pn) || pn.includes(n)); }); return part ? part.id : "new"; };
+const compressImage = (file, maxW, q) => new Promise((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const im = new Image(); im.onerror = rej; im.onload = () => { const sc = Math.min(1, maxW / Math.max(im.width, im.height)); const cv = document.createElement("canvas"); cv.width = Math.round(im.width * sc); cv.height = Math.round(im.height * sc); const cx = cv.getContext("2d"); cx.fillStyle = "#fff"; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(im, 0, 0, cv.width, cv.height); res(cv.toDataURL("image/jpeg", q)); }; im.src = r.result; }; r.readAsDataURL(file); });
+const fileToDataUrl = (file) => new Promise((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => res(r.result); r.readAsDataURL(file); });
+async function aiScanInvoice(dataUrl) {
+  const media = dataUrl.slice(5, dataUrl.indexOf(";")); const data = dataUrl.split(",")[1];
+  const src = media === "application/pdf" ? { type: "document", source: { type: "base64", media_type: "application/pdf", data } } : { type: "image", source: { type: "base64", media_type: media, data } };
+  const prompt = 'זו חשבונית קנייה של סחורה (בדרך כלל בעברית). חלץ ממנה את הנתונים והחזר JSON בלבד, בלי שום טקסט נוסף ובלי ```. מבנה: {"s":"שם הספק שהנפיק את החשבונית","n":"מספר חשבונית","d":"YYYY-MM-DD","v":סכום_מעמ_או_null,"t":סה"כ_לתשלום_או_null,"i":[["שם מוצר",כמות,"יחידה",מחיר_ליחידה_לפני_מעמ_ולפני_הנחה,אחוז_הנחה]]}. יחידה: "קג" אם נמכר לפי משקל, אחרת "יח". אם אין הנחה — 0. מספרים ללא סימני מטבע. אם שדה לא קריא — null.';
+  const res = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1000, messages: [{ role: "user", content: [src, { type: "text", text: prompt }] }] }) });
+  const d = await res.json();
+  const txt = (d.content || []).map((c) => c.type === "text" ? c.text : "").join("\n");
+  const clean = txt.replace(/```json|```/g, "").trim(); const m = clean.match(/\{[\s\S]*\}/);
+  return JSON.parse(m ? m[0] : clean);
+}
+
+function PurchaseScanModal({ state, setState, onClose }) {
+  const cats = state.cats || [];
+  const today = new Date().toISOString().slice(0, 10);
+  const blank = () => ({ add: true, name: "", match: "new", qty: "", unit: "carton", kg: 1, buy: "", disc: 0, sell: "", cat: "" });
+  const [file, setFile] = useState(null); // { preview, store, type, name }
+  const [scan, setScan] = useState("idle"); const [scanErr, setScanErr] = useState("");
+  const [h, setH] = useState({ supplier: "", number: "", date: today, vat: "" });
+  const [rows, setRows] = useState([blank()]);
+  const [markup, setMarkup] = useState(30); const [sellVatIncl, setSellVatIncl] = useState(false);
+  const [err, setErr] = useState(""); const [saving, setSaving] = useState(false);
+  const setRow = (i, k, v) => setRows((rs) => rs.map((r, j) => j === i ? { ...r, [k]: v, ...(k === "unit" ? { kg: v === "weight" ? 10 : 1 } : {}), ...(k === "name" && r.match === "new" ? {} : {}) } : r));
+  const netOf = (r) => (+r.buy || 0) * (1 - Math.min(100, Math.max(0, +r.disc || 0)) / 100);
+  const subtotal = rows.reduce((s, r) => s + (+r.qty || 0) * netOf(r), 0);
+  const vat = h.vat === "" ? subtotal * VAT : (+h.vat || 0);
+  const total = subtotal + vat;
+  const applyMarkup = () => setRows((rs) => rs.map((r) => netOf(r) > 0 ? { ...r, sell: String(Math.round(netOf(r) * (1 + markup / 100) * 100) / 100) } : r));
+  const runScan = async (dataUrl) => {
+    setScan("busy"); setScanErr("");
+    try {
+      const j = await aiScanInvoice(dataUrl);
+      const items = Array.isArray(j.i) ? j.i : [];
+      setH((x) => ({ supplier: j.s || x.supplier, number: j.n != null ? String(j.n) : x.number, date: (j.d && /^\d{4}-\d{2}-\d{2}$/.test(j.d)) ? j.d : x.date, vat: j.v != null && !isNaN(+j.v) ? String(j.v) : "" }));
+      if (items.length) setRows(items.map((it) => { const [name, qty, unit, price, disc] = it; const w = /ק.?ג|kg/i.test(String(unit || "")); const nm = String(name || "").trim(); const buy = +price || 0; return { add: true, name: nm, match: guessMatch(nm, state.products), qty: qty != null ? String(qty) : "", unit: w ? "weight" : "carton", kg: w ? 10 : 1, buy: buy ? String(buy) : "", disc: +disc || 0, sell: buy ? String(Math.round(buy * (1 - (+disc || 0) / 100) * (1 + markup / 100) * 100) / 100) : "", cat: "" }; }));
+      setScan(items.length ? "done" : "empty");
+    } catch (e) { setScan("error"); setScanErr("לא הצלחנו לקרוא את החשבונית אוטומטית. אפשר למלא את הפרטים ידנית, או לנסות תמונה חדה יותר."); }
+  };
+  const pick = async (f) => {
+    if (!f) return; setErr("");
+    try {
+      if (f.type === "application/pdf") { const du = await fileToDataUrl(f); setFile({ preview: "", store: f.size < 900000 ? du : "", type: "pdf", name: f.name }); runScan(du); }
+      else { const big = await compressImage(f, 1600, 0.82); const small = await compressImage(f, 1100, 0.62); setFile({ preview: small, store: small, type: "img", name: f.name }); runScan(big); }
+    } catch (e) { setErr("לא ניתן לפתוח את הקובץ. נסה תמונה (JPG/PNG) או PDF."); }
+  };
+  const valid = rows.filter((r) => r.name.trim());
+  const toStore = valid.filter((r) => r.add);
+  const dup = h.number.trim() && (state.purchaseInvoices || []).some((iv) => iv.number && iv.number === h.number.trim() && normName(iv.supplier) === normName(h.supplier));
+  const save = async () => {
+    if (!h.supplier.trim()) return setErr("נא למלא את שם הספק שממנו קנית");
+    if (!valid.length) return setErr("נא להוסיף לפחות שורת מוצר אחת");
+    setSaving(true);
+    const now = Date.now(); const id = "pi" + now;
+    const items = valid.map((r) => { const qty = +r.qty || 0; const net = netOf(r); return { name: r.name.trim(), qty, unit: r.unit, kg: Math.max(0.1, +r.kg || 1), buy: +r.buy || 0, disc: +r.disc || 0, net, total: qty * net, sell: +r.sell || 0, added: !!r.add, match: r.match }; });
+    const rec = { id, ts: now, date: h.date || today, supplier: h.supplier.trim(), number: h.number.trim(), items, subtotal, vat, total, hasFile: !!(file && file.store), fileType: file ? file.type : "", fileName: file ? file.name : "", count: toStore.length };
+    if (file && file.store) { try { await window.storage.set(PINV_KEY(id), file.store); } catch (e) { rec.hasFile = false; } }
+    setState((s) => {
+      let products = [...s.products];
+      items.forEach((it, i) => {
+        if (!it.added) return;
+        const cartonsIn = it.unit === "carton" ? Math.round(it.qty) : Math.max(1, Math.round(it.qty / it.kg));
+        const costKg = it.unit === "carton" ? it.net / it.kg : it.net;
+        const priceKg = it.sell > 0 ? (it.unit === "carton" ? it.sell / it.kg : it.sell) : null;
+        const ex = it.match !== "new" ? products.find((p) => p.id === it.match) : null;
+        if (ex) products = products.map((p) => p.id === ex.id ? { ...p, stock: (p.stock || 0) + cartonsIn, cost: costKg, ...(priceKg != null ? { price: priceKg, noPrice: false, vatIncluded: sellVatIncl } : {}) } : p);
+        else products.push({ id: "p" + now + "_" + i, name: it.name, unit: it.unit, kg: it.kg, units: 0, cost: costKg, price: priceKg || 0, noPrice: priceKg == null, vatIncluded: sellVatIncl, stock: cartonsIn, emoji: "📦", img: "", cat: valid[i].cat || "", fromInvoice: id });
+      });
+      return { ...s, products, purchaseInvoices: [rec, ...(s.purchaseInvoices || [])] };
+    });
+    setSaving(false); onClose(rec);
+  };
+  const inp = { border: `1px solid ${C.line}`, borderRadius: 8, padding: "7px 8px", fontSize: 13, fontFamily: "inherit", width: "100%", boxSizing: "border-box", background: "#fff" };
+  const lab = (t) => <div style={{ fontSize: 11, color: C.sub, marginBottom: 2 }}>{t}</div>;
+  return (
+    <Modal onClose={onClose} title="סריקת חשבונית קנייה">
+      <div style={{ fontSize: 13, color: C.sub, marginBottom: 12, lineHeight: 1.6 }}>צלמו או העלו את החשבונית מהספק שלכם. המערכת תקרא את שם הספק, מספר החשבונית והמוצרים — אתם בודקים, קובעים מחיר מכירה, והמוצרים עולים ישר לחנות. החשבונית נשמרת בהוצאות החודש.</div>
+      <label style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, border: `1.5px dashed ${C.green}`, borderRadius: 12, padding: file ? 8 : 22, cursor: "pointer", color: C.green, fontWeight: 700, fontSize: 14, marginBottom: 12, background: C.greenSoft + "66" }}>
+        {file ? (file.preview ? <img src={file.preview} alt="חשבונית" style={{ maxHeight: 170, borderRadius: 8 }} /> : <span style={{ display: "flex", alignItems: "center", gap: 6 }}><FileText size={20} /> {file.name}</span>) : <><ImageIcon size={20} /> צלם / העלה חשבונית (תמונה או PDF)</>}
+        <input type="file" accept="image/*,application/pdf" capture="environment" onChange={(e) => pick(e.target.files[0])} style={{ display: "none" }} />
+      </label>
+      {scan === "busy" && <div style={{ background: C.blueSoft, color: C.blue, borderRadius: 10, padding: "10px 12px", fontSize: 13.5, fontWeight: 700, marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}><Search size={16} /> קורא את החשבונית… זה לוקח כמה שניות</div>}
+      {scan === "done" && <div style={{ background: C.greenSoft, color: C.greenDeep, borderRadius: 10, padding: "10px 12px", fontSize: 13, fontWeight: 600, marginBottom: 12 }}>✓ נקראו {rows.length} שורות. בדקו את הנתונים — הסריקה האוטומטית עלולה לטעות.</div>}
+      {(scan === "error" || scan === "empty") && <div style={{ background: C.amberSoft, color: "#7A5A17", borderRadius: 10, padding: "10px 12px", fontSize: 13, marginBottom: 12 }}>{scan === "empty" ? "לא זוהו שורות מוצרים. אפשר למלא ידנית." : scanErr} {file && <button onClick={() => { if (file.type === "img" && file.preview) runScan(file.preview); }} style={{ border: "none", background: "transparent", color: C.blue, fontWeight: 700, cursor: "pointer", padding: 0 }}>נסה שוב</button>}</div>}
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 8, marginBottom: 12 }}>
+        <label>{lab("שם הספק שממנו קניתי *")}<input value={h.supplier} onChange={(e) => setH({ ...h, supplier: e.target.value })} style={inp} /></label>
+        <label>{lab("מספר חשבונית")}<input value={h.number} onChange={(e) => setH({ ...h, number: e.target.value })} style={inp} /></label>
+        <label>{lab("תאריך החשבונית")}<input type="date" value={h.date} onChange={(e) => setH({ ...h, date: e.target.value })} style={inp} /></label>
+      </div>
+      {dup && <div style={{ background: C.amberSoft, color: "#7A5A17", borderRadius: 10, padding: "8px 12px", fontSize: 12.5, marginBottom: 10 }}>⚠️ חשבונית עם אותו מספר מאותו ספק כבר נשמרה. ודאו שזו לא כפילות.</div>}
+
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", background: "#F7F9FC", borderRadius: 10, padding: "8px 10px", marginBottom: 10 }}>
+        <span style={{ fontSize: 13, fontWeight: 700 }}>מחיר מכירה = עלות +</span>
+        <input type="number" value={markup} onChange={(e) => setMarkup(Math.max(0, +e.target.value))} style={{ ...inp, width: 66, textAlign: "center" }} /><span style={{ fontSize: 13 }}>%</span>
+        <button onClick={applyMarkup} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 700, fontSize: 12.5, padding: "7px 12px", borderRadius: 8, cursor: "pointer" }}>החל על כל השורות</button>
+        <label style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5, color: C.sub, marginInlineStart: "auto" }}><input type="checkbox" checked={sellVatIncl} onChange={(e) => setSellVatIncl(e.target.checked)} /> מחירי המכירה כוללים מע"מ</label>
+      </div>
+
+      <div style={{ display: "grid", gap: 10, maxHeight: 380, overflow: "auto" }}>
+        {rows.map((r, i) => { const n = netOf(r); const lt = (+r.qty || 0) * n; const margin = (+r.sell || 0) - n; const u = r.unit === "carton" ? "ליח'/קרטון" : 'לק"ג'; return (
+          <div key={i} style={{ border: `1px solid ${r.add ? C.line : "#EEE"}`, borderRadius: 12, padding: 10, background: r.add ? "#fff" : "#FAFAFA" }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 8 }}>
+              <input type="checkbox" checked={r.add} onChange={(e) => setRow(i, "add", e.target.checked)} title="להעלות לחנות" />
+              <input value={r.name} onChange={(e) => setRow(i, "name", e.target.value)} onBlur={() => r.match === "new" && setRow(i, "match", guessMatch(r.name, state.products))} placeholder={"שם מוצר " + (i + 1)} style={{ ...inp, fontWeight: 700 }} />
+              <button onClick={() => setRows((rs) => rs.filter((_, j) => j !== i))} style={{ border: "none", background: C.redSoft, color: C.red, borderRadius: 8, width: 32, height: 32, flexShrink: 0, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Trash2 size={14} /></button>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(92px,1fr))", gap: 6 }}>
+              <label>{lab("בחנות")}<select value={r.match} onChange={(e) => setRow(i, "match", e.target.value)} style={inp}><option value="new">מוצר חדש</option>{state.products.map((p) => <option key={p.id} value={p.id}>הוסף ל: {p.name}</option>)}</select></label>
+              <label>{lab("יחידה")}<select value={r.unit} onChange={(e) => setRow(i, "unit", e.target.value)} style={inp}><option value="carton">יח' / קרטון</option><option value="weight">ק"ג</option></select></label>
+              <label>{lab(r.unit === "carton" ? "כמות" : 'כמות (ק"ג)')}<input type="number" value={r.qty} onChange={(e) => setRow(i, "qty", e.target.value)} style={inp} /></label>
+              {r.unit === "weight" && <label>{lab('ק"ג בקרטון')}<input type="number" value={r.kg} onChange={(e) => setRow(i, "kg", e.target.value)} style={inp} /></label>}
+              <label>{lab("מחיר קנייה " + u)}<input type="number" value={r.buy} onChange={(e) => setRow(i, "buy", e.target.value)} style={inp} /></label>
+              <label>{lab("הנחה %")}<input type="number" value={r.disc} onChange={(e) => setRow(i, "disc", e.target.value)} style={inp} /></label>
+              <label>{lab("מחיר מכירה " + u)}<input type="number" value={r.sell} onChange={(e) => setRow(i, "sell", e.target.value)} placeholder="לקביעתך" style={{ ...inp, borderColor: C.green }} /></label>
+              {r.match === "new" && <label>{lab("קטגוריה")}<select value={r.cat} onChange={(e) => setRow(i, "cat", e.target.value)} style={inp}><option value="">ללא</option>{cats.map((c) => <option key={c} value={c}>{c}</option>)}</select></label>}
+            </div>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", fontSize: 12, color: C.sub, marginTop: 6 }}><span>עלות נטו: <b style={{ color: C.ink }}>{NIS(n)}</b></span><span>סה"כ שורה: <b style={{ color: C.ink }}>{NIS(lt)}</b></span>{+r.sell > 0 && <span>רווח ליחידה: <b style={{ color: margin > 0 ? C.greenDeep : C.red }}>{NIS(margin)}</b></span>}{r.add && <span style={{ color: C.greenDeep, fontWeight: 700 }}>{r.match === "new" ? "→ מוצר חדש בחנות" : "→ יתווסף למלאי הקיים"}</span>}</div>
+          </div>
+        ); })}
+      </div>
+      <button onClick={() => setRows((rs) => [...rs, blank()])} style={{ marginTop: 10, border: `1px solid ${C.line}`, background: "#fff", color: C.green, fontWeight: 700, fontSize: 13, padding: "8px 14px", borderRadius: 9, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><Plus size={15} /> הוסף שורה</button>
+
+      <div style={{ marginInlineStart: "auto", maxWidth: 300, marginTop: 12, fontSize: 14 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}><span>סכום לפני מע"מ</span><b>{NIS(subtotal)}</b></div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4, gap: 8 }}><span>מע"מ</span><input type="number" value={h.vat === "" ? Math.round(subtotal * VAT * 100) / 100 : h.vat} onChange={(e) => setH({ ...h, vat: e.target.value })} style={{ ...inp, width: 100, textAlign: "center" }} /></div>
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, paddingTop: 8, borderTop: `2px solid ${C.greenDeep}`, fontWeight: 800, fontSize: 17 }}><span>סה"כ הוצאה</span><span style={{ color: C.greenDeep }}>{NIS(total)}</span></div>
+      </div>
+      {err && <ErrBox>{err}</ErrBox>}
+      <button onClick={save} disabled={saving || scan === "busy"} style={{ width: "100%", marginTop: 14, padding: 13, borderRadius: 12, border: "none", background: C.green, color: "#fff", fontWeight: 800, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, opacity: saving || scan === "busy" ? .6 : 1 }}><Save size={16} /> שמור חשבונית{toStore.length ? " והעלה " + toStore.length + " מוצרים לחנות" : ""}</button>
+      <div style={{ fontSize: 12, color: C.sub, marginTop: 8, textAlign: "center" }}>אחרי השמירה נשאר רק להוסיף תמונות למוצרים החדשים (לא חובה) ב"מוצרים ומלאי".</div>
+    </Modal>
+  );
+}
+
+function PurchaseInvoiceView({ inv, setState, onClose }) {
+  const [file, setFile] = useState(inv.img || "");
+  useEffect(() => { if (inv.hasFile && !inv.img) (async () => { try { const r = await window.storage.get(PINV_KEY(inv.id)); if (r && r.value) setFile(r.value); } catch (e) {} })(); }, [inv.id]);
+  const del = async () => { if (!window.confirm("למחוק את החשבונית? המוצרים והמלאי שנוספו ממנה יישארו בחנות.")) return; try { await window.storage.delete(PINV_KEY(inv.id)); } catch (e) {} setState((s) => ({ ...s, purchaseInvoices: (s.purchaseInvoices || []).filter((x) => x.id !== inv.id) })); onClose(); };
+  const items = inv.items || [];
+  return (
+    <Modal onClose={onClose} title={"חשבונית קנייה" + (inv.number ? " #" + inv.number : "")}>
+      <div style={{ fontSize: 13.5, marginBottom: 10 }}><b>{inv.supplier || "ספק לא ידוע"}</b> · {new Date(pinvDate(inv)).toLocaleDateString("he-IL")}</div>
+      {file && (file.indexOf("data:application/pdf") === 0 ? <a href={file} download={inv.fileName || "invoice.pdf"} style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.blue, fontWeight: 700, fontSize: 13, marginBottom: 10 }}><FileText size={15} /> הורד את קובץ ה-PDF המקורי</a> : <a href={file} target="_blank" rel="noopener noreferrer"><img src={file} alt="חשבונית" style={{ width: "100%", maxHeight: 360, objectFit: "contain", borderRadius: 10, border: `1px solid ${C.line}`, marginBottom: 10, background: "#F7F9FC" }} /></a>)}
+      {items.length > 0 ? <div style={{ overflowX: "auto" }}><table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+        <thead><tr style={{ textAlign: "right", color: C.sub, borderBottom: `1px solid ${C.line}` }}><Th>מוצר</Th><Th>כמות</Th><Th>מחיר</Th><Th>הנחה</Th><Th>סה"כ</Th></tr></thead>
+        <tbody>{items.map((it, i) => <tr key={i} style={{ borderBottom: `1px solid ${C.line}` }}><Td>{it.name}</Td><Td>{it.qty}{it.unit === "weight" ? ' ק"ג' : ""}</Td><Td>{NIS(it.buy)}</Td><Td>{it.disc ? it.disc + "%" : "—"}</Td><Td strong>{NIS(it.total)}</Td></tr>)}</tbody>
+      </table></div> : <Empty>חשבונית שנקלטה בגרסה קודמת — {inv.count || 0} מוצרים</Empty>}
+      <div style={{ marginInlineStart: "auto", maxWidth: 260, marginTop: 10, fontSize: 14 }}>
+        {inv.subtotal != null && <div style={{ display: "flex", justifyContent: "space-between" }}><span>לפני מע"מ</span><b>{NIS(inv.subtotal)}</b></div>}
+        {inv.vat != null && <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}><span>מע"מ</span><b>{NIS(inv.vat)}</b></div>}
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6, paddingTop: 6, borderTop: `2px solid ${C.greenDeep}`, fontWeight: 800, fontSize: 16 }}><span>סה"כ</span><span style={{ color: C.greenDeep }}>{NIS(pinvTotal(inv))}</span></div>
+      </div>
+      <button onClick={del} style={{ marginTop: 14, border: `1px solid ${C.red}`, background: "#fff", color: C.red, fontWeight: 700, fontSize: 13, padding: "8px 14px", borderRadius: 9, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><Trash2 size={14} /> מחק חשבונית</button>
+    </Modal>
+  );
+}
+
+function downloadFinanceReport(state, mk, fmt) {
+  const orders = state.orders.filter((o) => monthKey(o.date) === mk).sort((a, b) => a.date - b.date);
+  const invs = monthInvoices(state, mk).slice().reverse();
+  const inc = monthIncome(state, mk), exp = monthExpenses(state, mk), expVat = invs.reduce((s, iv) => s + (iv.vat || 0), 0);
+  const cName = (id) => { const c = state.clients.find((x) => x.id === id); return c ? c.name : "לקוח"; };
+  const ml = monthLabelOf(mk); const fname = "b2b-report-" + mk;
+  const dl = (content, type, ext) => { try { const blob = new Blob([content], { type }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = fname + ext; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); } catch (e) {} };
+  if (fmt === "csv") {
+    const q = (v) => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; const n2 = (v) => (Math.round(v * 100) / 100).toFixed(2);
+    const L = [];
+    L.push([q("דוח הכנסות והוצאות"), q(state.name), q(ml)].join(","), "");
+    L.push([q("סיכום"), q("סכום")].join(","), [q("הכנסות (הזמנות)"), n2(inc)].join(","), [q("הוצאות סחורה"), n2(exp)].join(","), [q('מתוכן מע"מ תשומות'), n2(expVat)].join(","), [q("רווח גולמי משוער"), n2(inc - exp)].join(","), "");
+    L.push(q("הכנסות"), [q("תאריך"), q("הזמנה"), q("לקוח"), q("סכום"), q("שולם")].join(","));
+    orders.forEach((o) => L.push([q(new Date(o.date).toLocaleDateString("he-IL")), q(o.id), q(cName(o.clientId)), n2(orderTotal(o, state.products)), q(o.paid ? "כן" : "לא")].join(",")));
+    L.push("", q("הוצאות — חשבוניות קנייה"), [q("תאריך"), q("ספק"), q("מס' חשבונית"), q('לפני מע"מ'), q('מע"מ'), q('סה"כ')].join(","));
+    invs.forEach((iv) => L.push([q(new Date(pinvDate(iv)).toLocaleDateString("he-IL")), q(iv.supplier || ""), q(iv.number || ""), n2(iv.subtotal || 0), n2(iv.vat || 0), n2(pinvTotal(iv))].join(",")));
+    return dl("\uFEFF" + L.join("\r\n"), "text/csv;charset=utf-8", ".csv");
+  }
+  const color = (state.brand && state.brand.color) || "#0B2A63";
+  const row = (cells, b) => "<tr>" + cells.map((c) => "<td" + (b ? ' style="font-weight:800"' : "") + ">" + c + "</td>").join("") + "</tr>";
+  const html = `<!doctype html><html dir="rtl" lang="he"><head><meta charset="utf-8"><title>דוח ${ml}</title><style>body{font-family:system-ui,Arial;padding:28px;color:#182620}h1{color:${color};margin:0 0 4px}h2{color:${color};font-size:17px;margin:22px 0 6px}table{width:100%;border-collapse:collapse}td,th{border-bottom:1px solid #E4E9DE;padding:7px;text-align:right;font-size:13px}thead tr{background:${color};color:#fff}.k{display:flex;gap:12px;margin-top:14px}.k div{flex:1;border:1px solid #E4E9DE;border-radius:10px;padding:10px}.k b{display:block;font-size:20px;color:${color}}</style></head><body><h1>דוח הכנסות והוצאות — ${ml}</h1><div style="color:#5B6B60">${state.name}${state.biz && state.biz.taxId ? " · ע.מ/ח.פ " + state.biz.taxId : ""} · הופק ${new Date().toLocaleDateString("he-IL")}</div><div class="k"><div>הכנסות<b>${NIS(inc)}</b></div><div>הוצאות סחורה<b>${NIS(exp)}</b></div><div>רווח גולמי משוער<b>${NIS(inc - exp)}</b></div></div><h2>הכנסות (${orders.length} הזמנות)</h2><table><thead><tr><th>תאריך</th><th>הזמנה</th><th>לקוח</th><th>סכום</th><th>שולם</th></tr></thead><tbody>${orders.map((o) => row([new Date(o.date).toLocaleDateString("he-IL"), "#" + o.id, cName(o.clientId), NIS(orderTotal(o, state.products)), o.paid ? "✓" : "—"])).join("")}${row(["", "", 'סה"כ', NIS(inc), ""], true)}</tbody></table><h2>הוצאות — חשבוניות קנייה (${invs.length})</h2><table><thead><tr><th>תאריך</th><th>ספק</th><th>מס' חשבונית</th><th>לפני מע"מ</th><th>מע"מ</th><th>סה"כ</th></tr></thead><tbody>${invs.map((iv) => row([new Date(pinvDate(iv)).toLocaleDateString("he-IL"), iv.supplier || "", iv.number || "", NIS(iv.subtotal || 0), NIS(iv.vat || 0), NIS(pinvTotal(iv))])).join("")}${row(["", "", 'סה"כ', "", NIS(expVat), NIS(exp)], true)}</tbody></table><p style="color:#5B6B60;font-size:11.5px;margin-top:20px">הדוח הופק אוטומטית ע"י B2B+ Marketplace ומיועד לעזר בלבד. אינו מהווה דוח חשבונאי רשמי.</p><script>window.onload=function(){setTimeout(function(){window.print()},300)}</script></body></html>`;
+  dl(html, "text/html;charset=utf-8", ".html");
+}
+
+function FinanceView({ state, setState }) {
+  const months = lastMonths(12);
+  const [mk, setMk] = useState(months[0]); const [scan, setScan] = useState(false); const [view, setView] = useState(null); const [q, setQ] = useState("");
+  const inc = monthIncome(state, mk), exp = monthExpenses(state, mk), invs = monthInvoices(state, mk);
+  const shown = invs.filter((iv) => !q.trim() || ((iv.supplier || "") + " " + (iv.number || "")).toLowerCase().includes(q.trim().toLowerCase()));
+  const six = months.slice(0, 6).reverse().map((m) => ({ m, inc: monthIncome(state, m), exp: monthExpenses(state, m) }));
+  const mx = Math.max(1, ...six.map((x) => Math.max(x.inc, x.exp)));
+  const all = state.purchaseInvoices || [];
+  const byMonth = months.map((m) => ({ m, list: monthInvoices(state, m) })).filter((x) => x.list.length);
+  return (
+    <div style={{ display: "grid", gap: 18 }}>
+      <Panel style={{ boxShadow: SH }}>
+        <SectionTitle icon={<Wallet size={18} />} extra={<button onClick={() => setScan(true)} style={{ display: "flex", alignItems: "center", gap: 6, border: "none", background: C.green, color: "#fff", fontWeight: 800, fontSize: 13.5, padding: "9px 15px", borderRadius: 10, cursor: "pointer" }}><ImageIcon size={16} /> סריקת חשבונית קנייה</button>}>הכנסות והוצאות</SectionTitle>
+        <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 6, marginBottom: 12 }}>{months.map((m) => { const on = m === mk; return <button key={m} onClick={() => setMk(m)} style={{ whiteSpace: "nowrap", border: `1px solid ${on ? C.green : C.line}`, background: on ? C.green : "#fff", color: on ? "#fff" : C.sub, borderRadius: 20, padding: "6px 13px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>{monthLabelOf(m)}</button>; })}</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 12 }}>
+          <Kpi bare icon={<ClipboardList size={17} />} label="הכנסות מהזמנות" value={NIS(inc)} tone="green" />
+          <Kpi bare icon={<Receipt size={17} />} label="הוצאות על סחורה" value={NIS(exp)} tone="red" />
+          <Kpi bare icon={<BarChart3 size={17} />} label="רווח גולמי משוער" value={NIS(inc - exp)} tone={inc - exp >= 0 ? "blue" : "red"} />
+          <Kpi bare icon={<FileText size={17} />} label="חשבוניות קנייה" value={invs.length} tone="plum" />
+        </div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 14 }}>
+          <button onClick={() => downloadFinanceReport(state, mk, "csv")} style={{ border: `1px solid ${C.green}`, background: "#fff", color: C.greenDeep, fontWeight: 700, fontSize: 13, padding: "9px 14px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><Download size={15} /> דוח {monthLabelOf(mk)} לאקסל</button>
+          <button onClick={() => downloadFinanceReport(state, mk, "html")} style={{ border: `1px solid ${C.line}`, background: "#fff", color: C.sub, fontWeight: 700, fontSize: 13, padding: "9px 14px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><FileText size={15} /> דוח להדפסה / PDF</button>
+        </div>
+        <div style={{ marginTop: 18 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, display: "flex", gap: 14, alignItems: "center" }}>6 חודשים אחרונים <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12, color: C.sub, fontWeight: 500 }}><span style={{ width: 10, height: 10, borderRadius: 3, background: C.green }} />הכנסות</span><span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12, color: C.sub, fontWeight: 500 }}><span style={{ width: 10, height: 10, borderRadius: 3, background: C.red }} />הוצאות</span></div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(6,1fr)", gap: 8, alignItems: "end", height: 130 }}>{six.map((x) => (
+            <button key={x.m} onClick={() => setMk(x.m)} title={monthLabelOf(x.m)} style={{ border: "none", background: x.m === mk ? "#F1F5FB" : "transparent", borderRadius: 8, padding: "4px 2px", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%" }}>
+              <div style={{ display: "flex", gap: 3, alignItems: "flex-end", height: 96 }}><div style={{ width: 14, height: Math.max(2, 96 * x.inc / mx), background: C.green, borderRadius: 3 }} /><div style={{ width: 14, height: Math.max(2, 96 * x.exp / mx), background: C.red, borderRadius: 3 }} /></div>
+              <div style={{ fontSize: 11, color: C.sub, marginTop: 4 }}>{monthLabelOf(x.m).split(" ")[0]}</div>
+            </button>))}</div>
+        </div>
+      </Panel>
+      <Panel style={{ boxShadow: SH }}>
+        <SectionTitle icon={<Receipt size={18} />} extra={<Badge>{all.length} סה"כ</Badge>}>חשבוניות הקנייה שלי · {monthLabelOf(mk)}</SectionTitle>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1px solid ${C.line}`, borderRadius: 10, padding: "0 10px", marginBottom: 12 }}><Search size={15} color={C.sub} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="חיפוש לפי ספק או מספר חשבונית" style={{ border: "none", outline: "none", padding: "9px 4px", fontSize: 13, width: "100%", fontFamily: "inherit", background: "transparent" }} /></div>
+        {shown.length === 0 ? <Empty>אין חשבוניות קנייה ב{monthLabelOf(mk)}. לחצו "סריקת חשבונית קנייה" כדי להוסיף.</Empty> : <div style={{ display: "grid", gap: 8 }}>{shown.map((iv) => (
+          <button key={iv.id} onClick={() => setView(iv)} style={{ textAlign: "right", border: `1px solid ${C.line}`, borderRadius: 12, padding: "11px 14px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <div style={{ width: 38, height: 38, borderRadius: 10, background: C.redSoft, color: C.red, display: "flex", alignItems: "center", justifyContent: "center" }}><Receipt size={18} /></div>
+            <div style={{ flex: 1, minWidth: 140 }}><div style={{ fontWeight: 800 }}>{iv.supplier || "חשבונית סחורה"}{iv.number ? " · #" + iv.number : ""}</div><div style={{ fontSize: 12, color: C.sub }}>{new Date(pinvDate(iv)).toLocaleDateString("he-IL")} · {(iv.items || []).length || iv.count || 0} שורות{iv.hasFile || iv.img ? " · 📎 מקור שמור" : ""}</div></div>
+            <span style={{ fontWeight: 800, color: C.red }}>{NIS(pinvTotal(iv))}</span>
+          </button>))}</div>}
+        {byMonth.length > 1 && <div style={{ marginTop: 16, borderTop: `1px dashed ${C.line}`, paddingTop: 12 }}><div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>כל החודשים</div><div style={{ display: "grid", gap: 6 }}>{byMonth.map((x) => <button key={x.m} onClick={() => setMk(x.m)} style={{ display: "flex", justifyContent: "space-between", border: `1px solid ${x.m === mk ? C.green : C.line}`, background: x.m === mk ? C.greenSoft : "#fff", borderRadius: 10, padding: "8px 12px", cursor: "pointer", fontSize: 13 }}><span style={{ fontWeight: 700 }}>{monthLabelOf(x.m)} · {x.list.length} חשבוניות</span><span style={{ fontWeight: 800, color: C.red }}>{NIS(x.list.reduce((s, iv) => s + pinvTotal(iv), 0))}</span></button>)}</div></div>}
+      </Panel>
+      {scan && <PurchaseScanModal state={state} setState={setState} onClose={(rec) => { setScan(false); if (rec && rec.date) setMk(monthKey(pinvDate(rec))); }} />}
+      {view && <PurchaseInvoiceView inv={view} setState={setState} onClose={() => setView(null)} />}
+    </div>
+  );
+}
+
 function MgrProducts({ state, setState }) {
-  const [add, setAdd] = useState(false); const [q, setQ] = useState(""); const [newCat, setNewCat] = useState("");
+  const [add, setAdd] = useState(false); const [q, setQ] = useState(""); const [newCat, setNewCat] = useState(""); const [intake, setIntake] = useState(false);
   const cats = state.cats || [];
   const addCat = () => { const v = newCat.trim(); if (!v) return; setState((s) => ({ ...s, cats: [...(s.cats || []), v].filter((x, i, a) => a.indexOf(x) === i) })); setNewCat(""); };
   const removeCat = (cat) => setState((s) => ({ ...s, cats: (s.cats || []).filter((c) => c !== cat), products: s.products.map((pr) => pr.cat === cat ? { ...pr, cat: "" } : pr) }));
@@ -1258,7 +1864,7 @@ function MgrProducts({ state, setState }) {
     <div style={{ display: "grid", gap: 20 }}>
       {low.length > 0 && <div style={{ display: "flex", alignItems: "center", gap: 10, background: C.amberSoft, border: "1px solid #E4D3A8", color: "#7A5A17", borderRadius: 14, padding: "12px 16px", fontSize: 14, flexWrap: "wrap" }}><AlertTriangle size={18} style={{ color: C.amber }} /><b>מלאי נמוך / אזל:</b>{low.map((p) => <span key={p.id}>{p.emoji} {p.name} ({p.stock === 0 ? "אזל" : p.stock})</span>)}</div>}
       <Panel style={{ boxShadow: SH }}>
-        <SectionTitle icon={<Boxes size={18} />} extra={<button onClick={() => setAdd(true)} style={{ display: "flex", alignItems: "center", gap: 5, border: "none", background: C.green, color: "#fff", fontWeight: 700, fontSize: 13, padding: "7px 13px", borderRadius: 9, cursor: "pointer" }}><Plus size={15} /> מוצר חדש</button>}>ניהול מוצרים ומלאי</SectionTitle>
+        <SectionTitle icon={<Boxes size={18} />} extra={<div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}><button onClick={() => setIntake(true)} style={{ display: "flex", alignItems: "center", gap: 5, border: `1px solid ${C.green}`, background: "#fff", color: C.greenDeep, fontWeight: 700, fontSize: 13, padding: "7px 13px", borderRadius: 9, cursor: "pointer" }}><ImageIcon size={15} /> סריקת חשבונית</button><button onClick={() => setAdd(true)} style={{ display: "flex", alignItems: "center", gap: 5, border: "none", background: C.green, color: "#fff", fontWeight: 700, fontSize: 13, padding: "7px 13px", borderRadius: 9, cursor: "pointer" }}><Plus size={15} /> מוצר חדש</button></div>}>ניהול מוצרים ומלאי</SectionTitle>
         <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1px solid ${C.line}`, borderRadius: 10, padding: "0 10px", marginBottom: 12 }}><Search size={15} color={C.sub} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="חיפוש מוצר" style={{ border: "none", outline: "none", padding: "9px 4px", fontSize: 13, width: "100%", fontFamily: "inherit", background: "transparent" }} /></div>
         <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginBottom: 14, background: "#F7F9FC", borderRadius: 10, padding: 10 }}><span style={{ fontSize: 13, color: C.sub, fontWeight: 700 }}>קטגוריות:</span>{cats.map((cat) => <span key={cat} style={{ display: "inline-flex", alignItems: "center", gap: 5, background: C.greenSoft, color: C.greenDeep, borderRadius: 20, padding: "4px 10px", fontSize: 12.5, fontWeight: 700 }}>{cat}<button onClick={() => removeCat(cat)} style={{ border: "none", background: "transparent", color: C.greenDeep, cursor: "pointer", padding: 0, display: "flex" }}><X size={13} /></button></span>)}<input value={newCat} onChange={(e) => setNewCat(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addCat()} placeholder="קטגוריה חדשה" style={{ border: `1px solid ${C.line}`, borderRadius: 8, padding: "6px 10px", fontSize: 13, fontFamily: "inherit" }} /><button onClick={addCat} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 700, fontSize: 13, padding: "6px 12px", borderRadius: 8, cursor: "pointer" }}>הוסף</button></div>
         <div style={{ display: "grid", gap: 10 }}>
@@ -1281,6 +1887,7 @@ function MgrProducts({ state, setState }) {
         </div>
       </Panel>
       {add && <AddProduct state={state} setState={setState} onClose={() => setAdd(false)} />}
+      {intake && <PurchaseScanModal state={state} setState={setState} onClose={() => setIntake(false)} />}
     </div>
   );
 }
@@ -1384,15 +1991,10 @@ function StoreDesign({ state, setState }) {
   const feat = state.features || { prizes: true, chat: true, minOrder: 5 };
   const b = state.brand || {};
   const [f, setF] = useState({ name: state.name || "", tagline: b.tagline || "", category: state.category || "", regions: state.regions || "", color: b.color || C.green, bg: b.bg || "soft", bgColor: b.bgColor || "#F4F7F1", fontColor: b.fontColor || C.ink, font: b.font || "Rubik", fontScale: b.fontScale || 1, borderW: b.borderW == null ? 2.5 : b.borderW });
-  const [copied, setCopied] = useState(false);
   useEffect(() => { if (f.font === "Rubik") return; const id = "gf-" + f.font.replace(/\s+/g, ""); if (document.getElementById(id)) return; const l = document.createElement("link"); l.id = id; l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=" + f.font.replace(/\s+/g, "+") + ":wght@400;600;700;800&display=swap"; document.head.appendChild(l); }, [f.font]);
   const pickLogo = (file) => { if (!file) return; const r = new FileReader(); r.onload = () => setState((s) => ({ ...s, brand: { ...(s.brand || {}), logo: r.result } })); r.readAsDataURL(file); };
   const save = () => setState((s) => ({ ...s, name: f.name || s.name, category: f.category, regions: f.regions, brand: { ...(s.brand || {}), tagline: f.tagline, color: f.color, bg: f.bg, bgColor: f.bgColor, fontColor: f.fontColor, font: f.font, fontScale: f.fontScale, borderW: f.borderW } }));
   const setFeat = (k, v) => setState((s) => ({ ...s, features: { ...(s.features || { prizes: true, chat: true, minOrder: 5 }), [k]: v } }));
-  const storeUrl = (typeof window !== "undefined" ? window.location.origin + window.location.pathname : "") + "?store=" + state.id;
-  const copy = () => { try { navigator.clipboard.writeText(storeUrl); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch {} };
-  const shareMsg = "בואו להזמין מ" + state.name + " 🛒\n" + storeUrl;
-  const shareBtn = (bg) => ({ display: "inline-flex", alignItems: "center", gap: 6, background: bg, color: "#fff", fontWeight: 700, fontSize: 13, padding: "9px 14px", borderRadius: 10, textDecoration: "none", border: "none", cursor: "pointer", fontFamily: "inherit" });
   const swatches = ["#1F7A4D", "#2C6E9B", "#B23B3B", "#B4791F", "#6D3B8E", "#0E7C86", "#C2410C", "#334155"];
   const fam = `'${f.font}', ${FONT}`;
   return (
@@ -1429,9 +2031,11 @@ function StoreDesign({ state, setState }) {
         </div>
         <div className="tp-2eq" style={{ display: "grid", gap: 10 }}>
           <Field label="שם החנות" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
-          <Field label="קטגוריה" value={f.category} onChange={(e) => setF({ ...f, category: e.target.value })} placeholder="ירקות ופירות / מאפייה / בשרים" />
+          <Field label="תחום הפעילות" value={f.category} onChange={(e) => setF({ ...f, category: e.target.value })} placeholder="למשל: בשר ועוף" />
         </div>
-        <Field label="סלוגן" value={f.tagline} onChange={(e) => setF({ ...f, tagline: e.target.value })} placeholder="למשל: ירקות ופירות טריים לעסקים" />
+        <DomainPicker value={f.category} onPick={(d) => { setF({ ...f, category: d.label }); setState((s) => ({ ...s, cats: (s.cats && s.cats.length) ? s.cats : d.cats })); }} />
+        <div style={{ fontSize: 12.5, color: C.sub, marginBottom: 10, background: "#F7F9FC", borderRadius: 10, padding: "8px 12px" }}>הלקוח יראה: <b style={{ color: C.ink }}>{orderPitch({ ...state, category: f.category })}</b> · קטגוריות המוצרים שלך: {(state.cats || []).length ? (state.cats || []).join(" · ") : "עוד לא הוגדרו"} (עריכה ב"מוצרים ומלאי")</div>
+        <Field label="סלוגן" value={f.tagline} onChange={(e) => setF({ ...f, tagline: e.target.value })} placeholder={"למשל: " + ((domainOf(f.category) || {}).label || "המוצרים שלנו") + " טריים לעסקים"} />
         <Field label="אזורי עבודה (מופרדים בפסיק)" value={f.regions} onChange={(e) => setF({ ...f, regions: e.target.value })} placeholder="למשל: מרכז, השרון, ירושלים" />
         <div style={{ fontSize: 13, color: C.sub, margin: "6px 0 6px" }}>צבע מסגרות המוצרים</div>
         <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
@@ -1455,23 +2059,6 @@ function StoreDesign({ state, setState }) {
           <Field label="כתובת העסק" value={(state.biz && state.biz.address) || ""} onChange={(e) => setState((s) => ({ ...s, biz: { ...(s.biz || {}), address: e.target.value } }))} />
           <Field label="טלפון" value={(state.biz && state.biz.phone) || ""} onChange={(e) => setState((s) => ({ ...s, biz: { ...(s.biz || {}), phone: e.target.value } }))} />
           <Field label="אימייל לחשבוניות" value={(state.biz && state.biz.email) || ""} onChange={(e) => setState((s) => ({ ...s, biz: { ...(s.biz || {}), email: e.target.value } }))} />
-        </div>
-      </Panel>
-      <Panel style={{ boxShadow: SH }}>
-        <SectionTitle icon={<Send size={18} />}>הקישור לחנות שלך</SectionTitle>
-        <div style={{ fontSize: 13, color: C.sub, marginBottom: 10 }}>שלח את הקישור ללקוחות — הוא פותח את החנות שלך עם הקטלוג וכפתורי הרשמה/כניסה.</div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <input readOnly value={storeUrl} onFocus={(e) => e.target.select()} style={{ flex: 1, minWidth: 220, border: `1px solid ${C.line}`, borderRadius: 10, padding: "10px 12px", fontSize: 13, background: "#F7F9F5", color: C.ink, fontFamily: "inherit" }} />
-          <button onClick={copy} style={{ border: "none", background: copied ? C.greenDeep : C.green, color: "#fff", fontWeight: 800, padding: "0 20px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>{copied ? <Check size={16} /> : <Download size={16} />}{copied ? "הועתק!" : "העתק קישור"}</button>
-        </div>
-        <div style={{ fontSize: 13, color: C.sub, margin: "14px 0 8px" }}>שיתוף מהיר:</div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <a href={`https://wa.me/?text=${encodeURIComponent(shareMsg)}`} target="_blank" rel="noopener noreferrer" style={shareBtn("#25D366")}><MessageCircle size={16} /> וואטסאפ</a>
-          <a href={`mailto:?subject=${encodeURIComponent(state.name)}&body=${encodeURIComponent(shareMsg)}`} style={shareBtn("#5A6B80")}><Mail size={16} /> מייל</a>
-          <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(storeUrl)}`} target="_blank" rel="noopener noreferrer" style={shareBtn("#1877F2")}><Facebook size={16} /> פייסבוק</a>
-          <a href={`https://t.me/share/url?url=${encodeURIComponent(storeUrl)}&text=${encodeURIComponent(state.name)}`} target="_blank" rel="noopener noreferrer" style={shareBtn("#229ED9")}><Send size={16} /> טלגרם</a>
-          <a href={`sms:?&body=${encodeURIComponent(shareMsg)}`} style={shareBtn("#7A5AF8")}><MessageSquare size={16} /> SMS</a>
-          <button onClick={() => { try { if (navigator.share) { navigator.share({ title: state.name, text: shareMsg, url: storeUrl }); } else { copy(); } } catch (e) {} }} style={shareBtn(C.green)}><Share2 size={16} /> עוד…</button>
         </div>
       </Panel>
     </div>
@@ -1533,7 +2120,7 @@ function InvoiceModal({ order, state, onClose, withAddress }) {
 }
 function MgrPrizes({ state, setState }) {
   const [open, setOpen] = useState(null);
-  const perClient = state.clients.filter((c) => c.status === "active").map((c) => ({ ...c, pts: pointsOf(c.id, state.orders, state.products, state.kgPerPoint, state.periodMonths) }));
+  const perClient = state.clients.filter((c) => c.status === "active").map((c) => ({ ...c, pts: pointsOf(c.id, state.orders, state.products, state.kgPerPoint, state.periodMonths, state.periodAnchor) }));
   const tiers = sortTiers(state.prizeTiers);
   const updateTier = (id, k, v) => setState((s) => ({ ...s, prizeTiers: s.prizeTiers.map((t) => t.id === id ? { ...t, [k]: v } : t) }));
   const addTier = () => setState((s) => { const mx = s.prizeTiers.reduce((m, t) => Math.max(m, t.points), 0); return { ...s, prizeTiers: [...s.prizeTiers, { id: "t" + Date.now(), points: mx + 100, title: "פרס חדש", detail: "", cost: 0 }] }; });
@@ -1541,12 +2128,14 @@ function MgrPrizes({ state, setState }) {
   const prizeCost = perClient.reduce((s, c) => { const t = reachedTier(c.pts, tiers); return s + (t ? t.cost || 0 : 0); }, 0);
   return (
     <Panel style={{ boxShadow: SH }}>
-      <SectionTitle icon={<Gift size={18} />} extra={<button onClick={addTier} style={{ display: "flex", alignItems: "center", gap: 5, border: `1px solid ${C.line}`, background: "#fff", color: C.green, fontWeight: 700, fontSize: 13, padding: "6px 12px", borderRadius: 9, cursor: "pointer" }}><Plus size={15} /> הוסף יעד</button>}>תוכנית היעדים והפרסים · {periodLabel(state.periodMonths)}</SectionTitle>
+      <SectionTitle icon={<Gift size={18} />} extra={<button onClick={addTier} style={{ display: "flex", alignItems: "center", gap: 5, border: `1px solid ${C.line}`, background: "#fff", color: C.green, fontWeight: 700, fontSize: 13, padding: "6px 12px", borderRadius: 9, cursor: "pointer" }}><Plus size={15} /> הוסף יעד</button>}>תוכנית היעדים והפרסים · {periodLabel(state.periodMonths, state.periodAnchor)}</SectionTitle>
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
         <span style={{ fontSize: 13, color: C.sub }}>{state.kgPerPoint} ק"ג = נקודה · מתאפס בכל תקופה · לחיצה על מספר הלקוחות מציגה מי הגיע.</span>
         <div style={{ flex: 1 }} />
         <span style={{ fontSize: 13, color: C.sub, fontWeight: 700 }}>תקופת היעדים:</span>
-        <select value={state.periodMonths || 1} onChange={(e) => setState((s) => ({ ...s, periodMonths: +e.target.value }))} style={{ border: `1px solid ${C.line}`, borderRadius: 8, padding: "6px 10px", fontSize: 13, fontFamily: "inherit" }}><option value={1}>כל חודש</option><option value={2}>כל חודשיים</option></select>
+        <select value={state.periodMonths || 1} onChange={(e) => { const v = +e.target.value; const n = new Date(); setState((s) => ({ ...s, periodMonths: v, periodAnchor: new Date(n.getFullYear(), n.getMonth(), 1).getTime() })); }} style={{ border: `1px solid ${C.line}`, borderRadius: 8, padding: "6px 10px", fontSize: 13, fontFamily: "inherit" }}>{PERIOD_OPTS.map(([n, lbl]) => <option key={n} value={n}>{lbl}</option>)}</select>
+      </div>
+      <div style={{ fontSize: 12.5, color: C.greenDeep, background: C.greenSoft, borderRadius: 10, padding: "8px 12px", marginBottom: 12 }}>התקופה הנוכחית: <b>{periodLabel(state.periodMonths, state.periodAnchor)}</b> · הנקודות מתאפסות ב-<b>{new Date(periodEndMs(state.periodMonths, state.periodAnchor)).toLocaleDateString("he-IL")}</b>. שינוי משך התקופה מתחיל ספירה חדשה מתחילת החודש הנוכחי.
       </div>
       <div style={{ display: "grid", gap: 10 }}>
         {tiers.map((t) => { const winners = perClient.filter((c) => c.pts >= t.points); const isOpen = open === t.id; return (
@@ -1586,7 +2175,7 @@ function MgrClients({ state, setState }) {
         <SectionTitle icon={<Users size={18} />} extra={<button onClick={() => setAdding(true)} style={{ display: "flex", alignItems: "center", gap: 5, border: `1px solid ${C.line}`, background: "#fff", color: C.green, fontWeight: 700, fontSize: 13, padding: "6px 12px", borderRadius: 9, cursor: "pointer" }}><UserPlus size={15} /> לקוח חדש</button>}>לקוחות</SectionTitle>
         <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1px solid ${C.line}`, borderRadius: 10, padding: "0 10px", marginBottom: 12 }}><Search size={15} color={C.sub} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="חיפוש: שם / טלפון / ח.פ / אימייל" style={{ border: "none", outline: "none", padding: "9px 4px", fontSize: 13, width: "100%", fontFamily: "inherit", background: "transparent" }} /></div>
         <div style={{ display: "grid", gap: 8 }}>
-          {active.map((c) => { const pts = pointsOf(c.id, state.orders, state.products, state.kgPerPoint, state.periodMonths); const prize = reachedTier(pts, sortTiers(state.prizeTiers)); const cnt = state.orders.filter((o) => o.clientId === c.id).length; const debt = outstandingOf(c.id, state.orders, state.products); return (
+          {active.map((c) => { const pts = pointsOf(c.id, state.orders, state.products, state.kgPerPoint, state.periodMonths, state.periodAnchor); const prize = reachedTier(pts, sortTiers(state.prizeTiers)); const cnt = state.orders.filter((o) => o.clientId === c.id).length; const debt = outstandingOf(c.id, state.orders, state.products); return (
             <button key={c.id} onClick={() => setOpen(c)} style={{ textAlign: "right", border: `1px solid ${C.line}`, borderRadius: 12, padding: "12px 14px", background: "#fff", cursor: "pointer" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><span style={{ fontWeight: 700 }}>{c.name}</span><Badge tone="plum" icon={<Star size={12} fill={C.plum} />}>{pts} נק'</Badge></div>
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}><Badge icon={<Building2 size={11} />}>{c.structure}</Badge><Badge icon={<PayIcon pay={c.pay} size={11} />}>{PAY[c.pay].label}</Badge>{prize && <Badge tone="green" icon={<Trophy size={11} />}>{prize.title}</Badge>}<Badge>{cnt} הזמנות</Badge>{debt > 0 && <Badge tone="amber"><Wallet size={11} /> חוב {NIS(debt)}</Badge>}</div>
@@ -1636,19 +2225,25 @@ function MgrStaff({ state, setState }) {
   );
 }
 function MgrMessages({ state, setState }) {
-  const [open, setOpen] = useState(null); const [bc, setBc] = useState("");
-  const clients = state.clients.filter((c) => c.status === "active");
+  const [open, setOpen] = useState(null); const [bc, setBc] = useState(""); const [openQ, setOpenQ] = useState(null);
+  const clients = state.clients.filter((c) => c.status === "active" || (c.status === "pending" && state.messages.some((m) => m.clientId === c.id)));
+  const inquiries = [...(state.inquiries || [])].sort((a, b) => b.ts - a.ts);
   const sendBc = () => { if (!bc.trim()) return; setState((s) => ({ ...s, broadcasts: [{ id: "b" + Date.now(), text: bc.trim(), ts: Date.now() }, ...s.broadcasts] })); setBc(""); };
   return (
     <div style={{ display: "grid", gap: 20 }}>
       <Panel style={{ boxShadow: SH }}><SectionTitle icon={<Megaphone size={18} />}>הודעה כללית / מבצע לכל הלקוחות</SectionTitle>
-        <div style={{ display: "flex", gap: 8 }}><input value={bc} onChange={(e) => setBc(e.target.value)} placeholder="למשל: מבצע השבוע – 10% על עגבניות 🍅" style={{ ...fieldStyle, flex: 1 }} /><button onClick={sendBc} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 700, padding: "0 18px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><Send size={16} /> שלח</button></div>
+        <div style={{ display: "flex", gap: 8 }}><input value={bc} onChange={(e) => setBc(e.target.value)} placeholder={"למשל: " + broadcastIdeas(state)[0]} style={{ ...fieldStyle, flex: 1 }} /><button onClick={sendBc} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 700, padding: "0 18px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><Send size={16} /> שלח</button></div>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 10, alignItems: "center" }}><span style={{ fontSize: 12, color: C.sub, fontWeight: 700 }}>רעיונות מהמוצרים שלך:</span>{broadcastIdeas(state).map((t) => <button key={t} onClick={() => setBc(t)} style={{ border: `1px dashed ${C.green}`, background: "#fff", color: C.greenDeep, borderRadius: 16, padding: "4px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>{t}</button>)}</div>
         <div style={{ display: "grid", gap: 6, marginTop: 12 }}>{state.broadcasts.map((b) => <div key={b.id} style={{ background: C.amberSoft, color: "#7A5A17", borderRadius: 10, padding: "8px 12px", fontSize: 13 }}><b>{b.text}</b> <span style={{ color: C.sub, fontSize: 11 }}>· {dayStr(b.ts)}</span></div>)}</div>
       </Panel>
+      {inquiries.length > 0 && <Panel style={{ boxShadow: SH, borderColor: "#D8D0F5", background: "#FBFAFF" }}><SectionTitle icon={<Mail size={18} />} extra={<Badge tone="plum">{inquiries.length}</Badge>}>פניות מעסקים שעוד לא לקוחות</SectionTitle>
+        <div style={{ display: "grid", gap: 8 }}>{inquiries.map((q) => { const last = q.msgs[q.msgs.length - 1]; return (<button key={q.id} onClick={() => { setOpenQ(q); setState((s) => ({ ...s, inquiries: (s.inquiries || []).map((x) => x.id === q.id ? { ...x, unread: false } : x) })); }} style={{ textAlign: "right", border: `1px solid ${C.line}`, borderRadius: 12, padding: "10px 14px", background: "#fff", cursor: "pointer" }}><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><span style={{ fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>{q.name}{q.unread && <span style={{ width: 9, height: 9, borderRadius: "50%", background: C.plum, display: "inline-block" }} />}</span>{last && <span style={{ fontSize: 11, color: C.sub }}>{dayStr(last.ts)}</span>}</div><div style={{ fontSize: 13, color: C.sub, marginTop: 3 }}>{last ? last.text : ""}</div></button>); })}</div>
+      </Panel>}
       <Panel style={{ boxShadow: SH }}><SectionTitle icon={<MessageSquare size={18} />}>שיחות עם לקוחות</SectionTitle>
-        <div style={{ display: "grid", gap: 8 }}>{clients.map((c) => { const msgs = state.messages.filter((m) => m.clientId === c.id); const last = msgs[msgs.length - 1]; const unread = msgs.some((m) => m.fromRole === "client" && !m.readBySup); return (<button key={c.id} onClick={() => { setOpen(c); setState((s) => ({ ...s, messages: s.messages.map((m) => m.clientId === c.id && m.fromRole === "client" ? { ...m, readBySup: true } : m) })); }} style={{ textAlign: "right", border: `1px solid ${C.line}`, borderRadius: 12, padding: "10px 14px", background: "#fff", cursor: "pointer" }}><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><span style={{ fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>{c.name}{unread && <span style={{ width: 9, height: 9, borderRadius: "50%", background: C.amber, display: "inline-block" }} />}</span>{last && <span style={{ fontSize: 11, color: C.sub }}>{dayStr(last.ts)}</span>}</div><div style={{ fontSize: 13, color: C.sub, marginTop: 3 }}>{last ? last.text : "אין הודעות עדיין"}</div></button>); })}</div>
+        <div style={{ display: "grid", gap: 8 }}>{clients.map((c) => { const msgs = state.messages.filter((m) => m.clientId === c.id); const last = msgs[msgs.length - 1]; const unread = msgs.some((m) => m.fromRole === "client" && !m.readBySup); return (<button key={c.id} onClick={() => { setOpen(c); setState((s) => ({ ...s, messages: s.messages.map((m) => m.clientId === c.id && m.fromRole === "client" ? { ...m, readBySup: true } : m) })); }} style={{ textAlign: "right", border: `1px solid ${C.line}`, borderRadius: 12, padding: "10px 14px", background: "#fff", cursor: "pointer" }}><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><span style={{ fontWeight: 700, display: "flex", alignItems: "center", gap: 6 }}>{c.name}{c.status === "pending" && <Badge tone="amber">ממתין לאישור</Badge>}{unread && <span style={{ width: 9, height: 9, borderRadius: "50%", background: C.amber, display: "inline-block" }} />}</span>{last && <span style={{ fontSize: 11, color: C.sub }}>{dayStr(last.ts)}</span>}</div><div style={{ fontSize: 13, color: C.sub, marginTop: 3 }}>{last ? last.text : "אין הודעות עדיין"}</div></button>); })}</div>
       </Panel>
       {open && <Modal onClose={() => setOpen(null)} title={"שיחה · " + open.name}><Chat state={state} setState={setState} clientId={open.id} meRole="manager" meName="מנהל" embedded /></Modal>}
+      {openQ && <Modal onClose={() => setOpenQ(null)} title={"פנייה · " + openQ.name}><InquiryChat q={openQ} state={state} setState={setState} /></Modal>}
     </div>
   );
 }
@@ -1834,7 +2429,7 @@ function ClientModal({ client, state, setState, onClose }) {
   const saveEdit = () => { setState((s) => ({ ...s, clients: s.clients.map((c) => c.id === client.id ? { ...c, ...f, target: +f.target || c.target } : c) })); setEditing(false); };
   const orders = state.orders.filter((o) => o.clientId === client.id).sort((a, b) => b.date - a.date);
   const m = monthOrdersOf(client.id, orders); const monthTotal = m.reduce((s, o) => s + orderTotal(o, state.products), 0);
-  const pts = pointsOf(client.id, state.orders, state.products, state.kgPerPoint, state.periodMonths); const prize = reachedTier(pts, sortTiers(state.prizeTiers));
+  const pts = pointsOf(client.id, state.orders, state.products, state.kgPerPoint, state.periodMonths, state.periodAnchor); const prize = reachedTier(pts, sortTiers(state.prizeTiers));
   const debt = outstandingOf(client.id, state.orders, state.products);
   const markPaid = (oid) => setState((s) => ({ ...s, orders: s.orders.map((o) => o.id === oid ? { ...o, paid: true } : o) }));
   if (editing) return (
