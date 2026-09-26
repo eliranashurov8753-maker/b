@@ -106,7 +106,7 @@ const supplierData = () => ({
   broadcasts: [{ id: "b1", text: "מבצע השבוע: 10% הנחה על פלפל אדום! 🫑", ts: Date.now() - 86400000 }],
 });
 
-const secondSupplier = () => ({ id: "s2", name: "מאפיית הבוקר", category: "מאפייה ולחמים", regions: "ירושלים, שפלה, מרכז", status: "active", biz: { taxId: "302998877", address: "יפו 100, ירושלים", phone: "02-5559876", email: "" }, invoiceSeq: 2000, owner: { email: "admin@boker.co.il", password: "1234", contact: "בעל המאפייה", phone: "02-0000000" }, brand: { logo: "", tagline: "טרי מהתנור כל בוקר", color: "#B4791F", borderW: 2.5 }, sub: { plan: "basic", status: "trial", method: "none", since: Date.now() - 86400000 * 10, invoices: [] }, cats: ["מאפים", "חד פעמי"], features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [ { id: "b1", name: "לחמניות", unit: "carton", cost: 0.8, price: 1.6, kg: 4, units: 24, stock: 50, emoji: "🥐", img: "" }, { id: "b2", name: "חלות", unit: "carton", cost: 6, price: 12, kg: 6, units: 6, stock: 30, emoji: "🍞", img: "" }, { id: "b3", name: "בורקסים", unit: "carton", cost: 2, price: 4, kg: 5, units: 12, stock: 40, emoji: "🥧", img: "" }, { id: "b4", name: "עוגיות", unit: "weight", cost: 15, price: 28, kg: 2, stock: 25, emoji: "🍪", img: "" }, { id: "b5", name: "כלים חד פעמי", unit: "carton", cost: 20, price: 38, kg: 3, units: 100, stock: 40, emoji: "🥡", img: "", cat: "חד פעמי" } ], clients: [ { id: "c1b", name: "מסעדת הגן", contact: "יוסי לוי", phone: "050-1234567", address: "הרצל 15, תל אביב", email: "gan@demo.co.il", password: "1234", taxId: "514112233", structure: "עוסק מורשה", category: "מסעדה", pay: "credit", status: "active", target: 15, docs: [], createdAt: Date.now() - 86400000 * 10 } ], staff: [], orders: [], messages: [], broadcasts: [{ id: "b2x", text: "מבצע השבוע: 10% הנחה על חלות 🍞!", ts: Date.now() - 86400000 }] });
+const secondSupplier = () => ({ id: "s2", name: "מאפיית הבוקר", category: "מאפים ולחמים · חד פעמי ואריזות", domains: ["bakery", "disposable"], regions: "ירושלים, שפלה, מרכז", status: "active", biz: { taxId: "302998877", address: "יפו 100, ירושלים", phone: "02-5559876", email: "" }, invoiceSeq: 2000, owner: { email: "admin@boker.co.il", password: "1234", contact: "בעל המאפייה", phone: "02-0000000" }, brand: { logo: "", tagline: "טרי מהתנור כל בוקר", color: "#B4791F", borderW: 2.5 }, sub: { plan: "basic", status: "trial", method: "none", since: Date.now() - 86400000 * 10, invoices: [] }, cats: ["מאפים", "חד פעמי"], features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [ { id: "b1", name: "לחמניות", unit: "carton", cost: 0.8, price: 1.6, kg: 4, units: 24, stock: 50, emoji: "🥐", img: "" }, { id: "b2", name: "חלות", unit: "carton", cost: 6, price: 12, kg: 6, units: 6, stock: 30, emoji: "🍞", img: "" }, { id: "b3", name: "בורקסים", unit: "carton", cost: 2, price: 4, kg: 5, units: 12, stock: 40, emoji: "🥧", img: "" }, { id: "b4", name: "עוגיות", unit: "weight", cost: 15, price: 28, kg: 2, stock: 25, emoji: "🍪", img: "" }, { id: "b5", name: "כלים חד פעמי", unit: "carton", cost: 20, price: 38, kg: 3, units: 100, stock: 40, emoji: "🥡", img: "", cat: "חד פעמי" } ], clients: [ { id: "c1b", name: "מסעדת הגן", contact: "יוסי לוי", phone: "050-1234567", address: "הרצל 15, תל אביב", email: "gan@demo.co.il", password: "1234", taxId: "514112233", structure: "עוסק מורשה", category: "מסעדה", pay: "credit", status: "active", target: 15, docs: [], createdAt: Date.now() - 86400000 * 10 } ], staff: [], orders: [], messages: [], broadcasts: [{ id: "b2x", text: "מבצע השבוע: 10% הנחה על חלות 🍞!", ts: Date.now() - 86400000 }] });
 const AREAS = {
   "מרכז": ["תל אביב", "רמת גן", "גבעתיים", "פתח תקווה", "ראשון לציון", "חולון", "בת ים", "אור יהודה", "יהוד"],
   "השרון": ["נתניה", "רעננה", "כפר סבא", "הוד השרון", "הרצליה", "רמת השרון", "כפר יונה"],
@@ -116,7 +116,7 @@ const AREAS = {
   "דרום": ["באר שבע", "אשדוד", "אשקלון", "אילת", "דימונה", "קרית גת", "נתיבות", "שדרות"],
 };
 const DEMO_TEMPLATES = {
-  veg: { name: "ירק+ שיווק השדה", category: "ירקות ופירות", color: "#1F7A4D", cats: ["ירקות", "פירות", "עלים"], tagline: "טרי מהשדה כל בוקר", products: [
+  veg: { name: "ירק+ שיווק השדה", category: "ירקות ופירות", domains: ["veg"], color: "#1F7A4D", cats: ["ירקות", "פירות", "עלים"], tagline: "טרי מהשדה כל בוקר", products: [
     { name: "עגבניות", unit: "weight", cost: 3, price: 6.5, kg: 10, stock: 60, emoji: "🍅", cat: "ירקות" },
     { name: "מלפפונים", unit: "weight", cost: 2.5, price: 5.5, kg: 8, stock: 45, emoji: "🥒", cat: "ירקות" },
     { name: "פלפל אדום", unit: "weight", cost: 5, price: 9, kg: 6, stock: 30, emoji: "🫑", cat: "ירקות" },
@@ -124,56 +124,69 @@ const DEMO_TEMPLATES = {
     { name: "בננות", unit: "weight", cost: 4.5, price: 8, kg: 10, stock: 40, emoji: "🍌", cat: "פירות" },
     { name: "חסה", unit: "carton", cost: 6, price: 12, kg: 3, units: 12, stock: 25, emoji: "🥬", cat: "עלים" },
   ] },
-  eggs: { name: "משק הביצים", category: "ביצים ומוצרי חלב", color: "#C79A1E", cats: ["ביצים", "חלב"], tagline: "ביצים טריות מהלול", products: [
+  eggs: { name: "משק הביצים", category: "ביצים · מוצרי חלב", domains: ["eggs", "dairy"], color: "#C79A1E", cats: ["ביצים", "חלב"], tagline: "ביצים טריות מהלול", products: [
     { name: "ביצים L (תבנית 30)", unit: "carton", cost: 18, price: 32, kg: 2, units: 30, stock: 80, emoji: "🥚", cat: "ביצים" },
     { name: "ביצים XL (תבנית 30)", unit: "carton", cost: 22, price: 38, kg: 2.2, units: 30, stock: 60, emoji: "🥚", cat: "ביצים" },
     { name: "ביצי חופש (12)", unit: "carton", cost: 14, price: 26, kg: 0.9, units: 12, stock: 40, emoji: "🐓", cat: "ביצים" },
     { name: "חלב 3% (ליטר)", unit: "carton", cost: 4, price: 7, kg: 1, units: 12, stock: 50, emoji: "🥛", cat: "חלב" },
   ] },
-  drinks: { name: "משקאות פלוס", category: "שתייה ומשקאות", color: "#1E6FE0", cats: ["קר", "מים", "אנרגיה"], tagline: "משקאות קרים לעסק", products: [
+  drinks: { name: "משקאות פלוס", category: "משקאות קלים", domains: ["soft"], color: "#1E6FE0", cats: ["קר", "מים", "אנרגיה"], tagline: "משקאות קרים לעסק", products: [
     { name: "קולה (משטח 24)", unit: "carton", cost: 30, price: 54, kg: 8, units: 24, stock: 40, emoji: "🥤", cat: "קר" },
     { name: "מיץ תפוזים (12)", unit: "carton", cost: 24, price: 44, kg: 12, units: 12, stock: 30, emoji: "🧃", cat: "קר" },
     { name: "מים מינרלים (24)", unit: "carton", cost: 12, price: 22, kg: 12, units: 24, stock: 90, emoji: "💧", cat: "מים" },
     { name: "משקה אנרגיה (24)", unit: "carton", cost: 60, price: 108, kg: 6, units: 24, stock: 25, emoji: "⚡", cat: "אנרגיה" },
   ] },
-  meat: { name: "אטליז הבשר", category: "בשר ועוף", color: "#B23B3B", cats: ["בקר", "עוף", "מעובד"], tagline: "בשר טרי ואיכותי", products: [
+  meat: { name: "אטליז הבשר", category: "מוצרי בשר ועוף", domains: ["meat"], color: "#B23B3B", cats: ["בקר", "עוף", "מעובד"], tagline: "בשר טרי ואיכותי", products: [
     { name: "אנטריקוט", unit: "weight", cost: 55, price: 92, kg: 5, stock: 30, emoji: "🥩", cat: "בקר" },
     { name: "בשר טחון", unit: "weight", cost: 32, price: 52, kg: 5, stock: 40, emoji: "🍖", cat: "בקר" },
     { name: "חזה עוף", unit: "weight", cost: 22, price: 36, kg: 6, stock: 50, emoji: "🍗", cat: "עוף" },
     { name: "שניצל פרוס", unit: "weight", cost: 28, price: 46, kg: 5, stock: 35, emoji: "🍗", cat: "עוף" },
     { name: "נקניקיות (חבילה)", unit: "carton", cost: 12, price: 22, kg: 4, units: 10, stock: 30, emoji: "🌭", cat: "מעובד" },
   ] },
-  food: { name: "מזון פלוס — יבשים", category: "מזון יבש ומכולת", color: "#8A5A2B", cats: ["יבשים", "שימורים", "תבלינים"], tagline: "כל המכולת לעסק", products: [
+  food: { name: "מזון פלוס — יבשים", category: "מוצרי מזון · תבלינים", domains: ["food", "spices"], color: "#8A5A2B", cats: ["יבשים", "שימורים", "תבלינים"], tagline: "כל המכולת לעסק", products: [
     { name: "אורז (5 ק\"ג)", unit: "carton", cost: 20, price: 34, kg: 5, units: 1, stock: 60, emoji: "🍚", cat: "יבשים" },
     { name: "פסטה (שק 3 ק\"ג)", unit: "carton", cost: 12, price: 22, kg: 3, units: 1, stock: 50, emoji: "🍝", cat: "יבשים" },
     { name: "טונה (משטח 48)", unit: "carton", cost: 90, price: 150, kg: 9, units: 48, stock: 20, emoji: "🐟", cat: "שימורים" },
     { name: "רסק עגבניות (12)", unit: "carton", cost: 24, price: 42, kg: 9, units: 12, stock: 30, emoji: "🥫", cat: "שימורים" },
     { name: "מלח / פלפל (ערכה)", unit: "carton", cost: 8, price: 16, kg: 2, units: 6, stock: 40, emoji: "🧂", cat: "תבלינים" },
   ] },
-  disposable: { name: "חד פעמי פלוס", category: "כלים חד פעמיים ואריזות", color: "#5B4BC4", cats: ["כלים", "אריזות", "ניקיון"], tagline: "הכל לעסק, חד פעמי", products: [
+  disposable: { name: "חד פעמי פלוס", category: "חד פעמי ואריזות", domains: ["disposable"], color: "#5B4BC4", cats: ["כלים", "אריזות", "ניקיון"], tagline: "הכל לעסק, חד פעמי", products: [
     { name: "צלחות (100)", unit: "carton", cost: 15, price: 28, kg: 3, units: 100, stock: 60, emoji: "🍽️", cat: "כלים" },
     { name: "כוסות (50)", unit: "carton", cost: 8, price: 16, kg: 1, units: 50, stock: 80, emoji: "🥤", cat: "כלים" },
     { name: "מגשי אלומיניום (50)", unit: "carton", cost: 20, price: 36, kg: 4, units: 50, stock: 40, emoji: "🥡", cat: "אריזות" },
     { name: "שקיות אשפה (רול)", unit: "carton", cost: 18, price: 32, kg: 5, units: 10, stock: 50, emoji: "🗑️", cat: "ניקיון" },
   ] },
 };
+// תחומי הפעילות של הספקים — ספק יכול לבחור יותר מתחום אחד
 const SUP_DOMAINS = [
-  { id: "veg", label: "ירקות ופירות", emoji: "🥬", cats: ["ירקות", "פירות", "עלים"], sample: "עגבניות" },
-  { id: "meat", label: "בשר ועוף", emoji: "🥩", cats: ["בקר", "עוף", "מעובד"], sample: "חזה עוף" },
-  { id: "fish", label: "דגים ופירות ים", emoji: "🐟", cats: ["דגים טריים", "קפואים", "פירות ים"], sample: "פילה סלמון" },
-  { id: "dairy", label: "ביצים ומוצרי חלב", emoji: "🥚", cats: ["ביצים", "חלב", "גבינות"], sample: "ביצים L" },
-  { id: "bakery", label: "מאפייה ולחמים", emoji: "🥐", cats: ["לחמים", "מאפים", "עוגות"], sample: "לחמניות" },
-  { id: "drinks", label: "שתייה ומשקאות", emoji: "🥤", cats: ["קר", "מים", "אלכוהול"], sample: "מים מינרלים" },
-  { id: "dry", label: "מזון יבש ומכולת", emoji: "🥫", cats: ["יבשים", "שימורים", "תבלינים"], sample: "אורז" },
-  { id: "frozen", label: "קפואים", emoji: "🧊", cats: ["ירקות קפואים", "בצקים", "מוכנים"], sample: "בצק עלים" },
-  { id: "disposable", label: "חד פעמי ואריזות", emoji: "🍽️", cats: ["כלים", "אריזות", "ניקיון"], sample: "מגשי אלומיניום" },
-  { id: "cleaning", label: "ניקיון ותחזוקה", emoji: "🧴", cats: ["חומרי ניקוי", "נייר", "ציוד"], sample: "נוזל כלים" },
+  { id: "meat", label: "מוצרי בשר ועוף", emoji: "🥩", cats: ["בקר", "עוף", "הודו", "מעובד"], sample: "חזה עוף", kw: ["בשר", "עוף", "אטליז"] },
+  { id: "fish", label: "דגים", emoji: "🐟", cats: ["דגים טריים", "דגים קפואים", "פירות ים"], sample: "פילה סלמון", kw: ["דג"] },
+  { id: "food", label: "מוצרי מזון", emoji: "🥫", cats: ["יבשים", "שימורים", "רטבים", "שמנים"], sample: "אורז", kw: ["מזון", "יבש", "מכולת", "שימורים"] },
+  { id: "frozen", label: "קפואים", emoji: "🧊", cats: ["ירקות קפואים", "בצקים", "מנות מוכנות"], sample: "בצק עלים", kw: ["קפוא"] },
+  { id: "spices", label: "תבלינים", emoji: "🧂", cats: ["תבלינים טחונים", "תערובות", "עשבי תיבול"], sample: "פפריקה", kw: ["תבלין"] },
+  { id: "eggs", label: "ביצים", emoji: "🥚", cats: ["ביצים", "ביצי חופש"], sample: "ביצים L", kw: ["ביצ"] },
+  { id: "soft", label: "משקאות קלים", emoji: "🥤", cats: ["מוגזים", "מיצים", "מים", "משקאות אנרגיה"], sample: "מים מינרלים", kw: ["שתייה", "משקאות קלים", "מיצים"] },
+  { id: "alcohol", label: "משקאות חריפים", emoji: "🥃", cats: ["יין", "בירה", "וויסקי", "וודקה", "ליקרים"], sample: "בקבוק וויסקי", kw: ["חריף", "אלכוהול", "יין", "בירה"] },
+  { id: "sweets", label: "ממתקים", emoji: "🍬", cats: ["שוקולד", "סוכריות", "חטיפים", "עוגיות"], sample: "חטיפי שוקולד", kw: ["ממתק", "חטיף", "שוקולד"] },
+  { id: "pet", label: "מזון לבעלי חיים", emoji: "🐾", cats: ["כלבים", "חתולים", "ציפורים ומכרסמים"], sample: "מזון לכלבים", kw: ["בעלי חיים", "כלב", "חתול"] },
+  { id: "veg", label: "ירקות ופירות", emoji: "🥬", cats: ["ירקות", "פירות", "עלים"], sample: "עגבניות", kw: ["ירק", "פירות"] },
+  { id: "dairy", label: "מוצרי חלב", emoji: "🧀", cats: ["חלב", "גבינות", "יוגורטים", "חמאה ושמנת"], sample: "גבינה צהובה", kw: ["חלב", "גבינ"] },
+  { id: "icecream", label: "גלידות", emoji: "🍦", cats: ["גלידות", "ארטיקים", "קינוחים קפואים"], sample: "גלידת וניל", kw: ["גליד"] },
+  { id: "chilled", label: "מוצרי קירור", emoji: "❄️", cats: ["סלטים", "נקניקים", "ממרחים", "טופו"], sample: "חומוס", kw: ["קירור", "סלט", "נקניק"] },
+  { id: "cleaning", label: "ניקיון ותחזוקה", emoji: "🧴", cats: ["חומרי ניקוי", "נייר", "ציוד ניקיון"], sample: "נוזל כלים", kw: ["ניקיון", "תחזוקה"] },
+  { id: "disposable", label: "חד פעמי ואריזות", emoji: "🍽️", cats: ["כלים", "אריזות", "שקיות"], sample: "מגשי אלומיניום", kw: ["חד פעמי", "אריזות"] },
+  { id: "bakery", label: "מאפים ולחמים", emoji: "🥐", cats: ["לחמים", "מאפים", "עוגות"], sample: "לחמניות", kw: ["מאפ", "לחם", "מאפייה"] },
+  { id: "importers", label: "יבואנים", emoji: "🚢", cats: ["מוצרי יבוא"], sample: "מוצר מיובא", pitch: "מוצרי יבוא", kw: ["יבוא"] },
 ];
-const domainOf = (category) => { const c = (category || "").trim(); if (!c) return null; return SUP_DOMAINS.find((d) => c.includes(d.label) || d.label.includes(c) || c.includes(d.label.split(" ")[0])) || null; };
-// מה הלקוח רואה בכפתור "הזמנה חדשה" — לפי התחום והקטגוריות של הספק
-const orderPitch = (sup) => { const cat = (sup.category || "").trim(); if (cat && cat !== "כללי") return "הזמן " + cat; const cs = (sup.cats || []).filter(Boolean); if (cs.length) return "הזמן " + cs.slice(0, 3).join(", "); return "הזמן מהקטלוג של " + (sup.name || "הספק"); };
-// דוגמאות להודעה כללית — לפי המוצרים של הספק עצמו
-const broadcastIdeas = (sup) => { const ps = (sup.products || []).filter((p) => p.name); const pick = (i) => ps.length ? ps[i % ps.length] : null; const d = domainOf(sup.category); const a = pick(0), b = pick(1), c = pick(2); const nm = (p, fb) => p ? p.name + (p.emoji ? " " + p.emoji : "") : fb; const fb = d ? d.sample : "מוצר נבחר"; return [
+const DOMAIN_BY_ID = Object.fromEntries(SUP_DOMAINS.map((d) => [d.id, d]));
+// תחומי הספק: מהבחירה השמורה (domains), ולספקים ישנים — זיהוי לפי הטקסט של התחום
+const domainsOf = (sup) => { if (!sup) return []; if (Array.isArray(sup.domains) && sup.domains.length) return sup.domains.map((id) => DOMAIN_BY_ID[id]).filter(Boolean); const c = (sup.category || "").trim(); if (!c) return []; return SUP_DOMAINS.filter((d) => c.includes(d.label) || d.kw.some((k) => c.includes(k))); };
+const domainOf = (category) => domainsOf({ category })[0] || null;
+const domainLabel = (sup) => { const ds = domainsOf(sup); return ds.length ? ds.map((d) => d.label).join(" · ") : ((sup && sup.category) || ""); };
+const domainPatch = (ids) => { const ds = ids.map((id) => DOMAIN_BY_ID[id]).filter(Boolean); return { domains: ds.map((d) => d.id), category: ds.map((d) => d.label).join(" · ") || "כללי" }; };
+// מה הלקוח רואה בכפתור "הזמנה חדשה" — לפי תחומי הפעילות של הספק
+const orderPitch = (sup) => { const ds = domainsOf(sup); if (ds.length) return "הזמן " + ds.map((d) => d.pitch || d.label).join(", "); const cat = (sup.category || "").trim(); if (cat && cat !== "כללי") return "הזמן " + cat; const cs = (sup.cats || []).filter(Boolean); if (cs.length) return "הזמן " + cs.slice(0, 3).join(", "); return "הזמן מהקטלוג של " + (sup.name || "הספק"); };
+const broadcastIdeas = (sup) => { const ps = (sup.products || []).filter((p) => p.name); const pick = (i) => ps.length ? ps[i % ps.length] : null; const d = domainsOf(sup)[0]; const a = pick(0), b = pick(1), c = pick(2); const nm = (p, fb) => p ? p.name + (p.emoji ? " " + p.emoji : "") : fb; const fb = d ? d.sample : "מוצר נבחר"; return [
   "מבצע השבוע: 10% הנחה על " + nm(a, fb) + "!",
   "חדש בקטלוג: " + nm(b || a, fb) + " — מזמינים כבר היום",
   "קנו 5 קרטונים " + (c || a ? (c || a).name : fb) + " וקבלו קרטון שישי במתנה 🎁",
@@ -185,7 +198,7 @@ const TERMS = "תקנון ותנאי שימוש — B2B+ Marketplace\n(גרסה 
 const PLANS = { basic: { id: "basic", name: "בסיסי", price: 99 }, pro: { id: "pro", name: "מקצועי", price: 199 }, premium: { id: "premium", name: "פרימיום", price: 349 } };
 const BILL_VAT = 0.18;
 const demoSupplier = (kind) => { const now = Date.now(); const id = "demo" + now; const t = DEMO_TEMPLATES[kind] || DEMO_TEMPLATES.veg; return {
-  id, name: t.name + " (הדגמה)", category: t.category, regions: "מרכז, השרון", status: "active",
+  id, name: t.name + " (הדגמה)", category: t.category, domains: t.domains, regions: "מרכז, השרון", status: "active",
   biz: { taxId: "500000000", address: "רחוב הדוגמה 1, תל אביב", phone: "03-0000000", email: "" },
   invoiceSeq: 5000,
   owner: { email: "demo-" + now + "@b2bplus.co.il", password: "1234", contact: "מנהל הדגמה", phone: "050-0000000" },
@@ -212,7 +225,7 @@ const demoSupplier = (kind) => { const now = Date.now(); const id = "demo" + now
 const seed = () => ({
   superPw: SUPER_PW,
   superAgents: [{ id: "sa1", role: "superagent", name: "תמיכה B2B+", email: "support@b2bplus.co.il", password: "1234" }],
-  suppliers: [{ id: "s1", name: "שיווק השדה", category: "ירקות ופירות טריים", regions: "מרכז, השרון, תל אביב", status: "active", biz: { taxId: "515123456", address: "המסגר 20, תל אביב", phone: "03-5551234", email: "billing@sadeh.co.il" }, invoiceSeq: 1000, owner: { email: "admin@sadeh.co.il", password: "1234", contact: "בעל העסק", phone: "050-0000000" }, brand: { logo: "", tagline: "ירקות ופירות טריים לעסקים", color: "#1F7A4D", borderW: 2.5 }, sub: { plan: "pro", status: "active", method: "credit", since: Date.now() - 86400000 * 40, last4: "4417", invoices: [] }, cats: ["ירקות", "פירות"], features: { prizes: true, chat: true, minOrder: 5 }, ...supplierData() }, secondSupplier()],
+  suppliers: [{ id: "s1", name: "שיווק השדה", category: "ירקות ופירות", domains: ["veg"], regions: "מרכז, השרון, תל אביב", status: "active", biz: { taxId: "515123456", address: "המסגר 20, תל אביב", phone: "03-5551234", email: "billing@sadeh.co.il" }, invoiceSeq: 1000, owner: { email: "admin@sadeh.co.il", password: "1234", contact: "בעל העסק", phone: "050-0000000" }, brand: { logo: "", tagline: "ירקות ופירות טריים לעסקים", color: "#1F7A4D", borderW: 2.5 }, sub: { plan: "pro", status: "active", method: "credit", since: Date.now() - 86400000 * 40, last4: "4417", invoices: [] }, cats: ["ירקות", "פירות"], features: { prizes: true, chat: true, minOrder: 5 }, ...supplierData() }, secondSupplier()],
 });
 
 // מקטין נתונים ישנים: מסיר עותקים של לוגו ברירת המחדל שנשמרו אצל כל ספק
@@ -466,7 +479,7 @@ function AuthScreen({ state, setState, onLogin }) {
   );
 }
 function SupplierRegister({ state, setState, back, byAdmin, onDone }) {
-  const [f, setF] = useState({ name: "", category: "", cats: [], regions: "", contact: "", phone: "", email: "", password: "" });
+  const [f, setF] = useState({ name: "", domains: [], cats: [], regions: "", contact: "", phone: "", email: "", password: "" });
   const [err, setErr] = useState(""); const [done, setDone] = useState(false);
   const set = (k) => (e) => setF((s) => ({ ...s, [k]: e.target.value }));
   const [agree, setAgree] = useState(false); const [showTerms, setShowTerms] = useState(false);
@@ -475,10 +488,11 @@ function SupplierRegister({ state, setState, back, byAdmin, onDone }) {
   const toggleReg = (v) => { const next = hasReg(v) ? regList.filter((x) => x !== v) : [...regList, v]; setF((s) => ({ ...s, regions: next.join(", ") })); };
   const submit = () => {
     if (!f.name || !f.email || !f.password) return setErr("שם, אימייל וסיסמה חובה");
+    if (!f.domains.length) return setErr("יש לבחור לפחות תחום פעילות אחד");
     if (!byAdmin && !agree) return setErr("יש לאשר את התקנון כדי להמשיך");
     const em = f.email.trim().toLowerCase();
     if (state.suppliers.some((sp) => sp.owner && sp.owner.email.trim().toLowerCase() === em)) return setErr("אימייל זה כבר רשום כספק");
-    const sup = { id: "s" + Date.now(), name: f.name, category: f.category || "כללי", regions: f.regions || "", status: byAdmin ? "active" : "pending", owner: { email: f.email, password: f.password, contact: f.contact, phone: f.phone }, terms: byAdmin ? null : { version: TERMS_VERSION, acceptedAt: Date.now() }, brand: { logo: "", tagline: "", color: "#1F7A4D" }, sub: { plan: "basic", status: "trial", method: "none", since: Date.now(), invoices: [] }, biz: { taxId: "", address: "", phone: f.phone || "", email: f.email || "" }, cats: f.cats || [], invoiceSeq: 1000, features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [], clients: [], staff: [], orders: [], messages: [], broadcasts: [] };
+    const sup = { id: "s" + Date.now(), name: f.name, ...domainPatch(f.domains), regions: f.regions || "", status: byAdmin ? "active" : "pending", owner: { email: f.email, password: f.password, contact: f.contact, phone: f.phone }, terms: byAdmin ? null : { version: TERMS_VERSION, acceptedAt: Date.now() }, brand: { logo: "", tagline: "", color: "#1F7A4D" }, sub: { plan: "basic", status: "trial", method: "none", since: Date.now(), invoices: [] }, biz: { taxId: "", address: "", phone: f.phone || "", email: f.email || "" }, cats: f.cats || [], invoiceSeq: 1000, features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [], clients: [], staff: [], orders: [], messages: [], broadcasts: [] };
     setState((root) => ({ ...root, suppliers: [...root.suppliers, sup] }));
     if (byAdmin && onDone) return onDone();
     setDone(true);
@@ -488,13 +502,12 @@ function SupplierRegister({ state, setState, back, byAdmin, onDone }) {
     <>
       <div className="tp-2eq" style={{ display: "grid", gap: 10 }}>
         <Field label="שם החנות / הספק *" value={f.name} onChange={set("name")} />
-        <Field label="תחום (אפשר גם לכתוב חופשי)" value={f.category} onChange={set("category")} placeholder="למשל: בשר ועוף" />
         <Field label="איש קשר" value={f.contact} onChange={set("contact")} />
         <Field label="טלפון" value={f.phone} onChange={set("phone")} />
         <Field label="אימייל (לכניסה) *" value={f.email} onChange={set("email")} />
         <Field label="סיסמה *" type="password" value={f.password} onChange={set("password")} />
       </div>
-      <DomainPicker value={f.category} onPick={(d) => setF((s) => ({ ...s, category: d.label, cats: d.cats }))} />
+      <DomainPicker required selected={f.domains} onChange={(ids) => setF((s) => ({ ...s, domains: ids, cats: Array.from(new Set(ids.flatMap((id) => (DOMAIN_BY_ID[id] || { cats: [] }).cats))) }))} />
       {f.cats && f.cats.length > 0 && <div style={{ fontSize: 12.5, color: C.greenDeep, marginBottom: 6 }}>קטגוריות מוצרים שייפתחו בחנות: {f.cats.join(" · ")} (אפשר לשנות אחר כך)</div>}
       <div style={{ marginTop: 12, border: `1px solid ${C.line}`, borderRadius: 12, padding: 14 }}>
         <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>אזורי פעילות</div>
@@ -939,14 +952,16 @@ function RegisterForm({ state, setState, back, byManager, onDone, lockSupplier }
   );
   return byManager ? body : <Card title="הרשמת עסק (לקוח)" back={back} wide>{body}</Card>;
 }
-function DomainPicker({ value, onPick }) {
-  const cur = domainOf(value);
+function DomainPicker({ selected = [], onChange, required }) {
+  const toggle = (id) => onChange(selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id]);
   return (
-    <div style={{ marginBottom: 10 }}>
-      <div style={{ fontSize: 13, color: C.sub, marginBottom: 6 }}>תחום הפעילות — מה אתם מוכרים? (קובע מה הלקוח רואה ב"הזמנה חדשה")</div>
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-        {SUP_DOMAINS.map((d) => { const on = cur && cur.id === d.id; return <button key={d.id} type="button" onClick={() => onPick(d)} style={{ border: `1.5px solid ${on ? C.green : C.line}`, background: on ? C.greenSoft : "#fff", color: on ? C.greenDeep : C.ink, borderRadius: 20, padding: "6px 12px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>{d.emoji} {d.label}</button>; })}
+    <div style={{ marginBottom: 12, border: `1px solid ${C.line}`, borderRadius: 12, padding: 12 }}>
+      <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>תחומי פעילות{required ? " *" : ""}</div>
+      <div style={{ fontSize: 12.5, color: C.sub, marginBottom: 10 }}>סמנו את כל התחומים שאתם מוכרים — כך לקוחות ימצאו אתכם בחיפוש, וזה מה שיופיע להם ב"הזמנה חדשה".</div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(138px,1fr))", gap: 6 }}>
+        {SUP_DOMAINS.map((d) => { const on = selected.includes(d.id); return <button key={d.id} type="button" onClick={() => toggle(d.id)} style={{ border: `1.5px solid ${on ? C.green : C.line}`, background: on ? C.greenSoft : "#fff", color: on ? C.greenDeep : C.ink, borderRadius: 10, padding: "8px 8px", fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, textAlign: "right" }}><span style={{ fontSize: 17 }}>{d.emoji}</span><span style={{ flex: 1 }}>{d.label}</span>{on && <Check size={14} />}</button>; })}
       </div>
+      {selected.length > 0 && <div style={{ fontSize: 12.5, color: C.greenDeep, marginTop: 8 }}>נבחרו {selected.length}: {selected.map((id) => DOMAIN_BY_ID[id] && DOMAIN_BY_ID[id].label).filter(Boolean).join(" · ")}</div>}
     </div>
   );
 }
@@ -1049,9 +1064,9 @@ function BusinessHub({ state, setState, email, onEnter, onJoin }) {
   const mine = active.filter((s) => recOf(s));
   const others = active.filter((s) => !recOf(s));
   const regions = Array.from(new Set(active.flatMap((s) => (s.regions || "").split(",").map((x) => x.trim()).filter(Boolean))));
-  const matchText = (s) => { const t = q.trim().toLowerCase(); if (!t) return true; const hay = (s.name + " " + s.category + " " + (s.regions || "") + " " + (s.products || []).map((p) => p.name).join(" ")).toLowerCase(); return hay.includes(t); };
-  const catsList = Array.from(new Set(active.flatMap((s) => [(s.category || "").trim(), ...((s.cats) || []).map((c) => (c || "").trim())]).filter(Boolean)));
-  const catOkFull = (s) => !cat || (s.category || "").includes(cat) || ((s.cats) || []).some((c) => c === cat);
+  const matchText = (s) => { const t = q.trim().toLowerCase(); if (!t) return true; const hay = (s.name + " " + s.category + " " + domainLabel(s) + " " + ((s.cats) || []).join(" ") + " " + (s.regions || "") + " " + (s.products || []).map((p) => p.name).join(" ")).toLowerCase(); return hay.includes(t); };
+  const domCount = (id) => active.filter((s) => domainsOf(s).some((d) => d.id === id)).length;
+  const catOkFull = (s) => !cat || domainsOf(s).some((d) => d.id === cat);
   const geoOk = (s) => { const r = s.regions || ""; if (city) return r.includes(city); if (area) return r.includes(area) || (AREAS[area] || []).some((c) => r.includes(c)); return true; };
   const catOk = (s) => !cat || (s.category || "").includes(cat);
   const found = others.filter((s) => geoOk(s) && catOkFull(s) && matchText(s));
@@ -1063,7 +1078,7 @@ function BusinessHub({ state, setState, email, onEnter, onJoin }) {
     <div key={sp.id} style={{ border: `1px solid ${C.line}`, borderRadius: 16, overflow: "hidden", background: "#fff", boxShadow: SH }}>
       <div style={{ height: 8, background: color }} />
       <div style={{ padding: 16 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}><Logo size={40} img={sp.brand && sp.brand.logo} name={sp.name} /><div><div style={{ fontWeight: 800 }}>{sp.name}</div><div style={{ fontSize: 12, color: C.sub }}>{sp.category}</div></div></div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}><Logo size={40} img={sp.brand && sp.brand.logo} name={sp.name} /><div><div style={{ fontWeight: 800 }}>{sp.name}</div><div style={{ fontSize: 12, color: C.sub }}>{domainsOf(sp).length ? domainsOf(sp).map((d) => d.emoji + " " + d.label).join(" · ") : sp.category}</div></div></div>
         <div style={{ display: "flex", gap: 5, flexWrap: "wrap", margin: "10px 0" }}>{(sp.regions || "").split(",").map((r) => r.trim()).filter(Boolean).map((r) => <Badge key={r} icon={<MapPin size={11} />}>{r}</Badge>)}</div>
         {cta}
       </div>
@@ -1096,14 +1111,15 @@ function BusinessHub({ state, setState, email, onEnter, onJoin }) {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 10 }}>
                 <label style={{ display: "block" }}><div style={{ fontSize: 12, color: C.sub, marginBottom: 4, fontWeight: 600 }}>אזור</div><select value={area} onChange={(e) => { setArea(e.target.value); setCity(""); }} style={{ ...fieldStyle, padding: "10px" }}><option value="">כל האזורים</option>{Object.keys(AREAS).map((r) => <option key={r} value={r}>{r}</option>)}</select></label>
                 <label style={{ display: "block" }}><div style={{ fontSize: 12, color: C.sub, marginBottom: 4, fontWeight: 600 }}>עיר</div><select value={city} onChange={(e) => setCity(e.target.value)} disabled={!area} style={{ ...fieldStyle, padding: "10px", opacity: area ? 1 : .5 }}><option value="">{area ? "כל הערים ב" + area : "בחר אזור קודם"}</option>{(AREAS[area] || []).map((c) => <option key={c} value={c}>{c}</option>)}</select></label>
-                <label style={{ display: "block" }}><div style={{ fontSize: 12, color: C.sub, marginBottom: 4, fontWeight: 600 }}>קטגוריה</div><select value={cat} onChange={(e) => setCat(e.target.value)} style={{ ...fieldStyle, padding: "10px" }}><option value="">כל הקטגוריות</option>{catsList.map((c) => <option key={c} value={c}>{c}</option>)}</select></label>
+                <label style={{ display: "block" }}><div style={{ fontSize: 12, color: C.sub, marginBottom: 4, fontWeight: 600 }}>תחום</div><select value={cat} onChange={(e) => setCat(e.target.value)} style={{ ...fieldStyle, padding: "10px" }}><option value="">כל התחומים</option>{SUP_DOMAINS.map((d) => <option key={d.id} value={d.id}>{d.emoji} {d.label}{domCount(d.id) ? " (" + domCount(d.id) + ")" : ""}</option>)}</select></label>
               </div>
               {(q || area || city || cat) && <button onClick={() => { setQ(""); setArea(""); setCity(""); setCat(""); }} style={{ marginTop: 12, border: `1px solid ${C.line}`, background: "#fff", color: C.sub, fontWeight: 700, fontSize: 13, padding: "8px 14px", borderRadius: 9, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 6 }}><X size={14} /> נקה סינון</button>}
             </div>
           </Panel>
+          <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 4 }}>{[{ id: "", label: "הכל", emoji: "🛒" }, ...SUP_DOMAINS].map((d) => { const on = cat === d.id; return <button key={d.id || "all"} onClick={() => setCat(d.id)} style={{ whiteSpace: "nowrap", border: `1px solid ${on ? C.green : C.line}`, background: on ? C.green : "#fff", color: on ? "#fff" : C.ink, borderRadius: 20, padding: "6px 12px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>{d.emoji} {d.label}</button>; })}</div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
             <div style={{ fontSize: 14, color: C.ink, fontWeight: 800 }}>{dir.length} ספקים</div>
-            <div style={{ fontSize: 13, color: C.sub }}>{city ? "ב" + city : area ? "ב" + area : "בכל הארץ"}{cat ? " · " + cat : ""}</div>
+            <div style={{ fontSize: 13, color: C.sub }}>{city ? "ב" + city : area ? "ב" + area : "בכל הארץ"}{cat ? " · " + (DOMAIN_BY_ID[cat] || {}).label : ""}</div>
           </div>
           {dir.length === 0 ? <Empty>לא נמצאו ספקים לפי הסינון</Empty> :
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 14 }}>
@@ -1294,7 +1310,7 @@ function OrderForm({ state, setState, clientId, agentName }) {
     <>
     <div className="tp-2col" style={{ paddingBottom: cartons > 0 ? 88 : 0 }}>
       <Panel style={{ boxShadow: SH }}>
-        <SectionTitle icon={<Package size={18} />} extra={<span style={{ fontSize: 12, color: C.sub }}>מינימום {minOrder} קרטונים</span>}>{state.category ? "הזמנת " + state.category : ((state.cats && state.cats.length) ? "הזמנת " + state.cats.join(" · ") : "קטלוג המוצרים")}</SectionTitle>
+        <SectionTitle icon={<Package size={18} />} extra={<span style={{ fontSize: 12, color: C.sub }}>מינימום {minOrder} קרטונים</span>}>{orderPitch(state).replace(/^הזמן /, "הזמנת ")}</SectionTitle>
         <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1px solid ${C.line}`, borderRadius: 10, padding: "0 10px", marginBottom: 12 }}><Search size={15} color={C.sub} /><input value={pq} onChange={(e) => setPq(e.target.value)} placeholder="חיפוש מוצר בקטלוג" style={{ border: "none", outline: "none", padding: "9px 4px", fontSize: 13, width: "100%", fontFamily: "inherit", background: "transparent" }} /></div>
           {(state.cats || []).length > 0 && <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>{[["", "הכל"], ...(state.cats || []).map((c) => [c, c])].map(([id, lbl]) => { const on = pcat === id; return <button key={id || "all"} onClick={() => setPcat(id)} style={{ border: `1.5px solid ${on ? themeColor : C.line}`, background: on ? themeColor : "#fff", color: on ? "#fff" : C.sub, borderRadius: 20, padding: "6px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>{lbl}</button>; })}</div>}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(158px,1fr))", gap: 12 }}>
@@ -1704,10 +1720,18 @@ function PurchaseScanModal({ state, setState, onClose }) {
   return (
     <Modal onClose={onClose} title="סריקת חשבונית קנייה">
       <div style={{ fontSize: 13, color: C.sub, marginBottom: 12, lineHeight: 1.6 }}>צלמו או העלו את החשבונית מהספק שלכם. המערכת תקרא את שם הספק, מספר החשבונית והמוצרים — אתם בודקים, קובעים מחיר מכירה, והמוצרים עולים ישר לחנות. החשבונית נשמרת בהוצאות החודש.</div>
-      <label style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, border: `1.5px dashed ${C.green}`, borderRadius: 12, padding: file ? 8 : 22, cursor: "pointer", color: C.green, fontWeight: 700, fontSize: 14, marginBottom: 12, background: C.greenSoft + "66" }}>
-        {file ? (file.preview ? <img src={file.preview} alt="חשבונית" style={{ maxHeight: 170, borderRadius: 8 }} /> : <span style={{ display: "flex", alignItems: "center", gap: 6 }}><FileText size={20} /> {file.name}</span>) : <><ImageIcon size={20} /> צלם / העלה חשבונית (תמונה או PDF)</>}
-        <input type="file" accept="image/*,application/pdf" capture="environment" onChange={(e) => pick(e.target.files[0])} style={{ display: "none" }} />
-      </label>
+      {file && <div style={{ display: "flex", justifyContent: "center", border: `1px solid ${C.line}`, borderRadius: 12, padding: 8, marginBottom: 8, background: "#F7F9FC" }}>{file.preview ? <img src={file.preview} alt="חשבונית" style={{ maxHeight: 170, borderRadius: 8 }} /> : <span style={{ display: "flex", alignItems: "center", gap: 6, color: C.ink, fontWeight: 700, fontSize: 14, padding: 10 }}><FileText size={20} /> {file.name}</span>}</div>}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
+        <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6, border: `1.5px dashed ${C.green}`, borderRadius: 12, padding: file ? 10 : 18, cursor: "pointer", color: C.greenDeep, fontWeight: 700, fontSize: 14, background: C.greenSoft + "66", textAlign: "center" }}>
+          <ImageIcon size={22} />{file ? "צלם מחדש" : "צלם חשבונית"}
+          <input type="file" accept="image/*" capture="environment" onChange={(e) => { pick(e.target.files[0]); e.target.value = ""; }} style={{ display: "none" }} />
+        </label>
+        <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6, border: `1.5px dashed ${C.blue}`, borderRadius: 12, padding: file ? 10 : 18, cursor: "pointer", color: C.blue, fontWeight: 700, fontSize: 14, background: C.blueSoft + "66", textAlign: "center" }}>
+          <Paperclip size={22} />{file ? "בחר קובץ אחר" : "העלה מהטלפון"}
+          <span style={{ fontSize: 11.5, fontWeight: 500, color: C.sub }}>גלריה · קבצים · PDF</span>
+          <input type="file" accept="image/*,application/pdf" onChange={(e) => { pick(e.target.files[0]); e.target.value = ""; }} style={{ display: "none" }} />
+        </label>
+      </div>
       {scan === "busy" && <div style={{ background: C.blueSoft, color: C.blue, borderRadius: 10, padding: "10px 12px", fontSize: 13.5, fontWeight: 700, marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}><Search size={16} /> קורא את החשבונית… זה לוקח כמה שניות</div>}
       {scan === "done" && <div style={{ background: C.greenSoft, color: C.greenDeep, borderRadius: 10, padding: "10px 12px", fontSize: 13, fontWeight: 600, marginBottom: 12 }}>✓ נקראו {rows.length} שורות. בדקו את הנתונים — הסריקה האוטומטית עלולה לטעות.</div>}
       {(scan === "error" || scan === "empty") && <div style={{ background: C.amberSoft, color: "#7A5A17", borderRadius: 10, padding: "10px 12px", fontSize: 13, marginBottom: 12 }}>{scan === "empty" ? "לא זוהו שורות מוצרים. אפשר למלא ידנית." : scanErr} {file && <button onClick={() => { if (file.type === "img" && file.preview) runScan(file.preview); }} style={{ border: "none", background: "transparent", color: C.blue, fontWeight: 700, cursor: "pointer", padding: 0 }}>נסה שוב</button>}</div>}
@@ -2041,11 +2065,10 @@ function StoreDesign({ state, setState }) {
         </div>
         <div className="tp-2eq" style={{ display: "grid", gap: 10 }}>
           <Field label="שם החנות" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} />
-          <Field label="תחום הפעילות" value={f.category} onChange={(e) => setF({ ...f, category: e.target.value })} placeholder="למשל: בשר ועוף" />
         </div>
-        <DomainPicker value={f.category} onPick={(d) => { setF({ ...f, category: d.label }); setState((s) => ({ ...s, cats: (s.cats && s.cats.length) ? s.cats : d.cats })); }} />
-        <div style={{ fontSize: 12.5, color: C.sub, marginBottom: 10, background: "#F7F9FC", borderRadius: 10, padding: "8px 12px" }}>הלקוח יראה: <b style={{ color: C.ink }}>{orderPitch({ ...state, category: f.category })}</b> · קטגוריות המוצרים שלך: {(state.cats || []).length ? (state.cats || []).join(" · ") : "עוד לא הוגדרו"} (עריכה ב"מוצרים ומלאי")</div>
-        <Field label="סלוגן" value={f.tagline} onChange={(e) => setF({ ...f, tagline: e.target.value })} placeholder={"למשל: " + ((domainOf(f.category) || {}).label || "המוצרים שלנו") + " טריים לעסקים"} />
+        <DomainPicker selected={domainsOf(state).map((d) => d.id)} onChange={(ids) => { const pt = domainPatch(ids); setF({ ...f, category: pt.category }); setState((s) => { const add = ids.filter((id) => !domainsOf(s).some((d) => d.id === id)).flatMap((id) => (DOMAIN_BY_ID[id] || { cats: [] }).cats); return { ...s, ...pt, cats: Array.from(new Set([...(s.cats || []), ...add])) }; }); }} />
+        <div style={{ fontSize: 12.5, color: C.sub, marginBottom: 10, background: "#F7F9FC", borderRadius: 10, padding: "8px 12px" }}>הלקוח יראה: <b style={{ color: C.ink }}>{orderPitch(state)}</b> · קטגוריות המוצרים שלך: {(state.cats || []).length ? (state.cats || []).join(" · ") : "עוד לא הוגדרו"} (עריכה ב"מוצרים ומלאי")</div>
+        <Field label="סלוגן" value={f.tagline} onChange={(e) => setF({ ...f, tagline: e.target.value })} placeholder={"למשל: " + ((domainsOf(state)[0] || {}).label || "המוצרים שלנו") + " איכותיים לעסקים"} />
         <Field label="אזורי עבודה (מופרדים בפסיק)" value={f.regions} onChange={(e) => setF({ ...f, regions: e.target.value })} placeholder="למשל: מרכז, השרון, ירושלים" />
         <div style={{ fontSize: 13, color: C.sub, margin: "6px 0 6px" }}>צבע מסגרות המוצרים</div>
         <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
