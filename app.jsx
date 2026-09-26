@@ -256,6 +256,10 @@ function useAppState() {
 
 /* helpers */
 const VAT = 0.18;
+// סוגי יחידה: "carton" = קרטון, "unit" = יחידה בודדת, "weight" = לפי ק"ג. קרטון ויחידה מחושבים אותו דבר (לפי כמות)
+const isPack = (p) => !!p && (p.unit === "carton" || p.unit === "unit");
+const packWord = (p) => p && p.unit === "unit" ? "יחידה" : "קרטון";
+const UNIT_OPTS = [["carton", "לפי קרטון"], ["unit", "לפי יחידה"], ["weight", 'לפי ק"ג']];
 const noPrice = (p) => !!p.noPrice || !(p.price > 0);
 const cartonPrice = (p) => p.price * p.kg;
 // מחיר קרטון כולל מע"מ אם המוצר מוגדר "לא כולל מע"מ"
@@ -263,9 +267,9 @@ const cartonPriceGross = (p) => cartonPrice(p) * (p.vatIncluded === false ? (1 +
 const suppliedOf = (it) => it.supplied != null ? it.supplied : it.cartons;
 const shortageOf = (it) => Math.max(0, it.cartons - suppliedOf(it));
 const hasShortage = (o) => o.items.some((it) => shortageOf(it) > 0);
-const lineKg = (it, p) => p.unit === "carton" ? suppliedOf(it) * p.kg : (it.actualKg != null ? it.actualKg : suppliedOf(it) * p.kg);
-const lineUnitGross = (p) => p.unit === "carton" ? cartonPriceGross(p) : (p.price * (p.vatIncluded === false ? (1 + VAT) : 1));
-const lineTotal = (it, p) => noPrice(p) ? 0 : (p.unit === "carton" ? suppliedOf(it) * cartonPriceGross(p) : lineKg(it, p) * (p.price * (p.vatIncluded === false ? (1 + VAT) : 1)));
+const lineKg = (it, p) => isPack(p) ? suppliedOf(it) * p.kg : (it.actualKg != null ? it.actualKg : suppliedOf(it) * p.kg);
+const lineUnitGross = (p) => isPack(p) ? cartonPriceGross(p) : (p.price * (p.vatIncluded === false ? (1 + VAT) : 1));
+const lineTotal = (it, p) => noPrice(p) ? 0 : (isPack(p) ? suppliedOf(it) * cartonPriceGross(p) : lineKg(it, p) * (p.price * (p.vatIncluded === false ? (1 + VAT) : 1)));
 const lineProfit = (it, p) => lineKg(it, p) * (p.price - p.cost);
 const orderCartons = (o) => o.items.reduce((s, it) => s + it.cartons, 0);
 const orderKgEff = (o, ps) => o.items.reduce((s, it) => { const p = ps.find((x) => x.id === it.pid); return s + (p ? lineKg(it, p) : 0); }, 0);
@@ -1317,8 +1321,8 @@ function OrderForm({ state, setState, clientId, agentName }) {
           {state.products.filter((p) => (!pq.trim() || p.name.toLowerCase().includes(pq.trim().toLowerCase())) && (!pcat || (p.cat || "") === pcat)).map((p) => { const out = p.stock <= 0, low = p.stock > 0 && p.stock <= LOW, inCart = cart[p.id] || 0; return (
             <div key={p.id} style={{ border: `${Math.max(1.5, borderW)}px solid ${inCart > 0 ? themeColor : themeColor + "99"}`, borderRadius: 16, padding: 12, opacity: out ? .55 : 1, background: "#fff", boxShadow: inCart > 0 ? `0 0 0 3px ${themeColor}22` : "none" }}>
               <ProdThumb p={p} tint={themeColor} /><div style={{ fontWeight: 700, marginTop: 8 }}>{p.name}</div>
-              <div style={{ fontSize: 11.5, color: C.sub }}>{p.unit === "carton" ? "לפי קרטון" + (p.units ? " · " + p.units + " יח\' בקרטון" : "") : NIS(p.price) + " לק\"ג · קרטון " + p.kg + " ק\"ג"}</div>
-              <div style={{ fontWeight: 800, color: themeColor, margin: "5px 0 6px" }}>{noPrice(p) ? <span style={{ fontSize: 13 }}>לפי הצעת מחיר</span> : <>{NIS(cartonPriceGross(p))} <span style={{ fontSize: 11, color: C.sub, fontWeight: 500 }}>/ קרטון</span></>}</div>
+              <div style={{ fontSize: 11.5, color: C.sub }}>{isPack(p) ? (p.unit === "unit" ? "לפי יחידה" : "לפי קרטון" + (p.units ? " · " + p.units + " יח\' בקרטון" : "")) : NIS(p.price) + " לק\"ג · קרטון " + p.kg + " ק\"ג"}</div>
+              <div style={{ fontWeight: 800, color: themeColor, margin: "5px 0 6px" }}>{noPrice(p) ? <span style={{ fontSize: 13 }}>לפי הצעת מחיר</span> : <>{NIS(cartonPriceGross(p))} <span style={{ fontSize: 11, color: C.sub, fontWeight: 500 }}>/ {packWord(p)}</span></>}</div>
               <div style={{ fontSize: 11.5, fontWeight: 700, marginBottom: 8, color: out ? C.red : low ? C.amber : C.green }}>{out ? "אזל מהמלאי" : low ? `נותרו ${p.stock}` : "במלאי"}</div>
               {out ? <div style={{ textAlign: "center", fontSize: 12, color: C.sub, padding: "6px 0", border: `1px dashed ${C.line}`, borderRadius: 10 }}>לא זמין</div> : <Stepper value={inCart} onDec={() => setQty(p.id, -1)} onInc={() => setQty(p.id, 1)} maxed={inCart >= p.stock} accent={themeColor} />}
             </div>
@@ -1645,23 +1649,67 @@ const normName = (t) => (t || "").replace(/["'״׳().,\-]/g, " ").replace(/\s+/g
 const guessMatch = (name, products) => { const n = normName(name); if (!n) return "new"; const exact = products.find((p) => normName(p.name) === n); if (exact) return exact.id; const part = products.find((p) => { const pn = normName(p.name); return pn.length > 2 && (n.includes(pn) || pn.includes(n)); }); return part ? part.id : "new"; };
 const compressImage = (file, maxW, q) => new Promise((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => { const im = new Image(); im.onerror = rej; im.onload = () => { const sc = Math.min(1, maxW / Math.max(im.width, im.height)); const cv = document.createElement("canvas"); cv.width = Math.round(im.width * sc); cv.height = Math.round(im.height * sc); const cx = cv.getContext("2d"); cx.fillStyle = "#fff"; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(im, 0, 0, cv.width, cv.height); res(cv.toDataURL("image/jpeg", q)); }; im.src = r.result; }; r.readAsDataURL(file); });
 const fileToDataUrl = (file) => new Promise((res, rej) => { const r = new FileReader(); r.onerror = rej; r.onload = () => res(r.result); r.readAsDataURL(file); });
-async function aiScanInvoice(dataUrl) {
-  const media = dataUrl.slice(5, dataUrl.indexOf(";")); const data = dataUrl.split(",")[1];
-  const src = media === "application/pdf" ? { type: "document", source: { type: "base64", media_type: "application/pdf", data } } : { type: "image", source: { type: "base64", media_type: media, data } };
-  const prompt = 'זו חשבונית קנייה של סחורה (בדרך כלל בעברית). חלץ ממנה את הנתונים והחזר JSON בלבד, בלי שום טקסט נוסף ובלי ```. מבנה: {"s":"שם הספק שהנפיק את החשבונית","n":"מספר חשבונית","d":"YYYY-MM-DD","v":סכום_מעמ_או_null,"t":סה"כ_לתשלום_או_null,"i":[["שם מוצר",כמות,"יחידה",מחיר_ליחידה_לפני_מעמ_ולפני_הנחה,אחוז_הנחה]]}. יחידה: "קג" אם נמכר לפי משקל, אחרת "יח". אם אין הנחה — 0. מספרים ללא סימני מטבע. אם שדה לא קריא — null.';
-  const res = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1000, messages: [{ role: "user", content: [src, { type: "text", text: prompt }] }] }) });
-  const d = await res.json();
-  const txt = (d.content || []).map((c) => c.type === "text" ? c.text : "").join("\n");
-  const clean = txt.replace(/```json|```/g, "").trim(); const m = clean.match(/\{[\s\S]*\}/);
-  return JSON.parse(m ? m[0] : clean);
+// ---- סריקת חשבונית: עמיד לגרשיים בעברית, לחשבוניות ארוכות ולשגיאות שירות ----
+const SCAN_PROMPT = 'זו חשבונית קנייה של סחורה (בדרך כלל בעברית). חלץ ממנה את הנתונים והחזר JSON בלבד, בלי טקסט נוסף ובלי ```. מבנה: {"s":"שם הספק שהנפיק את החשבונית","n":"מספר חשבונית","d":"YYYY-MM-DD","v":סכום_מעמ_או_null,"t":סהכ_לתשלום_או_null,"i":[["שם מוצר",כמות,"יחידה",מחיר_ליחידה_לפני_מעמ_ולפני_הנחה,אחוז_הנחה]]}. חוקים: יחידה היא "קג" אם נמכר לפי משקל, "קרטון" אם נמכר בקרטון/ארגז/מארז/חבילה, אחרת "יח" (יחידה בודדת). אם אין הנחה — 0. מספרים ללא סימני מטבע וללא פסיקים. בתוך טקסט אל תשתמש במרכאות " — כתוב ״ במקום (למשל ק״ג, בע״מ). שמות מוצרים קצרים. אם שדה לא קריא — null.';
+const heQuoteFix = (x) => x.replace(/([\u0590-\u05FF])"([\u0590-\u05FF])/g, "$1״$2");
+function parseScan(txt) {
+  const t = heQuoteFix(String(txt || "").replace(/```json|```/g, "").trim());
+  const m = t.match(/\{[\s\S]*\}/);
+  if (m) { try { const j = JSON.parse(m[0]); return { ...j, i: Array.isArray(j.i) ? j.i : [], complete: true }; } catch (e) {} }
+  // שחזור חלקי (למשל תשובה שנקטעה באמצע)
+  const str = (k) => { const r = t.match(new RegExp('"' + k + '"\\s*:\\s*"([^"]*)"')); if (r) return r[1]; const q = t.match(new RegExp('"' + k + '"\\s*:\\s*(-?[\\d.]+)')); return q ? q[1] : null; };
+  const num = (k) => { const r = t.match(new RegExp('"' + k + '"\\s*:\\s*(-?[\\d.]+)')); return r ? +r[1] : null; };
+  const nv = (x) => (x == null || x === "null" ? null : +x);
+  const rows = []; const re = /\[\s*"([^"]*)"\s*,\s*(-?[\d.]+|null)\s*,\s*"([^"]*)"\s*,\s*(-?[\d.]+|null)\s*,\s*(-?[\d.]+|null)\s*\]/g; let r;
+  while ((r = re.exec(t))) rows.push([r[1], nv(r[2]), r[3], nv(r[4]), nv(r[5]) || 0]);
+  return { s: str("s"), n: str("n"), d: str("d"), v: num("v"), t: num("t"), i: rows, complete: false };
 }
+async function callClaude(content) {
+  let res;
+  try { res = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1000, messages: [{ role: "user", content }] }) }); }
+  catch (e) { const er = new Error("NETWORK"); er.code = "network"; throw er; }
+  let d = null; try { d = await res.json(); } catch (e) {}
+  if (!res.ok || !d || d.type === "error") { const er = new Error((d && d.error && d.error.message) || ("HTTP " + res.status)); er.code = res.status === 413 ? "too_big" : res.status === 429 ? "busy" : res.status === 529 ? "busy" : "api"; throw er; }
+  return { text: (d.content || []).map((c) => c.type === "text" ? c.text : "").join("\n"), stop: d.stop_reason };
+}
+const toBlock = (dataUrl) => { const media = dataUrl.slice(5, dataUrl.indexOf(";")); const data = dataUrl.split(",")[1]; return media === "application/pdf" ? { type: "document", source: { type: "base64", media_type: "application/pdf", data } } : { type: "image", source: { type: "base64", media_type: media, data } }; };
+// מקבל דף אחד או כמה דפים של אותה חשבונית (תמונות ו/או PDF), לפי הסדר
+async function aiScanInvoice(pagesIn, onProgress) {
+  const pages = Array.isArray(pagesIn) ? pagesIn : [pagesIn];
+  const blocks = pages.map(toBlock);
+  const multi = pages.length > 1 ? "החשבונית מורכבת מ-" + pages.length + " דפים שמצורפים לפי הסדר — זו חשבונית אחת. אחד את כל שורות המוצרים מכל הדפים לרשימה אחת, בלי כפילויות, ואל תכלול שורות של סיכום ביניים / העברה מדף קודם כמוצרים. הסכומים הכוללים נמצאים בדרך כלל בדף האחרון. " : "";
+  const src = blocks.length === 1 ? blocks[0] : null;
+  const first = await callClaude([...blocks, { type: "text", text: multi + SCAN_PROMPT }]);
+  const out = parseScan(first.text);
+  let stop = first.stop, guard = 0;
+  // חשבונית ארוכה: התשובה נקטעה — מבקשים את המשך השורות
+  while ((stop === "max_tokens" || !out.complete) && out.i.length > 0 && guard < 4) {
+    guard++; if (onProgress) onProgress(out.i.length);
+    const last = out.i[out.i.length - 1][0];
+    const more = await callClaude([...blocks, { type: "text", text: 'מאותה חשבונית' + (pages.length > 1 ? " (" + pages.length + " דפים)" : "") + ': כבר נקלטו ' + out.i.length + ' שורות המוצרים הראשונות (האחרונה: "' + last + '"). החזר JSON בלבד במבנה {"i":[["שם מוצר",כמות,"יחידה",מחיר,הנחה]]} עם השורות שאחריה בלבד, באותם חוקים: יחידה "קג", "קרטון" או "יח", בלי מרכאות " בתוך טקסט (כתוב ״). אם אין עוד שורות — {"i":[]}.' }]);
+    const p = parseScan(more.text); stop = more.stop;
+    const fresh = p.i.filter((row) => !out.i.some((x) => x[0] === row[0] && x[1] === row[1] && x[3] === row[3]));
+    if (!fresh.length) break;
+    out.i = out.i.concat(fresh); out.complete = p.complete;
+  }
+  return out;
+}
+const scanErrorText = (e) => {
+  const c = e && e.code;
+  if (c === "network") return "אין חיבור לשירות הסריקה. הסריקה האוטומטית עובדת כשהאפליקציה פתוחה בתוך Claude (באתר claude.ai או באפליקציה) — לא בקישור ששותף או באתר חיצוני.";
+  if (c === "busy") return "שירות הסריקה עמוס כרגע. נסו שוב בעוד דקה.";
+  if (c === "too_big") return "הקובץ גדול מדי לסריקה. נסו צילום רגיל של החשבונית או PDF קטן יותר.";
+  if (c === "api") return "שירות הסריקה החזיר שגיאה: " + (e.message || "") ;
+  return "לא הצלחנו לפענח את החשבונית. נסו צילום חד וישר, באור טוב, שבו כל החשבונית בתוך המסגרת.";
+};
 
 function PurchaseScanModal({ state, setState, onClose }) {
   const cats = state.cats || [];
   const today = new Date().toISOString().slice(0, 10);
   const blank = () => ({ add: true, name: "", match: "new", qty: "", unit: "carton", kg: 1, buy: "", disc: 0, sell: "", cat: "" });
-  const [file, setFile] = useState(null); // { preview, store, type, name }
-  const [scan, setScan] = useState("idle"); const [scanErr, setScanErr] = useState("");
+  const [pages, setPages] = useState([]); // [{ id, preview, store, ai, type, name }] — כל דף של החשבונית
+  const [scan, setScan] = useState("idle"); const [scanErr, setScanErr] = useState(""); const [scanMsg, setScanMsg] = useState(""); const [adding, setAdding] = useState(false);
+  const MAX_PAGES = 10;
   const [h, setH] = useState({ supplier: "", number: "", date: today, vat: "" });
   const [rows, setRows] = useState([blank()]);
   const [markup, setMarkup] = useState(30); const [sellVatIncl, setSellVatIncl] = useState(false);
@@ -1672,23 +1720,34 @@ function PurchaseScanModal({ state, setState, onClose }) {
   const vat = h.vat === "" ? subtotal * VAT : (+h.vat || 0);
   const total = subtotal + vat;
   const applyMarkup = () => setRows((rs) => rs.map((r) => netOf(r) > 0 ? { ...r, sell: String(Math.round(netOf(r) * (1 + markup / 100) * 100) / 100) } : r));
-  const runScan = async (dataUrl) => {
-    setScan("busy"); setScanErr("");
+  const runScan = async (list) => {
+    const ps = (list || pages).map((pg) => pg.ai).filter(Boolean); if (!ps.length) return;
+    setScan("busy"); setScanErr(""); setScanMsg(ps.length > 1 ? "קורא " + ps.length + " דפים… זה לוקח כמה שניות" : "");
     try {
-      const j = await aiScanInvoice(dataUrl);
+      const j = await aiScanInvoice(ps, (n) => setScanMsg("חשבונית ארוכה — נקראו " + n + " שורות, ממשיך לקרוא…"));
       const items = Array.isArray(j.i) ? j.i : [];
       setH((x) => ({ supplier: j.s || x.supplier, number: j.n != null ? String(j.n) : x.number, date: (j.d && /^\d{4}-\d{2}-\d{2}$/.test(j.d)) ? j.d : x.date, vat: j.v != null && !isNaN(+j.v) ? String(j.v) : "" }));
-      if (items.length) setRows(items.map((it) => { const [name, qty, unit, price, disc] = it; const w = /ק.?ג|kg/i.test(String(unit || "")); const nm = String(name || "").trim(); const buy = +price || 0; return { add: true, name: nm, match: guessMatch(nm, state.products), qty: qty != null ? String(qty) : "", unit: w ? "weight" : "carton", kg: w ? 10 : 1, buy: buy ? String(buy) : "", disc: +disc || 0, sell: buy ? String(Math.round(buy * (1 - (+disc || 0) / 100) * (1 + markup / 100) * 100) / 100) : "", cat: "" }; }));
+      if (items.length) setRows(items.map((it) => { const [name, qty, unit, price, disc] = Array.isArray(it) ? it : [it.name, it.qty, it.unit, it.price, it.disc]; const us = String(unit || ""); const w = /ק.?ג|kg|קילו/i.test(us); const ut = w ? "weight" : /קרטון|ארגז|מארז|חבילה|carton|box|ctn/i.test(us) ? "carton" : "unit"; const nm = String(name || "").trim(); const buy = +price || 0; return { add: true, name: nm, match: guessMatch(nm, state.products), qty: qty != null ? String(qty) : "", unit: ut, kg: w ? 10 : 1, buy: buy ? String(buy) : "", disc: +disc || 0, sell: buy ? String(Math.round(buy * (1 - (+disc || 0) / 100) * (1 + markup / 100) * 100) / 100) : "", cat: "" }; }));
       setScan(items.length ? "done" : "empty");
-    } catch (e) { setScan("error"); setScanErr("לא הצלחנו לקרוא את החשבונית אוטומטית. אפשר למלא את הפרטים ידנית, או לנסות תמונה חדה יותר."); }
+    } catch (e) { setScan("error"); setScanErr(scanErrorText(e)); try { console.error("invoice scan failed", e); } catch (x) {} }
   };
-  const pick = async (f) => {
-    if (!f) return; setErr("");
-    try {
-      if (f.type === "application/pdf") { const du = await fileToDataUrl(f); setFile({ preview: "", store: f.size < 900000 ? du : "", type: "pdf", name: f.name }); runScan(du); }
-      else { const big = await compressImage(f, 1600, 0.82); const small = await compressImage(f, 1100, 0.62); setFile({ preview: small, store: small, type: "img", name: f.name }); runScan(big); }
-    } catch (e) { setErr("לא ניתן לפתוח את הקובץ. נסה תמונה (JPG/PNG) או PDF."); }
+  // הוספת דפים: מצלמה (דף אחד בכל פעם) או גלריה/קבצים (כמה בבת אחת)
+  const addFiles = async (fileList) => {
+    const files = Array.from(fileList || []); if (!files.length) return; setErr("");
+    const room = MAX_PAGES - pages.length; if (room <= 0) return setErr("אפשר עד " + MAX_PAGES + " דפים לחשבונית אחת");
+    setAdding(true); const added = [];
+    for (const f of files.slice(0, room)) {
+      try {
+        if (f.type === "application/pdf") { const du = await fileToDataUrl(f); added.push({ id: "pg" + Date.now() + added.length, preview: "", store: f.size < 900000 ? du : "", ai: du, type: "pdf", name: f.name }); }
+        else { const many = pages.length + files.length > 3; const big = await compressImage(f, many ? 1400 : 1600, many ? 0.75 : 0.82); const small = await compressImage(f, 1000, 0.6); added.push({ id: "pg" + Date.now() + added.length, preview: small, store: small, ai: big, type: "img", name: f.name }); }
+      } catch (e) { setErr("לא ניתן לפתוח את הקובץ " + (f.name || "") + ". נסו תמונה (JPG/PNG) או PDF."); }
+    }
+    if (files.length > room) setErr("נוספו " + room + " דפים — המקסימום הוא " + MAX_PAGES + " לחשבונית");
+    setAdding(false);
+    if (added.length) { setPages((cur) => [...cur, ...added]); if (scan !== "idle") setScan("stale"); }
   };
+  const removePage = (id) => { setPages((cur) => cur.filter((x) => x.id !== id)); if (scan !== "idle") setScan("stale"); };
+  const movePage = (idx, d) => setPages((cur) => { const a = [...cur]; const t = idx + d; if (t < 0 || t >= a.length) return a; [a[idx], a[t]] = [a[t], a[idx]]; return a; });
   const valid = rows.filter((r) => r.name.trim());
   const toStore = valid.filter((r) => r.add);
   const dup = h.number.trim() && (state.purchaseInvoices || []).some((iv) => iv.number && iv.number === h.number.trim() && normName(iv.supplier) === normName(h.supplier));
@@ -1698,15 +1757,17 @@ function PurchaseScanModal({ state, setState, onClose }) {
     setSaving(true);
     const now = Date.now(); const id = "pi" + now;
     const items = valid.map((r) => { const qty = +r.qty || 0; const net = netOf(r); return { name: r.name.trim(), qty, unit: r.unit, kg: Math.max(0.1, +r.kg || 1), buy: +r.buy || 0, disc: +r.disc || 0, net, total: qty * net, sell: +r.sell || 0, added: !!r.add, match: r.match }; });
-    const rec = { id, ts: now, date: h.date || today, supplier: h.supplier.trim(), number: h.number.trim(), items, subtotal, vat, total, hasFile: !!(file && file.store), fileType: file ? file.type : "", fileName: file ? file.name : "", count: toStore.length };
-    if (file && file.store) { try { await window.storage.set(PINV_KEY(id), file.store); } catch (e) { rec.hasFile = false; } }
+    const rec = { id, ts: now, date: h.date || today, supplier: h.supplier.trim(), number: h.number.trim(), items, subtotal, vat, total, pages: [], count: toStore.length };
+    let n = 0;
+    for (const pg of pages) { if (!pg.store) continue; try { await window.storage.set(PINV_KEY(id) + ":" + n, pg.store); rec.pages.push({ type: pg.type, name: pg.name }); n++; } catch (e) {} }
+    rec.hasFile = n > 0;
     setState((s) => {
       let products = [...s.products];
       items.forEach((it, i) => {
         if (!it.added) return;
-        const cartonsIn = it.unit === "carton" ? Math.round(it.qty) : Math.max(1, Math.round(it.qty / it.kg));
-        const costKg = it.unit === "carton" ? it.net / it.kg : it.net;
-        const priceKg = it.sell > 0 ? (it.unit === "carton" ? it.sell / it.kg : it.sell) : null;
+        const cartonsIn = isPack(it) ? Math.round(it.qty) : Math.max(1, Math.round(it.qty / it.kg));
+        const costKg = isPack(it) ? it.net / it.kg : it.net;
+        const priceKg = it.sell > 0 ? (isPack(it) ? it.sell / it.kg : it.sell) : null;
         const ex = it.match !== "new" ? products.find((p) => p.id === it.match) : null;
         if (ex) products = products.map((p) => p.id === ex.id ? { ...p, stock: (p.stock || 0) + cartonsIn, cost: costKg, ...(priceKg != null ? { price: priceKg, noPrice: false, vatIncluded: sellVatIncl } : {}) } : p);
         else products.push({ id: "p" + now + "_" + i, name: it.name, unit: it.unit, kg: it.kg, units: 0, cost: costKg, price: priceKg || 0, noPrice: priceKg == null, vatIncluded: sellVatIncl, stock: cartonsIn, emoji: "📦", img: "", cat: valid[i].cat || "", fromInvoice: id });
@@ -1719,22 +1780,43 @@ function PurchaseScanModal({ state, setState, onClose }) {
   const lab = (t) => <div style={{ fontSize: 11, color: C.sub, marginBottom: 2 }}>{t}</div>;
   return (
     <Modal onClose={onClose} title="סריקת חשבונית קנייה">
-      <div style={{ fontSize: 13, color: C.sub, marginBottom: 12, lineHeight: 1.6 }}>צלמו או העלו את החשבונית מהספק שלכם. המערכת תקרא את שם הספק, מספר החשבונית והמוצרים — אתם בודקים, קובעים מחיר מכירה, והמוצרים עולים ישר לחנות. החשבונית נשמרת בהוצאות החודש.</div>
-      {file && <div style={{ display: "flex", justifyContent: "center", border: `1px solid ${C.line}`, borderRadius: 12, padding: 8, marginBottom: 8, background: "#F7F9FC" }}>{file.preview ? <img src={file.preview} alt="חשבונית" style={{ maxHeight: 170, borderRadius: 8 }} /> : <span style={{ display: "flex", alignItems: "center", gap: 6, color: C.ink, fontWeight: 700, fontSize: 14, padding: 10 }}><FileText size={20} /> {file.name}</span>}</div>}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 12 }}>
-        <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6, border: `1.5px dashed ${C.green}`, borderRadius: 12, padding: file ? 10 : 18, cursor: "pointer", color: C.greenDeep, fontWeight: 700, fontSize: 14, background: C.greenSoft + "66", textAlign: "center" }}>
-          <ImageIcon size={22} />{file ? "צלם מחדש" : "צלם חשבונית"}
-          <input type="file" accept="image/*" capture="environment" onChange={(e) => { pick(e.target.files[0]); e.target.value = ""; }} style={{ display: "none" }} />
+      <div style={{ fontSize: 13, color: C.sub, marginBottom: 12, lineHeight: 1.6 }}>צלמו או העלו את החשבונית מהספק שלכם — גם אם היא כמה דפים: מוסיפים את כל הדפים ואז לוחצים "סרוק". המערכת תקרא את שם הספק, מספר החשבונית והמוצרים — אתם בודקים, קובעים מחיר מכירה, והמוצרים עולים ישר לחנות. החשבונית נשמרת בהוצאות החודש.</div>
+      {pages.length > 0 && (
+        <div style={{ border: `1px solid ${C.line}`, borderRadius: 12, padding: 8, marginBottom: 8, background: "#F7F9FC" }}>
+          <div style={{ fontSize: 12.5, color: C.sub, fontWeight: 700, marginBottom: 6 }}>דפי החשבונית ({pages.length}) — לפי הסדר</div>
+          <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 }}>
+            {pages.map((pg, idx) => (
+              <div key={pg.id} style={{ position: "relative", flexShrink: 0, width: 96, border: `1px solid ${C.line}`, borderRadius: 10, background: "#fff", padding: 4, textAlign: "center" }}>
+                {pg.preview ? <img src={pg.preview} alt={"דף " + (idx + 1)} style={{ width: 86, height: 110, objectFit: "cover", borderRadius: 6, display: "block" }} /> : <div style={{ width: 86, height: 110, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 4, color: C.sub, fontSize: 11 }}><FileText size={26} />PDF</div>}
+                <div style={{ fontSize: 11.5, fontWeight: 800, marginTop: 3 }}>דף {idx + 1}</div>
+                <div style={{ display: "flex", justifyContent: "center", gap: 4, marginTop: 3 }}>
+                  <button onClick={() => movePage(idx, -1)} disabled={idx === 0} title="הזז קדימה" style={{ border: `1px solid ${C.line}`, background: "#fff", borderRadius: 6, width: 24, height: 22, cursor: idx === 0 ? "default" : "pointer", opacity: idx === 0 ? .35 : 1, fontSize: 12, padding: 0 }}>→</button>
+                  <button onClick={() => movePage(idx, 1)} disabled={idx === pages.length - 1} title="הזז אחורה" style={{ border: `1px solid ${C.line}`, background: "#fff", borderRadius: 6, width: 24, height: 22, cursor: idx === pages.length - 1 ? "default" : "pointer", opacity: idx === pages.length - 1 ? .35 : 1, fontSize: 12, padding: 0 }}>←</button>
+                </div>
+                <button onClick={() => removePage(pg.id)} title="הסר דף" style={{ position: "absolute", top: -6, left: -6, width: 22, height: 22, borderRadius: "50%", border: "none", background: C.red, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}><X size={13} /></button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 10 }}>
+        <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6, border: `1.5px dashed ${C.green}`, borderRadius: 12, padding: pages.length ? 10 : 18, cursor: "pointer", color: C.greenDeep, fontWeight: 700, fontSize: 14, background: C.greenSoft + "66", textAlign: "center" }}>
+          <ImageIcon size={22} />{pages.length ? "צלם דף נוסף" : "צלם חשבונית"}
+          {!pages.length && <span style={{ fontSize: 11.5, fontWeight: 500, color: C.sub }}>כמה דפים? מצלמים אחד אחרי השני</span>}
+          <input type="file" accept="image/*" capture="environment" onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} style={{ display: "none" }} />
         </label>
-        <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6, border: `1.5px dashed ${C.blue}`, borderRadius: 12, padding: file ? 10 : 18, cursor: "pointer", color: C.blue, fontWeight: 700, fontSize: 14, background: C.blueSoft + "66", textAlign: "center" }}>
-          <Paperclip size={22} />{file ? "בחר קובץ אחר" : "העלה מהטלפון"}
-          <span style={{ fontSize: 11.5, fontWeight: 500, color: C.sub }}>גלריה · קבצים · PDF</span>
-          <input type="file" accept="image/*,application/pdf" onChange={(e) => { pick(e.target.files[0]); e.target.value = ""; }} style={{ display: "none" }} />
+        <label style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6, border: `1.5px dashed ${C.blue}`, borderRadius: 12, padding: pages.length ? 10 : 18, cursor: "pointer", color: C.blue, fontWeight: 700, fontSize: 14, background: C.blueSoft + "66", textAlign: "center" }}>
+          <Paperclip size={22} />{pages.length ? "הוסף דפים מהטלפון" : "העלה מהטלפון"}
+          <span style={{ fontSize: 11.5, fontWeight: 500, color: C.sub }}>אפשר לבחור כמה תמונות · PDF</span>
+          <input type="file" multiple accept="image/*,application/pdf" onChange={(e) => { addFiles(e.target.files); e.target.value = ""; }} style={{ display: "none" }} />
         </label>
       </div>
-      {scan === "busy" && <div style={{ background: C.blueSoft, color: C.blue, borderRadius: 10, padding: "10px 12px", fontSize: 13.5, fontWeight: 700, marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}><Search size={16} /> קורא את החשבונית… זה לוקח כמה שניות</div>}
+      {adding && <div style={{ fontSize: 13, color: C.sub, marginBottom: 8 }}>מכין את הדפים…</div>}
+      {pages.length > 0 && scan !== "busy" && (scan === "idle" || scan === "stale") && <button onClick={() => runScan()} style={{ width: "100%", marginBottom: 12, padding: 12, borderRadius: 12, border: "none", background: C.blue, color: "#fff", fontWeight: 800, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}><Search size={17} /> {scan === "stale" ? "סרוק מחדש את " : "סרוק את "}{pages.length === 1 ? "החשבונית" : pages.length + " הדפים"}</button>}
+      {scan === "stale" && <div style={{ fontSize: 12.5, color: C.amber, marginTop: -6, marginBottom: 10, textAlign: "center" }}>הדפים השתנו אחרי הסריקה — לחצו לסריקה מחדש (הנתונים הנוכחיים יוחלפו)</div>}
+      {scan === "busy" && <div style={{ background: C.blueSoft, color: C.blue, borderRadius: 10, padding: "10px 12px", fontSize: 13.5, fontWeight: 700, marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}><Search size={16} /> {scanMsg || "קורא את החשבונית… זה לוקח כמה שניות"}</div>}
       {scan === "done" && <div style={{ background: C.greenSoft, color: C.greenDeep, borderRadius: 10, padding: "10px 12px", fontSize: 13, fontWeight: 600, marginBottom: 12 }}>✓ נקראו {rows.length} שורות. בדקו את הנתונים — הסריקה האוטומטית עלולה לטעות.</div>}
-      {(scan === "error" || scan === "empty") && <div style={{ background: C.amberSoft, color: "#7A5A17", borderRadius: 10, padding: "10px 12px", fontSize: 13, marginBottom: 12 }}>{scan === "empty" ? "לא זוהו שורות מוצרים. אפשר למלא ידנית." : scanErr} {file && <button onClick={() => { if (file.type === "img" && file.preview) runScan(file.preview); }} style={{ border: "none", background: "transparent", color: C.blue, fontWeight: 700, cursor: "pointer", padding: 0 }}>נסה שוב</button>}</div>}
+      {(scan === "error" || scan === "empty") && <div style={{ background: C.amberSoft, color: "#7A5A17", borderRadius: 10, padding: "10px 12px", fontSize: 13, marginBottom: 12 }}>{scan === "empty" ? "לא זוהו שורות מוצרים. אפשר למלא ידנית." : scanErr} {pages.length > 0 && <button onClick={() => runScan()} style={{ border: "none", background: "transparent", color: C.blue, fontWeight: 700, cursor: "pointer", padding: 0 }}>נסה שוב</button>}</div>}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 8, marginBottom: 12 }}>
         <label>{lab("שם הספק שממנו קניתי *")}<input value={h.supplier} onChange={(e) => setH({ ...h, supplier: e.target.value })} style={inp} /></label>
@@ -1751,7 +1833,7 @@ function PurchaseScanModal({ state, setState, onClose }) {
       </div>
 
       <div style={{ display: "grid", gap: 10, maxHeight: 380, overflow: "auto" }}>
-        {rows.map((r, i) => { const n = netOf(r); const lt = (+r.qty || 0) * n; const margin = (+r.sell || 0) - n; const u = r.unit === "carton" ? "ליח'/קרטון" : 'לק"ג'; return (
+        {rows.map((r, i) => { const n = netOf(r); const lt = (+r.qty || 0) * n; const margin = (+r.sell || 0) - n; const u = r.unit === "weight" ? 'לק"ג' : r.unit === "unit" ? "ליחידה" : "לקרטון"; return (
           <div key={i} style={{ border: `1px solid ${r.add ? C.line : "#EEE"}`, borderRadius: 12, padding: 10, background: r.add ? "#fff" : "#FAFAFA" }}>
             <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 8 }}>
               <input type="checkbox" checked={r.add} onChange={(e) => setRow(i, "add", e.target.checked)} title="להעלות לחנות" />
@@ -1760,8 +1842,8 @@ function PurchaseScanModal({ state, setState, onClose }) {
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(92px,1fr))", gap: 6 }}>
               <label>{lab("בחנות")}<select value={r.match} onChange={(e) => setRow(i, "match", e.target.value)} style={inp}><option value="new">מוצר חדש</option>{state.products.map((p) => <option key={p.id} value={p.id}>הוסף ל: {p.name}</option>)}</select></label>
-              <label>{lab("יחידה")}<select value={r.unit} onChange={(e) => setRow(i, "unit", e.target.value)} style={inp}><option value="carton">יח' / קרטון</option><option value="weight">ק"ג</option></select></label>
-              <label>{lab(r.unit === "carton" ? "כמות" : 'כמות (ק"ג)')}<input type="number" value={r.qty} onChange={(e) => setRow(i, "qty", e.target.value)} style={inp} /></label>
+              <label>{lab("יחידה")}<select value={r.unit} onChange={(e) => setRow(i, "unit", e.target.value)} style={inp}><option value="carton">קרטון</option><option value="unit">יחידה</option><option value="weight">ק"ג</option></select></label>
+              <label>{lab(r.unit === "weight" ? 'כמות (ק"ג)' : r.unit === "unit" ? "כמות (יחידות)" : "כמות (קרטונים)")}<input type="number" value={r.qty} onChange={(e) => setRow(i, "qty", e.target.value)} style={inp} /></label>
               {r.unit === "weight" && <label>{lab('ק"ג בקרטון')}<input type="number" value={r.kg} onChange={(e) => setRow(i, "kg", e.target.value)} style={inp} /></label>}
               <label>{lab("מחיר קנייה " + u)}<input type="number" value={r.buy} onChange={(e) => setRow(i, "buy", e.target.value)} style={inp} /></label>
               <label>{lab("הנחה %")}<input type="number" value={r.disc} onChange={(e) => setRow(i, "disc", e.target.value)} style={inp} /></label>
@@ -1787,17 +1869,18 @@ function PurchaseScanModal({ state, setState, onClose }) {
 }
 
 function PurchaseInvoiceView({ inv, setState, onClose }) {
-  const [file, setFile] = useState(inv.img || "");
-  useEffect(() => { if (inv.hasFile && !inv.img) (async () => { try { const r = await window.storage.get(PINV_KEY(inv.id)); if (r && r.value) setFile(r.value); } catch (e) {} })(); }, [inv.id]);
-  const del = async () => { if (!window.confirm("למחוק את החשבונית? המוצרים והמלאי שנוספו ממנה יישארו בחנות.")) return; try { await window.storage.delete(PINV_KEY(inv.id)); } catch (e) {} setState((s) => ({ ...s, purchaseInvoices: (s.purchaseInvoices || []).filter((x) => x.id !== inv.id) })); onClose(); };
+  const [files, setFiles] = useState(inv.img ? [inv.img] : []);
+  const pageKeys = (inv.pages && inv.pages.length) ? inv.pages.map((_, n) => PINV_KEY(inv.id) + ":" + n) : (inv.hasFile ? [PINV_KEY(inv.id)] : []);
+  useEffect(() => { if (inv.img || !pageKeys.length) return; (async () => { const out = []; for (const k of pageKeys) { try { const r = await window.storage.get(k); if (r && r.value) out.push(r.value); } catch (e) {} } setFiles(out); })(); }, [inv.id]);
+  const del = async () => { if (!window.confirm("למחוק את החשבונית? המוצרים והמלאי שנוספו ממנה יישארו בחנות.")) return; for (const k of pageKeys) { try { await window.storage.delete(k); } catch (e) {} } setState((s) => ({ ...s, purchaseInvoices: (s.purchaseInvoices || []).filter((x) => x.id !== inv.id) })); onClose(); };
   const items = inv.items || [];
   return (
     <Modal onClose={onClose} title={"חשבונית קנייה" + (inv.number ? " #" + inv.number : "")}>
       <div style={{ fontSize: 13.5, marginBottom: 10 }}><b>{inv.supplier || "ספק לא ידוע"}</b> · {new Date(pinvDate(inv)).toLocaleDateString("he-IL")}</div>
-      {file && (file.indexOf("data:application/pdf") === 0 ? <a href={file} download={inv.fileName || "invoice.pdf"} style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.blue, fontWeight: 700, fontSize: 13, marginBottom: 10 }}><FileText size={15} /> הורד את קובץ ה-PDF המקורי</a> : <a href={file} target="_blank" rel="noopener noreferrer"><img src={file} alt="חשבונית" style={{ width: "100%", maxHeight: 360, objectFit: "contain", borderRadius: 10, border: `1px solid ${C.line}`, marginBottom: 10, background: "#F7F9FC" }} /></a>)}
+      {files.length > 0 && <div style={{ display: "grid", gap: 8, marginBottom: 10 }}>{files.length > 1 && <div style={{ fontSize: 12.5, color: C.sub, fontWeight: 700 }}>{files.length} דפים</div>}{files.map((file, n) => file.indexOf("data:application/pdf") === 0 ? <a key={n} href={file} download={((inv.pages && inv.pages[n] && inv.pages[n].name) || inv.fileName || "invoice") + (/\.pdf$/i.test((inv.pages && inv.pages[n] && inv.pages[n].name) || "") ? "" : ".pdf")} style={{ display: "inline-flex", alignItems: "center", gap: 6, color: C.blue, fontWeight: 700, fontSize: 13 }}><FileText size={15} /> הורד PDF {files.length > 1 ? "(דף " + (n + 1) + ")" : "מקורי"}</a> : <a key={n} href={file} target="_blank" rel="noopener noreferrer"><img src={file} alt={"דף " + (n + 1)} style={{ width: "100%", maxHeight: 360, objectFit: "contain", borderRadius: 10, border: `1px solid ${C.line}`, background: "#F7F9FC" }} /></a>)}</div>}
       {items.length > 0 ? <div style={{ overflowX: "auto" }}><table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
         <thead><tr style={{ textAlign: "right", color: C.sub, borderBottom: `1px solid ${C.line}` }}><Th>מוצר</Th><Th>כמות</Th><Th>מחיר</Th><Th>הנחה</Th><Th>סה"כ</Th></tr></thead>
-        <tbody>{items.map((it, i) => <tr key={i} style={{ borderBottom: `1px solid ${C.line}` }}><Td>{it.name}</Td><Td>{it.qty}{it.unit === "weight" ? ' ק"ג' : ""}</Td><Td>{NIS(it.buy)}</Td><Td>{it.disc ? it.disc + "%" : "—"}</Td><Td strong>{NIS(it.total)}</Td></tr>)}</tbody>
+        <tbody>{items.map((it, i) => <tr key={i} style={{ borderBottom: `1px solid ${C.line}` }}><Td>{it.name}</Td><Td>{it.qty}{it.unit === "weight" ? ' ק"ג' : it.unit === "unit" ? " יח'" : " קרט'"}</Td><Td>{NIS(it.buy)}</Td><Td>{it.disc ? it.disc + "%" : "—"}</Td><Td strong>{NIS(it.total)}</Td></tr>)}</tbody>
       </table></div> : <Empty>חשבונית שנקלטה בגרסה קודמת — {inv.count || 0} מוצרים</Empty>}
       <div style={{ marginInlineStart: "auto", maxWidth: 260, marginTop: 10, fontSize: 14 }}>
         {inv.subtotal != null && <div style={{ display: "flex", justifyContent: "space-between" }}><span>לפני מע"מ</span><b>{NIS(inv.subtotal)}</b></div>}
@@ -1872,7 +1955,7 @@ function FinanceView({ state, setState }) {
         {shown.length === 0 ? <Empty>אין חשבוניות קנייה ב{monthLabelOf(mk)}. לחצו "סריקת חשבונית קנייה" כדי להוסיף.</Empty> : <div style={{ display: "grid", gap: 8 }}>{shown.map((iv) => (
           <button key={iv.id} onClick={() => setView(iv)} style={{ textAlign: "right", border: `1px solid ${C.line}`, borderRadius: 12, padding: "11px 14px", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
             <div style={{ width: 38, height: 38, borderRadius: 10, background: C.redSoft, color: C.red, display: "flex", alignItems: "center", justifyContent: "center" }}><Receipt size={18} /></div>
-            <div style={{ flex: 1, minWidth: 140 }}><div style={{ fontWeight: 800 }}>{iv.supplier || "חשבונית סחורה"}{iv.number ? " · #" + iv.number : ""}</div><div style={{ fontSize: 12, color: C.sub }}>{new Date(pinvDate(iv)).toLocaleDateString("he-IL")} · {(iv.items || []).length || iv.count || 0} שורות{iv.hasFile || iv.img ? " · 📎 מקור שמור" : ""}</div></div>
+            <div style={{ flex: 1, minWidth: 140 }}><div style={{ fontWeight: 800 }}>{iv.supplier || "חשבונית סחורה"}{iv.number ? " · #" + iv.number : ""}</div><div style={{ fontSize: 12, color: C.sub }}>{new Date(pinvDate(iv)).toLocaleDateString("he-IL")} · {(iv.items || []).length || iv.count || 0} שורות{iv.hasFile || iv.img ? " · 📎 " + ((iv.pages && iv.pages.length > 1) ? iv.pages.length + " דפים" : "מקור שמור") : ""}</div></div>
             <span style={{ fontWeight: 800, color: C.red }}>{NIS(pinvTotal(iv))}</span>
           </button>))}</div>}
         {byMonth.length > 1 && <div style={{ marginTop: 16, borderTop: `1px dashed ${C.line}`, paddingTop: 12 }}><div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>כל החודשים</div><div style={{ display: "grid", gap: 6 }}>{byMonth.map((x) => <button key={x.m} onClick={() => setMk(x.m)} style={{ display: "flex", justifyContent: "space-between", border: `1px solid ${x.m === mk ? C.green : C.line}`, background: x.m === mk ? C.greenSoft : "#fff", borderRadius: 10, padding: "8px 12px", cursor: "pointer", fontSize: 13 }}><span style={{ fontWeight: 700 }}>{monthLabelOf(x.m)} · {x.list.length} חשבוניות</span><span style={{ fontWeight: 800, color: C.red }}>{NIS(x.list.reduce((s, iv) => s + pinvTotal(iv), 0))}</span></button>)}</div></div>}
@@ -1902,14 +1985,14 @@ function MgrProducts({ state, setState }) {
         <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1px solid ${C.line}`, borderRadius: 10, padding: "0 10px", marginBottom: 12 }}><Search size={15} color={C.sub} /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="חיפוש מוצר" style={{ border: "none", outline: "none", padding: "9px 4px", fontSize: 13, width: "100%", fontFamily: "inherit", background: "transparent" }} /></div>
         <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginBottom: 14, background: "#F7F9FC", borderRadius: 10, padding: 10 }}><span style={{ fontSize: 13, color: C.sub, fontWeight: 700 }}>קטגוריות:</span>{cats.map((cat) => <span key={cat} style={{ display: "inline-flex", alignItems: "center", gap: 5, background: C.greenSoft, color: C.greenDeep, borderRadius: 20, padding: "4px 10px", fontSize: 12.5, fontWeight: 700 }}>{cat}<button onClick={() => removeCat(cat)} style={{ border: "none", background: "transparent", color: C.greenDeep, cursor: "pointer", padding: 0, display: "flex" }}><X size={13} /></button></span>)}<input value={newCat} onChange={(e) => setNewCat(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addCat()} placeholder="קטגוריה חדשה" style={{ border: `1px solid ${C.line}`, borderRadius: 8, padding: "6px 10px", fontSize: 13, fontFamily: "inherit" }} /><button onClick={addCat} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 700, fontSize: 13, padding: "6px 12px", borderRadius: 8, cursor: "pointer" }}>הוסף</button></div>
         <div style={{ display: "grid", gap: 10 }}>
-          {products.filter((p) => !q.trim() || p.name.toLowerCase().includes(q.trim().toLowerCase())).map((p) => { const isC = p.unit === "carton"; const unitTxt = isC ? "קרטון" : "ק\"ג"; const m = p.price - p.cost; const out = p.stock <= 0, lw = p.stock > 0 && p.stock <= LOW; return (
+          {products.filter((p) => !q.trim() || p.name.toLowerCase().includes(q.trim().toLowerCase())).map((p) => { const isC = isPack(p); const unitTxt = isC ? packWord(p) : "ק\"ג"; const m = p.price - p.cost; const out = p.stock <= 0, lw = p.stock > 0 && p.stock <= LOW; return (
             <div key={p.id} style={{ border: `1px solid ${C.line}`, borderRadius: 14, padding: 12, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
               <label style={{ cursor: "pointer", position: "relative" }}><ProdThumb p={p} size={54} /><input type="file" accept="image/*" onChange={(e) => pickImg(p.id, e.target.files[0])} style={{ display: "none" }} /><span style={{ position: "absolute", bottom: -4, left: -4, background: C.green, color: "#fff", borderRadius: "50%", width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center" }}><ImageIcon size={11} /></span></label>
-              <div style={{ minWidth: 120 }}><div style={{ fontWeight: 700 }}>{p.name}</div><select value={p.unit} onChange={(e) => upd(p.id, "unit", e.target.value)} style={{ marginTop: 4, border: `1px solid ${C.line}`, borderRadius: 8, padding: "3px 6px", fontSize: 12, fontFamily: "inherit" }}><option value="weight">לפי משקל</option><option value="carton">לפי קרטון</option></select><select value={p.cat || ""} onChange={(e) => upd(p.id, "cat", e.target.value)} style={{ marginTop: 4, marginInlineStart: 4, border: `1px solid ${C.line}`, borderRadius: 8, padding: "3px 6px", fontSize: 12, fontFamily: "inherit" }}><option value="">ללא קטגוריה</option>{cats.map((cat) => <option key={cat} value={cat}>{cat}</option>)}</select></div>
+              <div style={{ minWidth: 120 }}><div style={{ fontWeight: 700 }}>{p.name}</div><select value={p.unit} onChange={(e) => upd(p.id, "unit", e.target.value)} style={{ marginTop: 4, border: `1px solid ${C.line}`, borderRadius: 8, padding: "3px 6px", fontSize: 12, fontFamily: "inherit" }}>{UNIT_OPTS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select><select value={p.cat || ""} onChange={(e) => upd(p.id, "cat", e.target.value)} style={{ marginTop: 4, marginInlineStart: 4, border: `1px solid ${C.line}`, borderRadius: 8, padding: "3px 6px", fontSize: 12, fontFamily: "inherit" }}><option value="">ללא קטגוריה</option>{cats.map((cat) => <option key={cat} value={cat}>{cat}</option>)}</select></div>
               <LabIn label={"עלות " + unitTxt} val={isC ? p.cost * p.kg : p.cost} step="0.1" onChange={(v) => num(p.id, "cost", isC ? v / p.kg : v)} />
               <LabIn label={"מחיר " + unitTxt} val={isC ? p.price * p.kg : p.price} step="0.1" onChange={(v) => num(p.id, "price", isC ? v / p.kg : v)} />
               <LabIn label={'ק"ג/קרטון'} val={p.kg} onChange={(v) => num(p.id, "kg", v)} />
-              {isC && <LabIn label="יח' בקרטון" val={p.units || 0} onChange={(v) => num(p.id, "units", v)} />}
+              {p.unit === "carton" && <LabIn label="יח' בקרטון" val={p.units || 0} onChange={(v) => num(p.id, "units", v)} />}
               <div style={{ fontSize: 12, color: C.sub }}>רווח<br /><b style={{ color: m <= 0 ? C.red : C.greenDeep, fontSize: 14 }}>{NIS(isC ? m * p.kg : m)}/{unitTxt}</b></div>
               <LabIn label="מלאי" val={p.stock} onChange={(v) => num(p.id, "stock", v)} />
               <span style={{ fontSize: 12, fontWeight: 700, color: out ? C.red : lw ? C.amber : C.green }}>{out ? "אזל" : lw ? "נמוך" : "תקין"}</span>
@@ -1930,12 +2013,12 @@ function AddProduct({ state, setState, onClose }) {
   const [err, setErr] = useState("");
   const set = (k) => (e) => setF((s) => ({ ...s, [k]: e.target.value }));
   const pickImg = (file) => pickImage(file, 480, (d) => setF((s) => ({ ...s, img: d })));
-  const unitTxt = f.unit === "carton" ? "קרטון" : "ק\"ג";
+  const unitTxt = isPack(f) ? packWord(f) : "ק\"ג";
   const save = () => {
     if (!f.name.trim()) return setErr("שם המוצר חובה");
     const kg = Math.max(1, +f.kg || 1);
     const cRaw = Math.max(0, +f.cost || 0), pRaw = Math.max(0, +f.price || 0);
-    const prod = { id: "p" + Date.now(), name: f.name.trim(), unit: f.unit, kg, units: Math.max(0, +f.units || 0), cost: f.unit === "carton" ? cRaw / kg : cRaw, price: f.noPrice ? 0 : (f.unit === "carton" ? pRaw / kg : pRaw), stock: Math.max(0, +f.stock || 0), emoji: f.emoji || "🥗", img: f.img, noPrice: f.noPrice, vatIncluded: f.vatIncluded, cat: f.cat };
+    const prod = { id: "p" + Date.now(), name: f.name.trim(), unit: f.unit, kg, units: Math.max(0, +f.units || 0), cost: isPack(f) ? cRaw / kg : cRaw, price: f.noPrice ? 0 : (isPack(f) ? pRaw / kg : pRaw), stock: Math.max(0, +f.stock || 0), emoji: f.emoji || "🥗", img: f.img, noPrice: f.noPrice, vatIncluded: f.vatIncluded, cat: f.cat };
     setState((s) => ({ ...s, products: [...s.products, prod] }));
     onClose();
   };
@@ -1947,7 +2030,7 @@ function AddProduct({ state, setState, onClose }) {
       </div>
       <div className="tp-2eq" style={{ display: "grid", gap: 10 }}>
         <Field label="שם המוצר *" value={f.name} onChange={set("name")} />
-        <label style={{ display: "block", marginBottom: 10 }}><div style={{ fontSize: 13, color: C.sub, marginBottom: 4 }}>סוג יחידה</div><select value={f.unit} onChange={set("unit")} style={fieldStyle}><option value="weight">לפי משקל</option><option value="carton">לפי קרטון</option></select></label>
+        <label style={{ display: "block", marginBottom: 10 }}><div style={{ fontSize: 13, color: C.sub, marginBottom: 4 }}>סוג יחידה</div><select value={f.unit} onChange={set("unit")} style={fieldStyle}>{UNIT_OPTS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></label>
         <label style={{ display: "block", marginBottom: 10 }}><div style={{ fontSize: 13, color: C.sub, marginBottom: 4 }}>קטגוריה</div><select value={f.cat} onChange={set("cat")} style={fieldStyle}><option value="">ללא קטגוריה</option>{(state.cats || []).map((cat) => <option key={cat} value={cat}>{cat}</option>)}</select></label>
         <Field label={'ק"ג לקרטון'} type="number" value={f.kg} onChange={set("kg")} />
         {f.unit === "carton" && <Field label="יחידות בקרטון" type="number" value={f.units} onChange={set("units")} />}
@@ -2007,8 +2090,8 @@ function StorePage({ supplier, state, setState, onLogin }) {
             {prods.map((p) => (
               <div key={p.id} style={{ border: `${Math.max(1.5, borderW)}px solid ${borderW > 0 ? color : C.line}`, borderRadius: 16, padding: 12, background: "#fff", boxShadow: SH }}>
                 <ProdThumb p={p} tint={color} /><div style={{ fontWeight: 700, marginTop: 8, fontSize: fs(14), color: C.ink }}>{p.name}</div>
-                <div style={{ fontSize: fs(12), color: C.sub }}>{p.unit === "carton" ? (p.units ? "קרטון · " + p.units + " יחידות" : "לפי קרטון") : "קרטון " + p.kg + " ק\"ג"}</div>
-                <div style={{ fontWeight: 800, marginTop: 4, color, fontSize: fs(15) }}>{noPrice(p) ? "לפי הצעת מחיר" : <>{NIS(cartonPriceGross(p))} <span style={{ fontSize: fs(11), color: C.sub, fontWeight: 500 }}>/ קרטון</span></>}</div>
+                <div style={{ fontSize: fs(12), color: C.sub }}>{isPack(p) ? (p.unit === "unit" ? "לפי יחידה" : p.units ? "קרטון · " + p.units + " יחידות" : "לפי קרטון") : "קרטון " + p.kg + " ק\"ג"}</div>
+                <div style={{ fontWeight: 800, marginTop: 4, color, fontSize: fs(15) }}>{noPrice(p) ? "לפי הצעת מחיר" : <>{NIS(cartonPriceGross(p))} <span style={{ fontSize: fs(11), color: C.sub, fontWeight: 500 }}>/ {packWord(p)}</span></>}</div>
               </div>
             ))}
           </div>
@@ -2046,7 +2129,7 @@ function StoreDesign({ state, setState }) {
                 <div key={p.id} style={{ background: "#fff", border: `${f.borderW}px solid ${f.color}`, borderRadius: 12, padding: 10 }}>
                   {p.img ? <img src={p.img} alt={p.name} style={{ width: 34, height: 34, borderRadius: 9, objectFit: "cover" }} /> : <div style={{ width: 34, height: 34, borderRadius: 9, background: f.color + "1A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>{p.emoji || "🛒"}</div>}
                   <div style={{ fontWeight: 700, marginTop: 6, fontSize: Math.round(13 * f.fontScale), color: f.fontColor }}>{p.name}</div>
-                  <div style={{ fontWeight: 800, color: f.color, fontSize: Math.round(14 * f.fontScale) }}>{noPrice(p) ? "לפי הצעה" : <>{NIS(cartonPriceGross(p))} <span style={{ fontSize: Math.round(10 * f.fontScale), color: C.sub, fontWeight: 500 }}>/ קרטון</span></>}</div>
+                  <div style={{ fontWeight: 800, color: f.color, fontSize: Math.round(14 * f.fontScale) }}>{noPrice(p) ? "לפי הצעה" : <>{NIS(cartonPriceGross(p))} <span style={{ fontSize: Math.round(10 * f.fontScale), color: C.sub, fontWeight: 500 }}>/ {packWord(p)}</span></>}</div>
                 </div>
               ))}
             </div>
@@ -2103,7 +2186,7 @@ function downloadInvoice(order, state) {
   const color = (state.brand && state.brand.color) || "#0B2A63";
   const gross = orderTotal(order, state.products);
   const net = gross / (1 + VAT), vat = gross - net;
-  const rows = order.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); if (!p) return ""; const isC = p.unit === "carton"; const w = isC ? "—" : (it.actualKg != null ? KGL(it.actualKg) : "~" + KGL(it.cartons * p.kg)); const amt = noPrice(p) ? "לפי הצעה" : NIS(lineTotal(it, p)); return `<tr><td>${p.emoji} ${p.name}</td><td>${it.cartons} קרטונים</td><td>${w}</td><td>${amt}</td></tr>`; }).join("");
+  const rows = order.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); if (!p) return ""; const isC = isPack(p); const w = isC ? "—" : (it.actualKg != null ? KGL(it.actualKg) : "~" + KGL(it.cartons * p.kg)); const amt = noPrice(p) ? "לפי הצעה" : NIS(lineTotal(it, p)); return `<tr><td>${p.emoji} ${p.name}</td><td>${it.cartons} קרטונים</td><td>${w}</td><td>${amt}</td></tr>`; }).join("");
   const html = `<!doctype html><html dir="rtl" lang="he"><head><meta charset="utf-8"><title>חשבונית ${order.invNo || order.id}</title><style>body{font-family:system-ui,Arial;padding:32px;color:#182620}h1{color:${color};margin:0;font-size:24px}table{width:100%;border-collapse:collapse;margin-top:16px}td,th{border-bottom:1px solid #E4E9DE;padding:8px;text-align:right}thead tr{background:${color};color:#fff}.tot{margin-top:16px;text-align:left;line-height:1.8}.tot b{font-size:20px;color:${color}}.hd{display:flex;justify-content:space-between;border-bottom:3px solid ${color};padding-bottom:10px}</style></head><body><div class="hd"><div><h1>${state.name}</h1><div style="color:#5B6B60;font-size:13px">${biz.taxId ? "ע.מ/ח.פ: " + biz.taxId + "<br>" : ""}${biz.address || ""}${biz.phone ? "<br>טל' " + biz.phone : ""}</div></div><div style="text-align:left"><div style="font-weight:800;color:${color};font-size:18px">חשבונית מס</div><div style="color:#5B6B60;font-size:13px">מס' ${order.invNo || order.id}<br>${new Date(order.date).toLocaleDateString("he-IL")}</div></div></div><div style="margin-top:12px">לכבוד: <b>${c ? c.name : ""}</b>${c && c.taxId ? " · ע.מ/ח.פ " + c.taxId : ""}<br>${c && c.address ? c.address : ""}</div><table><thead><tr><th>מוצר</th><th>כמות</th><th>משקל</th><th>סכום</th></tr></thead><tbody>${rows}</tbody></table><div class="tot">סכום לפני מע"מ: ${NIS(net)}<br>מע"מ ${Math.round(VAT * 100)}%: ${NIS(vat)}<br><b>סה"כ לתשלום: ${NIS(gross)}</b></div><p style="color:#5B6B60;font-size:12px">תשלום ב${(PAY[c ? c.pay : "cash"] || PAY.cash).label} · מופק ע"י ${state.name}</p></body></html>`;
   try { const blob = new Blob([html], { type: "text/html;charset=utf-8" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "invoice-" + (order.invNo || order.id) + ".html"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000); } catch (e) {}
 }
@@ -2137,7 +2220,7 @@ function InvoiceModal({ order, state, onClose, withAddress }) {
         <div style={{ fontSize: 13, marginBottom: 10 }}><span style={{ color: C.sub }}>לכבוד:</span> <b>{c ? c.name : ""}</b>{c && c.taxId ? " · ע.מ/ח.פ " + c.taxId : ""}{c && c.contact ? " · " + c.contact : ""}{withAddress && c && c.address ? <div style={{ fontSize: 12.5, color: C.sub, marginTop: 2, display: "flex", gap: 5, alignItems: "center" }}><MapPin size={13} /> {c.address} · {c.phone}</div> : null}</div>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
           <thead><tr style={{ background: color, color: "#fff", textAlign: "right" }}><Th>מוצר</Th><Th>כמות</Th><Th>משקל</Th><Th>סכום</Th></tr></thead>
-          <tbody>{order.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); if (!p) return null; const isC = p.unit === "carton"; return (<tr key={it.pid} style={{ borderBottom: `1px solid ${C.line}` }}><Td>{p.emoji} {p.name}</Td><Td>{it.cartons} קרטונים{suppliedOf(it) < it.cartons ? " (סופקו " + suppliedOf(it) + ")" : ""}</Td><Td>{isC ? "—" : (it.actualKg != null ? KGL(it.actualKg) : "~" + KGL(it.cartons * p.kg))}</Td><Td strong>{noPrice(p) ? "לפי הצעה" : NIS(lineTotal(it, p))}</Td></tr>); })}</tbody>
+          <tbody>{order.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); if (!p) return null; const isC = isPack(p); return (<tr key={it.pid} style={{ borderBottom: `1px solid ${C.line}` }}><Td>{p.emoji} {p.name}</Td><Td>{it.cartons} קרטונים{suppliedOf(it) < it.cartons ? " (סופקו " + suppliedOf(it) + ")" : ""}</Td><Td>{isC ? "—" : (it.actualKg != null ? KGL(it.actualKg) : "~" + KGL(it.cartons * p.kg))}</Td><Td strong>{noPrice(p) ? "לפי הצעה" : NIS(lineTotal(it, p))}</Td></tr>); })}</tbody>
         </table>
         <div style={{ marginInlineStart: "auto", maxWidth: 280, marginTop: 12 }}>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginTop: 6 }}><span>סכום לפני מע"מ</span><span style={{ fontWeight: 700 }}>{NIS(net)}</span></div>
@@ -2327,22 +2410,22 @@ function PickerView({ state, setState, me }) {
 }
 function PickModal({ order, state, setState, onClose, me }) {
   const [supplied, setSupplied] = useState(() => { const o = {}; order.items.forEach((it) => { o[it.pid] = it.cartons; }); return o; });
-  const [weights, setWeights] = useState(() => { const w = {}; order.items.forEach((it) => { const p = state.products.find((x) => x.id === it.pid); w[it.pid] = p.unit === "carton" ? null : it.cartons * p.kg; }); return w; });
+  const [weights, setWeights] = useState(() => { const w = {}; order.items.forEach((it) => { const p = state.products.find((x) => x.id === it.pid); w[it.pid] = isPack(p) ? null : it.cartons * p.kg; }); return w; });
   const [checked, setChecked] = useState({});
   const c = state.clients.find((x) => x.id === order.clientId);
-  const setSup = (pid, d, max) => { const p = state.products.find((x) => x.id === pid); const v = Math.max(0, Math.min(max, (supplied[pid] || 0) + d)); setSupplied((s) => ({ ...s, [pid]: v })); if (p.unit !== "carton") setWeights((w) => ({ ...w, [pid]: v * p.kg })); };
+  const setSup = (pid, d, max) => { const p = state.products.find((x) => x.id === pid); const v = Math.max(0, Math.min(max, (supplied[pid] || 0) + d)); setSupplied((s) => ({ ...s, [pid]: v })); if (!isPack(p)) setWeights((w) => ({ ...w, [pid]: v * p.kg })); };
   const active = order.items.filter((it) => (supplied[it.pid] || 0) > 0);
   const allChecked = active.length > 0 && active.every((it) => checked[it.pid]);
-  const total = order.items.reduce((s, it) => { const p = state.products.find((x) => x.id === it.pid); const eff = p.unit === "carton" ? { ...it, supplied: supplied[it.pid] } : { ...it, supplied: supplied[it.pid], actualKg: +weights[it.pid] || 0 }; return s + lineTotal(eff, p); }, 0);
+  const total = order.items.reduce((s, it) => { const p = state.products.find((x) => x.id === it.pid); const eff = isPack(p) ? { ...it, supplied: supplied[it.pid] } : { ...it, supplied: supplied[it.pid], actualKg: +weights[it.pid] || 0 }; return s + lineTotal(eff, p); }, 0);
   const confirm = () => {
-    const items = order.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); const base = { ...it, supplied: supplied[it.pid] }; return p.unit === "carton" ? base : { ...base, actualKg: Math.max(0, +weights[it.pid] || 0) }; });
+    const items = order.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); const base = { ...it, supplied: supplied[it.pid] }; return isPack(p) ? base : { ...base, actualKg: Math.max(0, +weights[it.pid] || 0) }; });
     setState((s) => { const seq = (s.invoiceSeq || 1000) + 1; return { ...s, invoiceSeq: seq, orders: s.orders.map((o) => o.id === order.id ? { ...o, status: "picked", items, pickedBy: me ? me.name : "מלקט", invNo: o.invNo || seq } : o) }; });
     onClose();
   };
   return (
     <Modal onClose={onClose} title={"ליקוט · #" + order.id + " · " + (c ? c.name : "")}>
       <div style={{ display: "grid", gap: 10 }}>
-        {order.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); const isC = p.unit === "carton"; const sup = supplied[it.pid] || 0; const short = it.cartons - sup; const gone = sup === 0; return (
+        {order.items.map((it) => { const p = state.products.find((x) => x.id === it.pid); const isC = isPack(p); const sup = supplied[it.pid] || 0; const short = it.cartons - sup; const gone = sup === 0; return (
           <div key={it.pid} style={{ border: `1px solid ${gone ? C.red : checked[it.pid] ? C.green : C.line}`, background: gone ? C.redSoft : checked[it.pid] ? C.greenSoft : "#fff", borderRadius: 12, padding: 12 }}>
             <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
               <ProdThumb p={p} size={42} />
