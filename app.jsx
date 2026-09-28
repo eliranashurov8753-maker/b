@@ -208,7 +208,7 @@ const PLAN_FEATURES = [
   { id: "chat", label: "צ'אט והודעות מבצע ללקוחות", basic: true },
   { id: "invoices", label: "חשבוניות ללקוחות", basic: true },
   { id: "design", label: "עיצוב החנות ומיתוג אישי", basic: false },
-  { id: "prizes", label: "יעדים ופרסים ללקוחות", basic: false },
+  { id: "prizes", label: "תוכנית יעדים ללקוחות (לבחירתכם)", basic: false },
   { id: "staff", label: "צוות: מלקטים, נהגים וסוכנים", basic: false },
   { id: "scan", label: "סריקת חשבוניות קנייה ב-AI", basic: false },
   { id: "finance", label: "דוח הכנסות והוצאות חודשי", basic: false },
@@ -405,13 +405,14 @@ export default function App() {
   const [state, setState] = useAppState();
   const [session, setSession] = useState({ kind: "none" });
   const [saved, setSaved] = useState(false);
-  const [storeId] = useState(() => { try { return new URL(window.location.href).searchParams.get("store"); } catch { return null; } });
+  const [storeId, setStoreId] = useState(() => { try { return new URL(window.location.href).searchParams.get("store"); } catch { return null; } });
+  const leaveStore = () => { setStoreId(null); try { const u = new URL(window.location.href); u.searchParams.delete("store"); window.history.replaceState(null, "", u.toString()); } catch (e) {} };
   const [joinMode, setJoinMode] = useState(() => { try { return new URL(window.location.href).searchParams.has("join"); } catch { return false; } }); // קישור מפרסום: ?join=1
   const [joinSrc] = useState(readUtm);
   const [showProfile, setShowProfile] = useState(false); const [showBell, setShowBell] = useState(false); const [mgrIntent, setMgrIntent] = useState(null);
   useEffect(() => { if (!document.getElementById("ff-rubik")) { const l = document.createElement("link"); l.id = "ff-rubik"; l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap"; document.head.appendChild(l); } if (!document.getElementById("tp-css")) { const st = document.createElement("style"); st.id = "tp-css"; st.textContent = ".tp-click{transition:transform .12s ease,box-shadow .12s ease}.tp-click:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(18,40,80,.14)!important}.tp-click:active{transform:translateY(0)}.tp-2col{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:20px}.tp-2eq{grid-template-columns:1fr 1fr}.tp-staff{grid-template-columns:1fr 1fr 1fr 1fr auto}.tp-2col-hide{display:none}@media(max-width:760px){.tp-2col-hide{display:block}.tp-2col{grid-template-columns:1fr}.tp-staff{grid-template-columns:1fr 1fr}}@media(max-width:560px){.tp-2eq{grid-template-columns:1fr}}"; document.head.appendChild(st); } }, []);
   if (!state) return <div dir="rtl" style={{ background: C.bg, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: C.sub }}>טוען…</div>;
-  if (session.kind === "none") { const storeSup = storeId ? state.suppliers.find((x) => x.id === storeId && x.status === "active") : null; if (joinMode && !storeSup) return <SupplierLanding state={state} setState={setState} onLogin={setSession} onBack={() => setJoinMode(false)} source={joinSrc} />; return storeSup ? <StorePage supplier={storeSup} state={state} setState={setState} onLogin={setSession} /> : <AuthScreen state={state} setState={setState} onLogin={setSession} />; }
+  if (session.kind === "none") { const storeSup = storeId ? state.suppliers.find((x) => x.id === storeId && x.status === "active") : null; if (joinMode && !storeSup) return <SupplierLanding state={state} setState={setState} onLogin={setSession} onBack={() => setJoinMode(false)} source={joinSrc} />; return storeSup ? <StorePage supplier={storeSup} state={state} setState={setState} onLogin={setSession} onHome={leaveStore} /> : <AuthScreen state={state} setState={setState} onLogin={setSession} />; }
   const save = async () => { try { await window.storage.set(KEY, JSON.stringify(state)); } catch {} setSaved(true); setTimeout(() => setSaved(false), 1600); };
   const isSuper = session.kind === "super";
   const isAgent = session.kind === "superagent";
@@ -507,7 +508,7 @@ const makeSupplier = (f, { plan, active, source }) => ({
   id: "s" + Date.now(), name: f.name.trim(), ...domainPatch(f.domains), regions: f.regions || "", status: active ? "active" : "pending",
   owner: { email: f.email.trim(), password: f.password, contact: f.contact.trim(), phone: f.phone.trim() }, terms: { version: TERMS_VERSION, acceptedAt: Date.now() },
   brand: { logo: "", tagline: "", color: "#1F7A4D" }, sub: newTrialSub(plan), biz: { taxId: "", address: "", phone: f.phone.trim(), email: f.email.trim() },
-  cats: Array.from(new Set(f.domains.flatMap((id) => (DOMAIN_BY_ID[id] || { cats: [] }).cats))), invoiceSeq: 1000, features: { prizes: true, chat: true, minOrder: 5 },
+  cats: Array.from(new Set(f.domains.flatMap((id) => (DOMAIN_BY_ID[id] || { cats: [] }).cats))), invoiceSeq: 1000, features: { prizes: false, chat: true, minOrder: 5 },
   kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [], clients: [], staff: [], orders: [], messages: [], broadcasts: [],
   source: source || "direct", createdAt: Date.now(), onboarding: { startedAt: Date.now() },
 });
@@ -517,9 +518,9 @@ const LP_FEATURES = [
   ["🔔", "הזמנות מסודרות, ישר אליכם", "בלי הודעות קוליות ופתקים. כל הזמנה מגיעה עם התראה, מוכנה לליקוט.", "הזמנות 24/7"],
   ["⚖️", "ליקוט, שקילה ומשלוחים", "המלקט רואה מה להכין, הנהג רואה לאן לנסוע, ואתם רואים הכל בזמן אמת.", "ליקוט ומשלוחים"],
   ["🧾", "חשבוניות ללקוחות", "חשבונית לכל הזמנה בלחיצה, ומעקב מי שילם ומי עוד לא.", "חשבוניות וגבייה"],
-  ["📸", "מצלמים חשבונית — המוצרים עולים לבד", "מצלמים חשבונית מהספק שלכם, והמערכת מעלה את המוצרים לחנות עם הכמויות והמחירים.", "סריקת חשבוניות"],
+  ["📸", "מצלמים חשבונית — והכל מתעדכן לבד", "המוצרים עולים לחנות ולמלאי, ההוצאה נרשמת בדוח החודשי, והחשבונית נשמרת מסודרת — בלי להקליד שורה אחת.", "צילום חשבוניות"],
   ["📊", "הכנסות והוצאות כל חודש", "רואים כמה נכנס, כמה יצא על סחורה, ומה נשאר — עם דוח לרואה החשבון.", "דוח רווח חודשי"],
-  ["🏆", "יעדים ופרסים ללקוחות", "לקוחות צוברים נקודות על כל הזמנה ומזמינים יותר.", "מועדון לקוחות"],
+  ["🏆", "תוכנית יעדים ללקוחות — לבחירתכם", "רוצים לדחוף את הלקוחות להזמין יותר? מפעילים תוכנית יעדים ופרסים. לא רוצים — משאירים כבוי.", "מועדון לקוחות"],
   ["💬", "צ'אט ומבצעים", "שולחים מבצע לכל הלקוחות בלחיצה אחת, ומדברים איתם במקום אחד.", "מבצעים וצ'אט"],
 ];
 // ראש מסך ההרשמה: מה מקבלים, בקצרה ובצורה ברורה
@@ -546,7 +547,7 @@ function SignupIntro() {
     </div>
   );
 }
-const APP_VERSION = "28.9.26-h"; // מופיע בתחתית מסך הכניסה — לבדוק שהעדכון עלה
+const APP_VERSION = "28.9.26-n"; // מופיע בתחתית מסך הכניסה — לבדוק שהעדכון עלה
 const LP = { navy: "#0B1F4D", blue: "#1D4ED8", orange: "#F97316", pink: "#DB2777", soft: "#F5F7FC" };
 const ctaStyle = (big) => ({ border: "none", background: `linear-gradient(135deg, ${LP.orange}, ${LP.pink})`, color: "#fff", fontWeight: 800, fontSize: big ? 18 : 15, padding: big ? "16px 28px" : "12px 20px", borderRadius: 14, cursor: "pointer", boxShadow: "0 8px 24px rgba(219,39,119,.35)", fontFamily: "inherit" });
 function PhoneMock({ items: itemsIn, title, store }) {
@@ -795,17 +796,193 @@ function MockPrizes() {
     <Demo />
   </div>;
 }
+// ================= סיפורים מונפשים לכל חלון =================
+// תמונות מוצרים: /tour/products/<שם>.jpg — אם אין קובץ, מוצג אייקון
+const PRODUCT_PICS = { "עגבניות שרי": "cherry-tomatoes", "פלפל אדום": "red-pepper", "מלפפון": "cucumber", "חסה": "lettuce", "בצל": "onion", "תפוחי אדמה": "potatoes", "גזר": "carrot", "לימון": "lemon" };
+function ProductPic({ name, emoji, size = 34 }) {
+  const [bad, setBad] = useState(false); const slug = PRODUCT_PICS[name];
+  const box = { width: size, height: size, borderRadius: Math.round(size * 0.28), flexShrink: 0, overflow: "hidden", background: "#F1F5F9", display: "flex", alignItems: "center", justifyContent: "center", fontSize: Math.round(size * 0.6) };
+  if (!slug || bad) return <span style={box}>{emoji}</span>;
+  return <span style={box}><img src={"/tour/products/" + slug + ".jpg"} alt={name} onError={() => setBad(true)} style={{ width: "100%", height: "100%", objectFit: "cover" }} /></span>;
+}
+function CountUp({ from = 0, to, dur = 1200, delay = 0, fmt = (v) => Math.round(v).toLocaleString("he-IL") }) {
+  const [v, setV] = useState(from);
+  useEffect(() => { let raf, t0; const t = setTimeout(() => { const step = (ts) => { if (!t0) t0 = ts; const k = Math.min(1, (ts - t0) / dur); setV(from + (to - from) * (1 - Math.pow(1 - k, 3))); if (k < 1) raf = requestAnimationFrame(step); }; raf = requestAnimationFrame(step); }, delay); return () => { clearTimeout(t); cancelAnimationFrame(raf); }; }, [from, to]);
+  return <>{fmt(v)}</>;
+}
+const STORY_CSS = `@keyframes tpScanLine{0%{top:10%}50%{top:86%}100%{top:10%}}@keyframes tpIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@keyframes tpPop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}@keyframes tpGrow{from{height:0}}@keyframes tpGrowW{from{transform:scaleX(0)}to{transform:scaleX(1)}}@keyframes tpDrop{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:none}}@keyframes tpFloat{0%{opacity:0;transform:translateY(10px)}30%{opacity:1}100%{opacity:0;transform:translateY(-40px)}}@keyframes tpTap{0%,100%{transform:scale(1)}50%{transform:scale(.85)}}@keyframes tpType{from{max-width:0}to{max-width:100%}}@keyframes tpGlow{0%,100%{box-shadow:0 0 0 0 rgba(249,115,22,.0)}50%{box-shadow:0 0 0 6px rgba(249,115,22,.25)}}@keyframes tpFill{from{width:var(--f0)}to{width:var(--f1)}}`;
+function StoryShell({ steps }) {
+  const [st, setSt] = useState(0); const [auto, setAuto] = useState(true);
+  useEffect(() => { if (!auto) return; const t = setTimeout(() => setSt((x) => (x + 1) % steps.length), steps[st].dur || 3200); return () => clearTimeout(t); }, [st, auto]);
+  const cur = steps[st];
+  return (
+    <div style={{ background: "#fff", borderRadius: 18, boxShadow: "0 16px 40px rgba(15,31,77,.18)", overflow: "hidden", direction: "rtl" }}>
+      <style>{STORY_CSS}</style>
+      <div style={{ display: "flex", borderBottom: `1px solid ${C.line}` }}>
+        {steps.map((x, i) => <button key={x.label} onClick={() => { setAuto(false); setSt(i); }} style={{ flex: 1, border: "none", background: st === i ? "linear-gradient(135deg,#FFF1E6,#FDE2EF)" : "#fff", padding: "9px 4px 7px", cursor: "pointer", fontFamily: "inherit", position: "relative" }}>
+          <div style={{ fontSize: 16 }}>{x.icon}</div><div style={{ fontSize: 11.5, fontWeight: 800, color: st === i ? "#9D174D" : C.sub }}>{i + 1}. {x.label}</div>
+          {st === i && auto && <div key={"p" + st} style={{ position: "absolute", bottom: 0, right: 0, height: 3, width: "100%", background: `linear-gradient(90deg, ${LP.orange}, ${LP.pink})`, transformOrigin: "right", animation: `tpGrowW ${(x.dur || 3200) / 1000}s linear forwards` }} />}
+        </button>)}
+      </div>
+      <div style={{ height: 300, position: "relative", background: "linear-gradient(180deg,#F5F7FC,#fff)", overflow: "hidden" }}>
+        <div key={st} style={{ position: "absolute", inset: 0, padding: 12, animation: "tpIn .35s ease", display: "flex", flexDirection: "column", justifyContent: "center" }}>{cur.render()}</div>
+      </div>
+      <div style={{ padding: "8px 12px", fontSize: 12.5, fontWeight: 700, textAlign: "center", borderTop: `1px solid ${C.line}`, background: "#FAFBFD" }}>{cur.caption}</div>
+    </div>
+  );
+}
+const card = (extra) => ({ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 12, padding: "8px 10px", ...extra });
+const anim = (a, d) => ({ animation: `${a} .4s ease ${d}s both` });
+const VEG = [["🍅", "עגבניות שרי", 45, 3], ["🫑", "פלפל אדום", 62, 2], ["🥒", "מלפפון", 29, 4]];
+const PhoneBox = ({ children, bg = "#fff" }) => <div style={{ width: 188, margin: "0 auto", background: "#0f172a", borderRadius: 26, padding: 6, boxShadow: "0 14px 30px rgba(0,0,0,.28)" }}><div style={{ height: 262, borderRadius: 21, overflow: "hidden", background: bg, position: "relative" }}>{children}</div></div>;
+// ---- 1. ממשק ללקוחות ----
+function CustomersStory() {
+  return <StoryShell steps={[
+    { icon: "🔗", label: "מקבלים קישור", caption: "הלקוח מקבל מכם קישור לחנות — בוואטסאפ, במייל או ב-SMS", render: () => <PhoneBox bg="#ECE5DD">
+      <div style={{ background: "#075E54", color: "#fff", padding: "10px 12px", fontWeight: 800, fontSize: 12 }}>שיווק השדה</div>
+      <div style={{ padding: 10 }}><div style={{ ...card({ borderRadius: "12px 12px 12px 4px", maxWidth: "92%" }), ...anim("tpIn", .3) }}>
+        <div style={{ fontSize: 11.5 }}>שלום! מעכשיו מזמינים אצלנו אונליין 🛒</div>
+        <div style={{ marginTop: 6, borderRadius: 10, overflow: "hidden", border: `1px solid ${C.line}` }}><div style={{ height: 46, background: "linear-gradient(135deg,#1F7A4D,#124A2B)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13 }}>🥬 שיווק השדה</div><div dir="ltr" style={{ padding: "5px 7px", fontSize: 10, color: "#0B7", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", textAlign: "left" }}>b2b-plus.onrender.com/?store=s1</div></div>
+      </div>
+      <div style={{ textAlign: "center", fontSize: 24, marginTop: 10, animation: "tpTap 1s ease-in-out 1s infinite" }}>👆</div></div>
+    </PhoneBox> },
+    { icon: "🛒", label: "בוחרים מוצרים", dur: 3600, caption: "בוחרים מוצרים עם תמונות ומחירים — בכמה לחיצות", render: () => <PhoneBox>
+      <div style={{ background: "linear-gradient(135deg,#1F7A4D,#124A2B)", color: "#fff", padding: "9px 12px", fontWeight: 800, fontSize: 12 }}>הזמנה חדשה</div>
+      <div style={{ padding: 8, display: "grid", gap: 6 }}>{VEG.map(([e, n, p, q], i) => <div key={n} style={{ ...card({ display: "flex", alignItems: "center", gap: 7, padding: "6px 7px" }), ...anim("tpIn", .2 + i * .2) }}><ProductPic name={n} emoji={e} size={30} /><div style={{ flex: 1, lineHeight: 1.2 }}><div style={{ fontWeight: 800, fontSize: 11.5 }}>{n}</div><div style={{ fontSize: 10, color: C.sub }}>₪{p} לקרטון</div></div><b style={{ fontSize: 13, minWidth: 14, textAlign: "center" }}><CountUp to={q} dur={900} delay={600 + i * 350} /></b><span style={{ width: 20, height: 20, borderRadius: 6, background: LP.blue, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13 }}>+</span></div>)}</div>
+      <div style={{ position: "absolute", bottom: 8, left: 8, right: 8, background: `linear-gradient(135deg, ${LP.orange}, ${LP.pink})`, color: "#fff", borderRadius: 11, padding: "8px 10px", display: "flex", justifyContent: "space-between", fontWeight: 800, fontSize: 12 }}><span>שליחת הזמנה</span><span>₪<CountUp to={VEG.reduce((a, x) => a + x[2] * x[3], 0)} dur={1600} delay={700} /></span></div>
+    </PhoneBox> },
+    { icon: "✅", label: "שולחים", caption: "ההזמנה נשלחת — ומגיעה אליכם מיד, מסודרת", render: () => <div style={{ textAlign: "center" }}>
+      <div style={{ width: 70, height: 70, borderRadius: "50%", background: C.green, color: "#fff", fontSize: 36, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto", ...anim("tpPop", .1) }}>✓</div>
+      <div style={{ fontWeight: 800, fontSize: 17, marginTop: 8, ...anim("tpIn", .4) }}>ההזמנה נשלחה!</div>
+      <div style={{ ...card({ margin: "14px auto 0", maxWidth: 260, display: "flex", gap: 8, alignItems: "center", textAlign: "right", boxShadow: "0 8px 20px rgba(0,0,0,.12)" }), ...anim("tpDrop", 1) }}><span style={{ fontSize: 22 }}>🔔</span><div><div style={{ fontWeight: 800, fontSize: 12.5 }}>הזמנה חדשה ממסעדת הנמל</div><div style={{ fontSize: 11, color: C.sub }}>3 מוצרים · ₪377 · אצלכם עכשיו</div></div></div>
+    </div> },
+  ]} />;
+}
+// ---- 2. הזמנות ----
+function OrdersStory() {
+  const sts = [["חדשה", C.amber], ["לוקטה", C.blue], ["בדרך", C.plum], ["נמסרה", C.green]];
+  return <StoryShell steps={[
+    { icon: "🔔", label: "התראה", caption: "כל הזמנה חדשה מגיעה אליכם עם התראה", render: () => <div style={{ display: "grid", gap: 8 }}>
+      {[["מסעדת הנמל", "₪2,340", .2], ["קפה השכונה", "₪860", .9], ["קייטרינג אורן", "₪4,120", 1.6]].map(([n, t, d]) => <div key={n} style={{ ...card({ display: "flex", gap: 8, alignItems: "center", boxShadow: "0 8px 18px rgba(0,0,0,.08)" }), ...anim("tpDrop", d) }}><span style={{ fontSize: 22 }}>🔔</span><div style={{ flex: 1 }}><div style={{ fontWeight: 800, fontSize: 13 }}>הזמנה חדשה · {n}</div><div style={{ fontSize: 11, color: C.sub }}>עכשיו</div></div><b>{t}</b></div>)}
+    </div> },
+    { icon: "📋", label: "פירוט", caption: "רואים בדיוק מה הוזמן — מוצרים, כמויות וסכום", render: () => <div style={card({ padding: 12 })}>
+      <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800, fontSize: 13.5 }}><span>מסעדת הנמל · #1047</span><span style={{ color: C.amber, fontSize: 11.5 }}>חדשה</span></div>
+      {[["🍅", "עגבניות שרי", "4 קרט'"], ["🫑", "פלפל אדום", "2 קרט'"], ["🥒", "מלפפון", "6 קרט'"], ["🥬", "חסה", "10 יח'"]].map(([e, n, q], i) => <div key={n} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", borderTop: `1px solid ${C.line}`, ...anim("tpIn", .2 + i * .18) }}><ProductPic name={n} emoji={e} size={26} /><span style={{ flex: 1, fontWeight: 700, fontSize: 12.5 }}>{n}</span><span style={{ fontSize: 12, color: C.sub }}>{q}</span></div>)}
+      <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800, marginTop: 6, fontSize: 14 }}><span>סה"כ</span><span>₪2,340</span></div>
+    </div> },
+    { icon: "🚚", label: "עד המסירה", dur: 3600, caption: "עוקבים אחרי כל הזמנה: חדשה ← לוקטה ← בדרך ← נמסרה", render: () => <div style={card({ padding: 14 })}>
+      <div style={{ fontWeight: 800, fontSize: 13.5, marginBottom: 12 }}>מסעדת הנמל · #1047</div>
+      <div style={{ position: "relative", height: 6, background: "#E5E9F0", borderRadius: 6, margin: "0 12px" }}><div style={{ position: "absolute", right: 0, top: 0, bottom: 0, borderRadius: 6, background: `linear-gradient(90deg, ${C.green}, ${LP.blue})`, "--f0": "0%", "--f1": "100%", animation: "tpFill 2.6s ease .3s both" }} /></div>
+      <div style={{ display: "flex", justifyContent: "space-between", marginTop: -13 }}>{sts.map(([l, c], i) => <div key={l} style={{ textAlign: "center", width: 56, ...anim("tpPop", .3 + i * .75) }}><div style={{ width: 20, height: 20, borderRadius: "50%", background: c, color: "#fff", fontSize: 11, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto", border: "3px solid #fff" }}>✓</div><div style={{ fontSize: 11.5, fontWeight: 800, marginTop: 3 }}>{l}</div></div>)}</div>
+      <div style={{ textAlign: "center", marginTop: 14, fontWeight: 800, color: C.greenDeep, ...anim("tpIn", 2.7) }}>✓ נמסרה ללקוח · 11:42</div>
+    </div> },
+  ]} />;
+}
+// ---- 3. מלאי ----
+function StockStory() {
+  const row = (e, n, from, to, note, noteColor, d) => <div style={{ ...card({ display: "flex", alignItems: "center", gap: 10, padding: 12 }), ...anim("tpIn", d) }}><ProductPic name={n} emoji={e} size={44} /><div style={{ flex: 1 }}><div style={{ fontWeight: 800, fontSize: 14 }}>{n}</div><div style={{ fontSize: 11.5, fontWeight: 700, color: noteColor, ...anim("tpIn", 1) }}>{note}</div></div><div style={{ textAlign: "center" }}><div style={{ fontWeight: 800, fontSize: 24, color: noteColor }}><CountUp from={from} to={to} dur={1200} delay={900} /></div><div style={{ fontSize: 10.5, color: C.sub }}>קרטונים</div></div></div>;
+  return <StoryShell steps={[
+    { icon: "📤", label: "הזמנה יוצאת", caption: "כל הזמנה מורידה את המלאי אוטומטית", render: () => <div style={{ display: "grid", gap: 8 }}>{row("🍅", "עגבניות שרי", 24, 20, "−4 · הזמנה #1047", C.ink, .1)}{row("🥒", "מלפפון", 30, 24, "−6 · הזמנה #1047", C.ink, .3)}</div> },
+    { icon: "⚠️", label: "מלאי נמוך", caption: "מקבלים התראה לפני שמשהו נגמר", render: () => <div style={{ display: "grid", gap: 8 }}>{row("🧅", "בצל", 6, 3, "", C.red, .1)}<div style={{ ...card({ background: C.redSoft, borderColor: "#F3C2C2", color: C.red, fontWeight: 800, fontSize: 13.5, display: "flex", gap: 8, alignItems: "center" }), ...anim("tpPop", 1.6) }}>⚠️ בצל — נשארו 3 קרטונים. כדאי להזמין מהספק</div></div> },
+    { icon: "📥", label: "סחורה נכנסת", caption: "צילום חשבונית קנייה מוסיף את הסחורה למלאי", render: () => <div style={{ display: "grid", gap: 8 }}>{row("🍅", "עגבניות שרי", 20, 40, "+20 · חשבונית 58213", C.greenDeep, .1)}{row("🫑", "פלפל אדום", 5, 17, "+12 · חשבונית 58213", C.greenDeep, .3)}</div> },
+  ]} />;
+}
+// ---- 4. צילום חשבוניות (עם חשבונית "אמיתית") ----
+const INV_ROWS = [[42.2, "🍅", "עגבניות שרי", 20, 38, 52], [47.5, "🫑", "פלפל אדום", 12, 45, 62], [52.7, "🥒", "מלפפון", 25, 21, 29]];
+function ScanStory() {
+  const total = INV_ROWS.reduce((a, r) => a + r[3] * r[4], 0);
+  return <StoryShell steps={[
+    { icon: "📸", label: "מצלמים", caption: "מצלמים את החשבונית מהספק — גם כמה דפים", render: () => <PhoneBox bg="#222">
+      <img src="/tour/invoice-photo.jpg" alt="חשבונית" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { e.currentTarget.style.display = "none"; }} />
+      {[["top", "right"], ["top", "left"], ["bottom", "right"], ["bottom", "left"]].map(([v, h], i) => <div key={i} style={{ position: "absolute", [v]: 30, [h]: 16, width: 18, height: 18, [`border${v[0].toUpperCase() + v.slice(1)}`]: "3px solid #FDBA74", [`border${h[0].toUpperCase() + h.slice(1)}`]: "3px solid #FDBA74", borderRadius: 4 }} />)}
+      <div style={{ position: "absolute", left: 14, right: 14, height: 2, background: "linear-gradient(90deg,transparent,#F97316,#DB2777,transparent)", boxShadow: "0 0 12px #F97316", animation: "tpScanLine 2.2s ease-in-out infinite" }} />
+      <div style={{ position: "absolute", top: 8, left: 0, right: 0, textAlign: "center" }}><span style={{ background: "rgba(0,0,0,.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 10, padding: "2px 8px" }}>דף 1 מתוך 1</span></div>
+      <div style={{ position: "absolute", bottom: 10, left: "50%", marginLeft: -19, width: 38, height: 38, borderRadius: "50%", border: "3px solid #fff", background: "rgba(255,255,255,.3)", animation: "tpTap 1.2s ease-in-out 1s infinite" }} />
+    </PhoneBox> },
+    { icon: "✨", label: "נקרא לבד", dur: 3800, caption: "המערכת קוראת ספק, מוצרים, כמויות ומחירים", render: () => <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+      <div style={{ width: 112, flexShrink: 0, position: "relative", borderRadius: 6, overflow: "hidden", boxShadow: "0 6px 16px rgba(0,0,0,.18)" }}>
+        <img src="/tour/invoice-scan.jpg" alt="" style={{ width: "100%", display: "block" }} />
+        <div style={{ position: "absolute", left: "44.8%", top: "5.4%", width: "50.2%", height: "4.7%", background: "rgba(249,115,22,.35)", borderRadius: 2, ...anim("tpIn", .2) }} />
+        {INV_ROWS.map(([y], i) => <div key={i} style={{ position: "absolute", left: "5.1%", top: y + "%", width: "89.9%", height: "5.2%", background: "rgba(219,39,119,.28)", outline: "1.5px solid rgba(219,39,119,.8)", ...anim("tpIn", .6 + i * .55) }} />)}
+      </div>
+      <div style={{ fontSize: 16, color: LP.pink, fontWeight: 800 }}>←</div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 11.5, fontWeight: 800, marginBottom: 5, ...anim("tpIn", .2) }}><span style={{ background: "linear-gradient(135deg,#EEF2FF,#FAF5FF)", borderRadius: 8, padding: "1px 6px", color: "#6D28D9" }}>✨ זוהה</span> המשק — סיטונאות · #58213</div>
+        {INV_ROWS.map(([, e, n, q, p], i) => <div key={n} style={{ ...card({ display: "flex", alignItems: "center", gap: 6, padding: "5px 7px", marginBottom: 5 }), ...anim("tpIn", .65 + i * .55) }}><ProductPic name={n} emoji={e} size={26} /><div style={{ flex: 1, minWidth: 0, lineHeight: 1.2 }}><div style={{ fontWeight: 800, fontSize: 12 }}>{n}</div><div style={{ fontSize: 10.5, color: C.sub }}>{q} קרט' × ₪{p}</div></div><span style={{ width: 17, height: 17, borderRadius: "50%", background: C.green, color: "#fff", fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", ...anim("tpPop", .9 + i * .55) }}>✓</span></div>)}
+        <div style={{ fontSize: 11.5, color: C.sub, ...anim("tpIn", 2.4) }}>סה"כ לפני מע"מ: <b style={{ color: C.ink }}>₪{total.toLocaleString()}</b></div>
+      </div>
+    </div> },
+    { icon: "🏪", label: "בחנות ובדוח", caption: "המוצרים בחנות ובמלאי, ההוצאה בדוח והחשבונית שמורה", render: () => <div style={{ display: "grid", gap: 8 }}>
+      <div style={{ fontSize: 12, fontWeight: 800 }}>🏪 נוסף לחנות <span style={{ fontSize: 10.5, color: C.sub, fontWeight: 600 }}>· קבעתם מחיר מכירה</span></div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 6 }}>{INV_ROWS.map(([, e, n, q, buy, sell], i) => <div key={n} style={{ ...card({ border: `1.5px solid ${C.green}`, padding: "7px 4px", textAlign: "center" }), ...anim("tpPop", .1 + i * .25) }}><div style={{ display: "flex", justifyContent: "center" }}><ProductPic name={n} emoji={e} size={38} /></div><div style={{ fontWeight: 800, fontSize: 11, marginTop: 3 }}>{n}</div><div style={{ fontWeight: 800, color: C.greenDeep, fontSize: 13 }}>₪{sell}</div><div style={{ fontSize: 9.5, color: C.sub }}>מלאי +{q} · רווח ₪{sell - buy}</div></div>)}</div>
+      <div style={{ ...card({ display: "flex", alignItems: "flex-end", gap: 10 }), ...anim("tpIn", .8) }}><div style={{ flex: 1 }}><div style={{ fontSize: 12, fontWeight: 800 }}>📊 דוח ספטמבר עודכן</div><div style={{ fontSize: 11, color: C.sub, marginTop: 2 }}>הוצאה על סחורה <b style={{ color: C.red }}>+₪{total.toLocaleString()}</b> · 🗂️ החשבונית נשמרה</div></div><div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 40 }}>{[55, 70, 62, 88].map((h, i) => <div key={i} style={{ width: 9, height: h + "%", background: i === 3 ? `linear-gradient(180deg, ${LP.orange}, ${LP.pink})` : "#CBD5E1", borderRadius: 2, animation: i === 3 ? "tpGrow .6s ease 1s both" : "none" }} />)}</div></div>
+    </div> },
+  ]} />;
+}
+// ---- 5. דוחות ----
+function ReportsStory() {
+  const months = ["יולי", "אוגוסט", "ספטמבר"];
+  return <StoryShell steps={[
+    { icon: "📅", label: "בוחרים חודש", caption: "בוחרים חודש ושנה — בלחיצה", render: () => <div style={{ textAlign: "center" }}><div style={{ display: "flex", gap: 6, justifyContent: "center" }}>{months.map((m, i) => <span key={m} style={{ borderRadius: 20, padding: "7px 14px", fontWeight: 800, fontSize: 13, border: `1.5px solid ${i === 2 ? C.green : C.line}`, background: i === 2 ? C.green : "#fff", color: i === 2 ? "#fff" : C.sub, ...anim(i === 2 ? "tpPop" : "tpIn", .2 + i * .25) }}>{m}</span>)}</div><div style={{ ...card({ margin: "14px auto 0", maxWidth: 220, fontWeight: 800 }), ...anim("tpIn", 1.1) }}>📊 ספטמבר 2026</div></div> },
+    { icon: "💰", label: "הכנסות והוצאות", dur: 3400, caption: "רואים מיד כמה נכנס, כמה יצא על סחורה ומה נשאר", render: () => <div style={{ display: "grid", gap: 8 }}>{[["הכנסות מהזמנות", 92400, C.greenDeep], ["הוצאות על סחורה", 55100, C.red], ["רווח גולמי", 37300, C.blue]].map(([l, v, c], i) => <div key={l} style={{ ...card({ display: "flex", justifyContent: "space-between", alignItems: "center", padding: 12 }), ...anim("tpIn", .1 + i * .3) }}><span style={{ fontWeight: 700, fontSize: 13 }}>{l}</span><b style={{ fontSize: 20, color: c }}>₪<CountUp to={v} dur={1300} delay={300 + i * 300} /></b></div>)}</div> },
+    { icon: "⬇️", label: "לרואה החשבון", caption: "גרף חודשי והורדה לאקסל — מוכן לרואה החשבון", render: () => <div style={card({ padding: 12 })}>
+      <div style={{ display: "flex", alignItems: "flex-end", gap: 10, height: 110, padding: "0 6px" }}>{[[62, 41], [70, 44], [66, 40], [81, 50], [77, 47], [92, 55]].map(([a, b], i) => <div key={i} style={{ flex: 1, display: "flex", gap: 2, alignItems: "flex-end", height: "100%" }}><div style={{ flex: 1, height: a + "%", background: C.green, borderRadius: 3, animation: `tpGrow .6s ease ${.1 + i * .12}s both` }} /><div style={{ flex: 1, height: b + "%", background: "#F87171", borderRadius: 3, animation: `tpGrow .6s ease ${.15 + i * .12}s both` }} /></div>)}</div>
+      <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "center" }}><span style={{ ...card({ fontWeight: 800, fontSize: 12.5, color: C.greenDeep, borderColor: C.green }), animation: "tpGlow 1.4s ease 1s 2" }}>⬇ הורדה לאקסל</span><span style={{ ...card({ fontWeight: 800, fontSize: 12.5, color: C.greenDeep }), ...anim("tpPop", 1.8) }}>✓ נשלח לרואה החשבון</span></div>
+    </div> },
+  ]} />;
+}
+// ---- 6. חשבוניות וגבייה ----
+function InvoicesStory() {
+  return <StoryShell steps={[
+    { icon: "✅", label: "הזמנה נמסרה", caption: "הזמנה נמסרה — מפיקים חשבונית בלחיצה", render: () => <div style={card({ padding: 14 })}><div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800 }}><span>מסעדת הנמל · #1047</span><span style={{ color: C.greenDeep, fontSize: 12 }}>✓ נמסרה</span></div><div style={{ fontSize: 12, color: C.sub, marginTop: 4 }}>4 מוצרים · ₪677.32 כולל מע"מ</div><div style={{ marginTop: 14, background: C.green, color: "#fff", borderRadius: 11, padding: 10, textAlign: "center", fontWeight: 800, animation: "tpGlow 1.2s ease .6s 2" }}>🧾 הפקת חשבונית</div></div> },
+    { icon: "🧾", label: "חשבונית", caption: "חשבונית מס/קבלה מסודרת עם פרטי העסק שלכם", render: () => <div style={{ ...card({ padding: 12, boxShadow: "0 10px 24px rgba(0,0,0,.1)" }), ...anim("tpPop", .1) }}>
+      <div style={{ display: "flex", justifyContent: "space-between" }}><div><div style={{ fontWeight: 800 }}>חשבונית מס / קבלה</div><div style={{ fontSize: 11, color: C.sub }}>שיווק השדה · מס' 1047</div></div><span style={{ fontSize: 11, color: C.sub }}>28.9.2026</span></div>
+      {[["🍅", "עגבניות שרי · 4", "₪180"], ["🥬", "חסה · 10", "₪45"], ["🥒", "מלפפון · 6", "₪174"], ["🫑", "פלפל אדום · 3", "₪186"]].map(([e, n, v], i) => <div key={n} style={{ display: "flex", justifyContent: "space-between", fontSize: 12, padding: "4px 0", borderTop: `1px solid ${C.line}`, ...anim("tpIn", .3 + i * .15) }}><span>{e} {n}</span><span>{v}</span></div>)}
+      <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800, paddingTop: 6, borderTop: `2px solid ${C.ink}`, ...anim("tpIn", 1) }}><span>סה"כ כולל מע"מ</span><span>₪677.32</span></div>
+    </div> },
+    { icon: "💸", label: "שליחה ותשלום", caption: "שולחים בוואטסאפ ורואים מי שילם ומי חייב", render: () => <div style={{ display: "grid", gap: 10 }}>
+      <div style={{ ...card({ background: "#DCF8C6", borderColor: "#BFE7A6", maxWidth: "80%", justifySelf: "start", display: "flex", gap: 8, alignItems: "center" }), ...anim("tpIn", .1) }}><span style={{ fontSize: 22 }}>🧾</span><div style={{ fontSize: 12 }}><b>חשבונית <bdi dir="ltr">1047.pdf</bdi></b><div style={{ color: C.sub }}>נשלח ✓✓</div></div></div>
+      <div style={{ ...card({ display: "flex", justifyContent: "space-between", alignItems: "center", padding: 12 }), ...anim("tpIn", .7) }}><span style={{ fontWeight: 800 }}>מסעדת הנמל</span><span style={{ display: "flex", alignItems: "center", gap: 8 }}><span style={{ color: C.sub, fontSize: 12, textDecoration: "line-through" }}>חוב ₪677</span><span style={{ border: `2.5px solid ${C.green}`, color: C.greenDeep, fontWeight: 800, borderRadius: 8, padding: "1px 8px", transform: "rotate(-8deg)", background: C.greenSoft, ...anim("tpPop", 1.3) }}>שולם ✓</span></span></div>
+    </div> },
+  ]} />;
+}
+// ---- 7. צוות ----
+function TeamStory() {
+  return <StoryShell steps={[
+    { icon: "⚖️", label: "מלקט", dur: 3600, caption: "המלקט רואה מה להכין, מסמן ושוקל", render: () => <div style={card({ padding: 12 })}><div style={{ fontWeight: 800, fontSize: 13, marginBottom: 6 }}>⚖️ ליקוט · הזמנה #1047</div>{[["🍅", "עגבניות שרי", "4 קרט' · 38.6 ק\"ג"], ["🥬", "חסה", "10 יח'"], ["🥒", "מלפפון", "6 קרט' · 54.2 ק\"ג"]].map(([e, n, q], i) => <div key={n} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", borderTop: `1px solid ${C.line}` }}><span style={{ width: 20, height: 20, borderRadius: 6, background: C.green, color: "#fff", fontSize: 12, display: "flex", alignItems: "center", justifyContent: "center", ...anim("tpPop", .5 + i * .7) }}>✓</span><ProductPic name={n} emoji={e} size={26} /><span style={{ flex: 1, fontWeight: 700, fontSize: 12.5 }}>{n}</span><span style={{ fontSize: 11, color: C.sub }}>{q}</span></div>)}</div> },
+    { icon: "🚚", label: "נהג", caption: "הנהג רואה את המשלוחים שלו ומסמן \"נמסר\"", render: () => <div style={{ display: "grid", gap: 7 }}>{[["מסעדת הנמל", "הרצל 12, חיפה", true], ["קפה השכונה", "הנביאים 4, חיפה", true], ["קייטרינג אורן", "העצמאות 30, קריות", false]].map(([n, a, d], i) => <div key={n} style={{ ...card({ display: "flex", alignItems: "center", gap: 8 }), ...anim("tpIn", .1 + i * .2) }}><span style={{ fontSize: 18 }}>📍</span><div style={{ flex: 1 }}><div style={{ fontWeight: 800, fontSize: 12.5 }}>{n}</div><div style={{ fontSize: 11, color: C.sub }}>{a}</div></div><span style={{ fontSize: 11, fontWeight: 800, borderRadius: 20, padding: "2px 8px", background: d ? C.greenSoft : C.plumSoft, color: d ? C.greenDeep : C.plum, ...anim("tpPop", .9 + i * .5) }}>{d ? "נמסר ✓" : "בדרך"}</span></div>)}</div> },
+    { icon: "💼", label: "סוכן", caption: "הסוכן מזמין עבור הלקוחות שלו ועוקב אחריהם", render: () => <div style={card({ padding: 12 })}><div style={{ fontWeight: 800, fontSize: 13 }}>💼 הזמנה עבור: קפה השכונה</div>{VEG.map(([e, n, p, q], i) => <div key={n} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", borderTop: `1px solid ${C.line}`, ...anim("tpIn", .3 + i * .25) }}><ProductPic name={n} emoji={e} size={26} /><span style={{ flex: 1, fontWeight: 700, fontSize: 12.5 }}>{n}</span><b>{q}</b></div>)}<div style={{ marginTop: 8, background: C.green, color: "#fff", borderRadius: 10, padding: 8, textAlign: "center", fontWeight: 800, ...anim("tpPop", 1.5) }}>✓ ההזמנה נשלחה לליקוט</div></div> },
+  ]} />;
+}
+// ---- 8. מבצעים וצ'אט ----
+function MessagesStory() {
+  const msg = "🔥 מבצע השבוע: 10% הנחה על עגבניות שרי!";
+  return <StoryShell steps={[
+    { icon: "✍️", label: "כותבים מבצע", dur: 3400, caption: "כותבים מבצע אחד — או בוחרים מהרעיונות המוכנים", render: () => <div style={card({ padding: 12 })}><div style={{ fontWeight: 800, fontSize: 13, marginBottom: 8 }}>📣 הודעה לכל הלקוחות</div><div style={{ border: `1.5px solid ${LP.orange}`, borderRadius: 10, padding: "9px 10px", fontSize: 13.5, fontWeight: 700, lineHeight: 1.5, minHeight: 44 }}>{msg.split(" ").map((w, i) => <span key={i} style={{ display: "inline-block", marginInlineEnd: 4, animation: `tpIn .25s ease ${0.3 + i * 0.22}s both` }}>{w}</span>)}<span style={{ display: "inline-block", width: 2, height: 15, background: LP.orange, verticalAlign: "middle", animation: "tpTap .8s steps(2) infinite" }} /></div><div style={{ display: "flex", gap: 6, marginTop: 10 }}><ProductPic name="עגבניות שרי" emoji="🍅" size={40} /><div style={{ fontSize: 11.5, color: C.sub, alignSelf: "center" }}>רעיון מהמוצרים שלכם 💡</div></div></div> },
+    { icon: "📲", label: "נשלח לכולם", caption: "בלחיצה אחת — כל הלקוחות מקבלים את המבצע", render: () => <div style={{ textAlign: "center" }}><div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 8, maxWidth: 260, margin: "0 auto" }}>{Array.from({ length: 8 }, (_, i) => <div key={i} style={{ ...card({ padding: "8px 0", fontSize: 20 }), ...anim("tpPop", .2 + i * .15) }}>📱<div style={{ fontSize: 9, color: C.greenDeep, fontWeight: 800 }}>✓</div></div>)}</div><div style={{ fontWeight: 800, fontSize: 15, marginTop: 12, ...anim("tpIn", 1.5) }}><CountUp to={48} dur={900} delay={1500} /> לקוחות קיבלו את המבצע</div></div> },
+    { icon: "💬", label: "צ'אט", caption: "מדברים עם כל לקוח במקום אחד", render: () => <div style={{ display: "grid", gap: 7 }}>{[["start", "אפשר להוסיף 2 קרטוני חסה למחר?", "#EEF2F7", C.ink, .1], ["end", "בטח, הוספתי ✓", LP.blue, "#fff", .9], ["start", "תודה! והמבצע על העגבניות בתוקף?", "#EEF2F7", C.ink, 1.7], ["end", "כן, עד יום חמישי 🍅", LP.blue, "#fff", 2.4]].map(([side, t, bg, fg, d]) => <div key={t} style={{ justifySelf: side, background: bg, color: fg, borderRadius: 12, padding: "7px 11px", fontSize: 12.5, maxWidth: "80%", ...anim("tpIn", d) }}>{t}</div>)}</div> },
+  ]} />;
+}
+// ---- 9. יעדים ופרסים ----
+function PrizesStory() {
+  return <StoryShell steps={[
+    { icon: "⭐", label: "צוברים נקודות", caption: "כל הזמנה של הלקוח צוברת לו נקודות", render: () => <div style={{ textAlign: "center", position: "relative" }}><div style={card({ padding: 14, maxWidth: 240, margin: "0 auto" })}><div style={{ fontWeight: 800 }}>מסעדת הנמל · #1047</div><div style={{ fontSize: 12, color: C.sub }}>120 ק"ג סחורה</div></div><div style={{ fontSize: 20, marginTop: 10, color: LP.pink, ...anim("tpIn", .4) }}>↓</div><div style={{ display: "inline-block", marginTop: 6, fontWeight: 800, fontSize: 24, color: "#fff", background: `linear-gradient(135deg, ${LP.orange}, ${LP.pink})`, borderRadius: 30, padding: "6px 18px", boxShadow: "0 8px 20px rgba(219,39,119,.35)", ...anim("tpPop", .7) }}>+12 נק' ⭐</div></div> },
+    { icon: "📈", label: "מתקדמים ליעד", dur: 3400, caption: "הלקוח רואה כמה חסר לו לפרס — ומזמין יותר", render: () => <div style={card({ padding: 14 })}><div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800 }}><span>מסעדת הנמל</span><span style={{ color: C.plum }}><CountUp from={52} to={64} dur={1400} delay={400} /> נק'</span></div><div style={{ height: 12, borderRadius: 12, background: "#EEF2F7", margin: "12px 0 6px", overflow: "hidden" }}><div style={{ height: "100%", borderRadius: 12, background: `linear-gradient(90deg, ${LP.orange}, ${LP.pink})`, "--f0": "52%", "--f1": "64%", animation: "tpFill 1.4s ease .4s both" }} /></div><div style={{ fontSize: 12, color: C.sub }}>עוד <b style={{ color: C.ink }}>36 נק'</b> ל-☕ מכונת קפה</div></div> },
+    { icon: "🎁", label: "פרס!", caption: "הלקוח זוכה — ונשאר נאמן אליכם. אתם קובעים את הפרסים", render: () => <div style={{ textAlign: "center", position: "relative" }}>{["🎉", "✨", "🎊", "⭐", "🎉"].map((e, i) => <span key={i} style={{ position: "absolute", top: 20 + (i % 2) * 30, left: 10 + i * 20 + "%", fontSize: 22, animation: `tpFloat 1.6s ease ${.2 + i * .15}s infinite` }}>{e}</span>)}<div style={{ fontSize: 50, ...anim("tpPop", .2) }}>🎁</div><div style={{ fontWeight: 800, fontSize: 17, ...anim("tpIn", .6) }}>מסעדת הנמל זכתה!</div><div style={{ fontSize: 13, color: C.sub, ...anim("tpIn", .9) }}>מארז פירות עונתי · 30 נק'</div></div> },
+  ]} />;
+}
+
 // סיור בכלים — חלונות בראש מסך ההרשמה; לחיצה פותחת המחשה גדולה
 const FEATURE_TOUR = [
-  { icon: "🛒", short: "ממשק ללקוחות", title: "ממשק הזמנות נוח ללקוחות שלכם", text: "הלקוחות שלכם פותחים קישור ומזמינים מהטלפון תוך שניות — עם תמונות, מחירים וכמויות. בלי אפליקציה ובלי להתקשר.", bullets: ["מזמינים 24/7", "🔁 הזמן שוב בלחיצה", "מבצעים ישר לטלפון שלהם"], visual: () => <PhoneMock /> },
-  { icon: "📋", short: "הזמנות", title: "כל ההזמנות — מפורטות ומסודרות", text: "כל הזמנה מגיעה עם התראה ופירוט מלא, ועוברת שלבים ברורים עד שהיא נמסרת ללקוח.", bullets: ["התראה על כל הזמנה חדשה", "סטטוס: חדשה · לוקטה · בדרך · נמסרה", "סכום ההזמנות של היום"], visual: () => <MockOrders /> },
-  { icon: "📦", short: "מלאי", title: "מעקב מלאי אוטומטי", text: "המלאי יורד עם כל הזמנה ועולה עם כל חשבונית קנייה. תמיד יודעים מה יש ומה עומד להיגמר.", bullets: ["התראת מלאי נמוך", "קרטון, יחידה או ק\"ג", "מתעדכן מסריקת חשבוניות"], visual: () => <MockStock /> },
-  { icon: "📸", short: "סריקת חשבוניות", premium: true, title: "מצלמים חשבונית — והמוצרים עולים לחנות ולדוחות", text: "מצלמים את החשבונית מהספק שלכם (גם כמה דפים). המערכת קוראת מוצרים, כמויות ומחירים — ואתם רק קובעים מחיר מכירה.", bullets: ["בלי להקליד מוצר אחרי מוצר", "רווח לכל מוצר מחושב לבד", "החשבוניות שמורות לפי חודשים"], visual: () => <MockScan /> },
-  { icon: "📊", short: "דוחות חודשיים", premium: true, title: "דוח הכנסות והוצאות — בלחיצה", text: "בוחרים חודש ושנה ורואים כמה נכנס, כמה יצא על סחורה ומה נשאר. כל נתון נפתח לפירוט מלא.", bullets: ["השוואה בין חודשים וסיכום שנתי", "פירוט כל ההזמנות והחשבוניות", "הורדה לאקסל לרואה החשבון"], visual: () => <MockReport /> },
-  { icon: "🧾", short: "חשבוניות וגבייה", title: "חשבונית לכל הזמנה, ומעקב מי שילם", text: "חשבונית מסודרת עם פרטי העסק שלכם לכל הזמנה, ויתרת חוב לכל לקוח — בלי לרדוף אחרי אף אחד.", bullets: ["הורדה או שליחה בוואטסאפ", "יתרת חוב לכל לקוח", "מזומן, אשראי, צ'ק או העברה"], visual: () => <MockInvoice /> },
-  { icon: "🚚", short: "ליקוט ומשלוחים", premium: true, title: "ליקוט, שקילה ומשלוחים — מסונכרנים", text: "המלקט רואה מה להכין ושוקל, הנהג רואה לאן לנסוע, ואתם רואים הכל בזמן אמת.", bullets: ["רשימת ליקוט לכל הזמנה", "שקילה ועדכון משקל אמיתי", "סימון \"נמסר\" אצל הנהג"], visual: () => <MockPickDrive /> },
-  { icon: "💬", short: "מבצעים וצ'אט", title: "מבצעים וצ'אט עם הלקוחות", text: "שולחים מבצע לכל הלקוחות בלחיצה, ומדברים עם כל לקוח במקום אחד — בלי לפזר הודעות.", bullets: ["הודעה לכולם בלחיצה", "רעיונות למבצעים מהמוצרים שלכם", "צ'אט אישי עם כל לקוח"], visual: () => <MockChat /> },
-  { icon: "🏆", short: "יעדים ופרסים", premium: true, title: "מועדון לקוחות: יעדים ופרסים", text: "הלקוחות צוברים נקודות על כל הזמנה ורואים כמה חסר להם לפרס הבא — ומזמינים יותר.", bullets: ["אתם קובעים את הפרסים", "תקופה: מחודש ועד שנה", "הלקוח רואה את ההתקדמות שלו"], visual: () => <MockPrizes /> },
+  { icon: "🛒", short: "ממשק ללקוחות", story: () => <CustomersStory />, shot: "/tour/customers.jpg", title: "ממשק הזמנות נוח ללקוחות שלכם", text: "הלקוחות שלכם פותחים קישור ומזמינים מהטלפון תוך שניות — עם תמונות, מחירים וכמויות. בלי אפליקציה ובלי להתקשר.", bullets: ["מזמינים 24/7", "🔁 הזמן שוב בלחיצה", "מבצעים ישר לטלפון שלהם"], visual: () => <PhoneMock /> },
+  { icon: "📋", short: "הזמנות", story: () => <OrdersStory />, shot: "/tour/orders.jpg", title: "כל ההזמנות — מפורטות ומסודרות", text: "כל הזמנה מגיעה עם התראה ופירוט מלא, ועוברת שלבים ברורים עד שהיא נמסרת ללקוח.", bullets: ["התראה על כל הזמנה חדשה", "סטטוס: חדשה · לוקטה · בדרך · נמסרה", "סכום ההזמנות של היום"], visual: () => <MockOrders /> },
+  { icon: "📦", short: "מלאי", story: () => <StockStory />, shot: "/tour/stock.jpg", title: "מעקב מלאי אוטומטי", text: "המלאי יורד עם כל הזמנה ועולה עם כל חשבונית קנייה. תמיד יודעים מה יש ומה עומד להיגמר.", bullets: ["התראת מלאי נמוך", "קרטון, יחידה או ק\"ג", "מתעדכן מסריקת חשבוניות"], visual: () => <MockStock /> },
+  { icon: "📸", short: "צילום חשבוניות", story: () => <ScanStory />, shot: "/tour/scan.jpg", premium: true, title: "מצלמים חשבונית — והכל מתעדכן לבד", text: "מצלמים את החשבונית מהספק שלכם (גם כמה דפים), והמערכת עושה את כל השאר — בלי להקליד שורה אחת.", bullets: ["🏪 המוצרים עולים לחנות — אתם רק קובעים מחיר מכירה", "📦 המלאי מתעדכן אוטומטית", "📊 ההוצאה נרשמת בדוח ההכנסות וההוצאות", "🗂️ כל החשבוניות שמורות ומסודרות לפי חודשים — מוכנות לרואה החשבון"], visual: () => <MockScan /> },
+  { icon: "📊", short: "דוחות חודשיים", story: () => <ReportsStory />, shot: "/tour/reports.jpg", premium: true, title: "דוח הכנסות והוצאות — בלחיצה", text: "בוחרים חודש ושנה ורואים כמה נכנס, כמה יצא על סחורה ומה נשאר. כל נתון נפתח לפירוט מלא.", bullets: ["השוואה בין חודשים וסיכום שנתי", "פירוט כל ההזמנות והחשבוניות", "הורדה לאקסל לרואה החשבון"], visual: () => <MockReport /> },
+  { icon: "🧾", short: "חשבוניות וגבייה", story: () => <InvoicesStory />, shot: "/tour/invoices.jpg", title: "חשבונית לכל הזמנה, ומעקב מי שילם", text: "חשבונית מסודרת עם פרטי העסק שלכם לכל הזמנה, ויתרת חוב לכל לקוח — בלי לרדוף אחרי אף אחד.", bullets: ["הורדה או שליחה בוואטסאפ", "יתרת חוב לכל לקוח", "מזומן, אשראי, צ'ק או העברה"], visual: () => <MockInvoice /> },
+  { icon: "👥", short: "צוות עובדים", story: () => <TeamStory />, shot: "/tour/picking.jpg", premium: true, title: "צוות עובדים — ממשק מותאם לכל אחד", text: "מוסיפים מלקטים, סוכנים ונהגים. כל עובד נכנס עם משתמש משלו ורואה רק את מה שהוא צריך — ואתם רואים הכל בזמן אמת.", bullets: ["מלקט: רשימת ליקוט ושקילה לכל הזמנה", "סוכן: הזמנות עבור לקוחות ומעקב", "נהג: המשלוחים שלו וסימון \"נמסר\""], visual: () => <MockPickDrive /> },
+  { icon: "💬", short: "מבצעים וצ'אט", story: () => <MessagesStory />, shot: "/tour/messages.jpg", title: "מבצעים וצ'אט עם הלקוחות", text: "שולחים מבצע לכל הלקוחות בלחיצה, ומדברים עם כל לקוח במקום אחד — בלי לפזר הודעות.", bullets: ["הודעה לכולם בלחיצה", "רעיונות למבצעים מהמוצרים שלכם", "צ'אט אישי עם כל לקוח"], visual: () => <MockChat /> },
+  { icon: "🏆", short: "יעדים ופרסים", story: () => <PrizesStory />, shot: "/tour/prizes.jpg", premium: true, title: "תוכנית יעדים ללקוחות — רק אם תרצו", text: "אפשרות למי שרוצה לדחוף את הלקוחות להזמין יותר: מפעילים תוכנית יעדים, הלקוחות צוברים נקודות על כל הזמנה ורואים כמה חסר להם לפרס הבא. לא מתאים לכם? פשוט משאירים כבוי.", bullets: ["מפעילים ומכבים בלחיצה — אתם מחליטים", "אתם קובעים את היעדים והפרסים", "תקופה לבחירה: מחודש ועד שנה"], visual: () => <MockPrizes /> },
 ];
 function FeatureTiles({ onOpen }) {
   return <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr))", gap: 8 }}>
@@ -818,7 +995,20 @@ function FeatureTiles({ onOpen }) {
       </button>))}
   </div>;
 }
+// צילום מסך אמיתי מהאפליקציה בתוך מסגרת טלפון; אם התמונה לא זמינה — מציגים את ההמחשה
+function ShotFrame({ f }) {
+  const [bad, setBad] = useState(false); const [real, setReal] = useState(false);
+  useEffect(() => { setBad(false); setReal(false); }, [f.shot]);
+  if (f.story && !real) return <div>{f.story()}{f.shot && <button onClick={() => setReal(true)} style={{ display: "block", margin: "8px auto 0", border: "none", background: "transparent", color: LP.blue, fontWeight: 700, fontSize: 12.5, cursor: "pointer", fontFamily: "inherit" }}>📱 לצילום מסך אמיתי מהאפליקציה</button>}</div>;
+  if (!f.shot || bad) return f.visual();
+  return (
+    <div style={{ width: "min(100%, 250px)", margin: "0 auto", background: "#0f172a", borderRadius: 30, padding: 7, boxShadow: "0 24px 50px rgba(0,0,0,.35)" }}>
+      <img src={f.shot} alt={f.title} onError={() => setBad(true)} style={{ display: "block", width: "100%", borderRadius: 24, background: "#EEF3F8" }} />
+    </div>
+  );
+}
 function FeatureViewer({ index, onClose, onNav, onSignup }) {
+  useEffect(() => { FEATURE_TOUR.forEach((x) => { if (x.shot) { const im = new Image(); im.src = x.shot; } }); }, []); // טעינה מוקדמת של התמונות
   const f = FEATURE_TOUR[index]; const n = FEATURE_TOUR.length;
   const touch = React.useRef(null);
   useEffect(() => { const k = (e) => { if (e.key === "Escape") onClose(); if (e.key === "ArrowLeft") onNav((index + 1) % n); if (e.key === "ArrowRight") onNav((index - 1 + n) % n); }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, [index]);
@@ -829,14 +1019,14 @@ function FeatureViewer({ index, onClose, onNav, onSignup }) {
         style={{ width: "100%", maxWidth: 480, maxHeight: "92vh", overflow: "auto", background: "#fff", borderRadius: 24, boxShadow: "0 30px 80px rgba(0,0,0,.35)", direction: "rtl" }}>
         <div style={{ background: `radial-gradient(400px 200px at 90% 0%, rgba(249,115,22,.35), transparent), linear-gradient(160deg, ${LP.navy}, ${LP.blue})`, color: "#fff", padding: "16px 16px 70px", position: "relative", borderRadius: "24px 24px 0 0" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 13, fontWeight: 700, opacity: .85 }}>{index + 1} / {n}</span>
+            <span style={{ fontSize: 13, fontWeight: 700, opacity: .85 }}><bdi dir="ltr">{index + 1} / {n}</bdi></span>
             {f.premium && <span style={{ fontSize: 11.5, fontWeight: 800, background: "rgba(255,255,255,.18)", borderRadius: 20, padding: "2px 9px" }}>⭐ פרימיום · פתוח בחודש הניסיון</span>}
             <span style={{ flex: 1 }} />
             <button onClick={onClose} aria-label="סגור" style={{ width: 32, height: 32, borderRadius: "50%", border: "none", background: "rgba(255,255,255,.18)", color: "#fff", cursor: "pointer", fontSize: 16 }}>✕</button>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10 }}><span style={{ width: 44, height: 44, borderRadius: 13, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>{f.icon}</span><div style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.3 }}>{f.title}</div></div>
         </div>
-        <div style={{ margin: "-56px 16px 0", position: "relative" }}><div style={{ maxWidth: 340, margin: "0 auto" }}>{f.visual()}</div></div>
+        <div style={{ margin: "-56px 16px 0", position: "relative" }}><div style={{ maxWidth: 340, margin: "0 auto" }}><ShotFrame f={f} /></div>{f.shot && !f.story && <div style={{ fontSize: 11, color: C.sub, textAlign: "center", marginTop: 6 }}>📱 צילום מסך מהאפליקציה · נתוני הדגמה</div>}</div>
         <div style={{ padding: "14px 18px 18px" }}>
           <div style={{ fontSize: 14.5, color: C.sub, lineHeight: 1.7 }}>{f.text}</div>
           <div style={{ display: "grid", gap: 6, marginTop: 10 }}>{f.bullets.map((b) => <div key={b} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 14, fontWeight: 700 }}><span style={{ width: 20, height: 20, borderRadius: "50%", background: C.greenSoft, color: C.greenDeep, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Check size={12} strokeWidth={3} /></span>{b}</div>)}</div>
@@ -862,7 +1052,7 @@ function ProductShowcase() {
     <Spot flip tag="🧾 חשבוניות וגבייה" title="חשבונית לכל הזמנה, ומעקב מי שילם" text="כל הזמנה מקבלת חשבונית מסודרת עם פרטי העסק שלכם. רואים בכל רגע מי שילם, מי חייב וכמה." bullets={["חשבונית בלחיצה — להורדה או לשליחה", "יתרת חוב לכל לקוח", "סימון תשלום: מזומן, אשראי, צ'ק או העברה"]} visual={<MockInvoice />} />
   </>;
 }
-const MORE_FEATURES = [["🚚", "ליקוט ומשלוחים", "מלקט שוקל ומכין, נהג רואה את המסלול", true], ["👥", "צוות", "מלקטים, נהגים וסוכנים — כל אחד עם הרשאות משלו", true], ["🏆", "יעדים ופרסים", "לקוחות צוברים נקודות ומזמינים יותר", true], ["💬", "צ'אט ומבצעים", "הודעה לכל הלקוחות בלחיצה אחת", false], ["🔎", "לקוחות חדשים", "עסקים באזור שלכם מוצאים אתכם בחיפוש", false], ["🎨", "חנות במיתוג שלכם", "לוגו, צבעים וקישור אישי לשיתוף", true]];
+const MORE_FEATURES = [["🚚", "ליקוט ומשלוחים", "מלקט שוקל ומכין, נהג רואה את המסלול", true], ["👥", "צוות", "מלקטים, נהגים וסוכנים — כל אחד עם הרשאות משלו", true], ["🏆", "יעדים ופרסים", "אופציונלי — מפעילים רק אם רוצים", true], ["💬", "צ'אט ומבצעים", "הודעה לכל הלקוחות בלחיצה אחת", false], ["🔎", "לקוחות חדשים", "עסקים באזור שלכם מוצאים אתכם בחיפוש", false], ["🎨", "חנות במיתוג שלכם", "לוגו, צבעים וקישור אישי לשיתוף", true]];
 function BeforeAfter() {
   const rows = [["הזמנות בטלפון, בוואטסאפ ובהודעות קוליות", "הלקוח מזמין לבד — ההזמנה מגיעה מסודרת"], ["מקלידים מחדש כל הזמנה", "הכל כבר כתוב, מוכן לליקוט"], ["לא בטוחים מה נשאר במלאי", "מלאי מתעדכן לבד + התראת מלאי נמוך"], ["מקלידים מוצרים אחד אחד", "מצלמים חשבונית — והמוצרים עולים"], ["דוחות באקסל בסוף החודש", "דוח חודשי מוכן בלחיצה"], ["רודפים אחרי תשלומים", "רואים מי שילם ומי חייב"]];
   return <div style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 20, overflow: "hidden" }}>
@@ -889,6 +1079,14 @@ const SIGNUP_EASY = [
   "כל אחד בצוות רואה רק את שלו: מלקט, נהג וסוכן",
 ];
 const PREMIUM_FEAT = { "ליקוט ומשלוחים": 1, "סריקת חשבוניות": 1, "דוח רווח חודשי": 1, "מועדון לקוחות": 1 };
+// מה הספק מקבל — בראש מסך ההרשמה; לחיצה פותחת את צילום המסך המתאים
+const SIGNUP_HIGHLIGHTS = [
+  ["🛒", "ממשק הזמנות פעיל 24/7", "חנות משלכם עם קישור ללקוחות — הם מזמינים מתי שנוח להם", 0],
+  ["📋", "מעקב אחר הזמנות", "כל הזמנה עם התראה, פירוט מלא וסטטוס עד המסירה", 1],
+  ["📦", "מעקב אחר המלאי", "המלאי מתעדכן לבד, עם התראה לפני שמשהו נגמר", 2],
+  ["🧾", "חשבונית לכל לקוח", "מנפיקים חשבונית בלחיצה ורואים מי שילם ומי חייב", 5],
+  ["👥", "צוות עם ממשק לכל עובד", "מלקט, סוכן ונהג — כל אחד רואה רק מה שהוא צריך", 6],
+];
 function SignupPage({ state, setState, onLogin, onCancel, source, onLoginClick, onMore }) {
   const formRef = React.useRef(null); const [formSeen, setFormSeen] = useState(false); const [tour, setTour] = useState(null);
   useEffect(() => { const el = formRef.current; if (!el || typeof IntersectionObserver === "undefined") return; const io = new IntersectionObserver((es) => setFormSeen(es[0].isIntersecting), { threshold: 0.15 }); io.observe(el); return () => io.disconnect(); }, []);
@@ -902,10 +1100,34 @@ function SignupPage({ state, setState, onLogin, onCancel, source, onLoginClick, 
             <div style={{ display: "inline-block", background: "rgba(255,255,255,.15)", borderRadius: 20, padding: "4px 12px", fontSize: 12.5, fontWeight: 700 }}>🎁 חודש ראשון חינם · בלי כרטיס אשראי</div>
             <h1 style={{ fontSize: "clamp(27px, 7vw, 38px)", fontWeight: 800, lineHeight: 1.15, margin: "12px 0 8px", letterSpacing: "-0.8px" }}>חוסכים זמן וכסף.<br /><span style={{ background: "linear-gradient(90deg,#FDBA74,#F9A8D4)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>מרוויחים יותר.</span></h1>
             <div style={{ fontSize: 15.5, opacity: .92, lineHeight: 1.6 }}>כל מה שספק צריך באפליקציה אחת — נוח לכם, ונוח ללקוחות שלכם.</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 6, marginTop: 14 }}>
-              {[["⏱️", "חוסך שעות עבודה"], ["💰", "חוסך טעויות וכסף"], ["📈", "מוסיף הזמנות ורווח"], ["😊", "נוח לכם וללקוחות"]].map(([e, t]) => <div key={t} style={{ display: "flex", alignItems: "center", gap: 7, background: "rgba(255,255,255,.12)", borderRadius: 12, padding: "8px 10px", fontSize: 13.5, fontWeight: 800 }}><span style={{ fontSize: 17 }}>{e}</span>{t}</div>)}
+            <button onClick={() => setTour(3)} className="tp-click" style={{ display: "block", width: "100%", textAlign: "right", marginTop: 16, padding: 2, borderRadius: 18, border: "none", cursor: "pointer", background: "linear-gradient(135deg,#FDBA74,#F472B6,#A78BFA)", fontFamily: "inherit", boxShadow: "0 10px 26px rgba(219,39,119,.35)" }}>
+              <div style={{ background: "linear-gradient(160deg,#13275E,#1E3FA8)", borderRadius: 16, padding: "14px 14px 12px", color: "#fff" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ width: 48, height: 48, borderRadius: 14, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, flexShrink: 0 }}>📸</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: "inline-block", fontSize: 11, fontWeight: 800, background: "linear-gradient(90deg,#F97316,#DB2777)", borderRadius: 20, padding: "2px 9px", marginBottom: 3 }}>⚡ הכי חוסך זמן</div>
+                    <div style={{ fontWeight: 800, fontSize: 18, lineHeight: 1.25 }}>מצלמים חשבונית — והכל מתעדכן לבד</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 13.5, opacity: .9, lineHeight: 1.6, marginTop: 8 }}>צילום אחד של חשבונית הספק, ובלי להקליד שורה אחת:</div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 6, marginTop: 8 }}>
+                  {[["🏪", "המוצרים עולים לחנות"], ["📦", "המלאי מתעדכן"], ["📊", "ההוצאה נרשמת בדוח"], ["🗂️", "החשבונית נשמרת מסודרת"]].map(([e, t]) => <div key={t} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,.12)", borderRadius: 10, padding: "7px 8px", fontSize: 12.5, fontWeight: 800 }}><span>{e}</span>{t}</div>)}
+                </div>
+                <div style={{ fontSize: 12.5, fontWeight: 800, marginTop: 10, color: "#FDBA74" }}>ראו איך זה עובד ›</div>
+              </div>
+            </button>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 7, marginTop: 10 }}>
+              {SIGNUP_HIGHLIGHTS.map(([e, t, d, tourIdx]) => (
+                <button key={t} onClick={() => setTour(tourIdx)} className="tp-click" style={{ display: "flex", alignItems: "center", gap: 10, textAlign: "right", background: "rgba(255,255,255,.11)", border: "1px solid rgba(255,255,255,.18)", borderRadius: 14, padding: "10px 11px", cursor: "pointer", color: "#fff", fontFamily: "inherit" }}>
+                  <span style={{ width: 38, height: 38, borderRadius: 11, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>{e}</span>
+                  <span style={{ flex: 1, minWidth: 0 }}><span style={{ display: "block", fontWeight: 800, fontSize: 14.5, lineHeight: 1.3 }}>{t}</span><span style={{ display: "block", fontSize: 12.5, opacity: .82, lineHeight: 1.4, marginTop: 2 }}>{d}</span></span>
+                  <span style={{ opacity: .7, fontSize: 18 }}>‹</span>
+                </button>))}
             </div>
-            <div style={{ fontSize: 13.5, fontWeight: 700, margin: "16px 0 8px", opacity: .95 }}>👇 לחצו על חלון וראו איך זה נראה</div>
+            <div style={{ marginTop: 14, background: "linear-gradient(135deg, rgba(249,115,22,.95), rgba(219,39,119,.95))", borderRadius: 14, padding: "12px 14px", fontSize: 14.5, fontWeight: 700, lineHeight: 1.55 }}>
+              ✨ הכל כבר מוכן בשבילכם: נרשמים ב-2 דקות, מעלים מוצרים ושולחים ללקוחות קישור — ומתחילים לקבל הזמנות. בלי סוכן, בלי התקנה, <u>והחודש הראשון עלינו</u>.
+            </div>
+            <div style={{ fontSize: 13.5, fontWeight: 700, margin: "16px 0 8px", opacity: .95 }}>👇 רוצים לראות איך זה נראה? לחצו על כל חלון</div>
             <FeatureTiles onOpen={setTour} />
             <button onClick={toForm} className="tp-2col-hide" style={{ ...ctaStyle(false), width: "100%", marginTop: 14, fontSize: 16, padding: "14px" }}>פתחו חנות בחינם — 2 דקות ↓</button>
           </div>
@@ -1148,7 +1370,7 @@ function SupplierRegister({ state, setState, back, byAdmin, onDone }) {
     if (!byAdmin && !agree) return setErr("יש לאשר את התקנון כדי להמשיך");
     const em = f.email.trim().toLowerCase();
     if (state.suppliers.some((sp) => sp.owner && sp.owner.email.trim().toLowerCase() === em)) return setErr("אימייל זה כבר רשום כספק");
-    const sup = { id: "s" + Date.now(), name: f.name, ...domainPatch(f.domains), regions: f.regions || "", status: byAdmin ? "active" : "pending", owner: { email: f.email, password: f.password, contact: f.contact, phone: f.phone }, terms: byAdmin ? null : { version: TERMS_VERSION, acceptedAt: Date.now() }, brand: { logo: "", tagline: "", color: "#1F7A4D" }, sub: newTrialSub(plan), biz: { taxId: "", address: "", phone: f.phone || "", email: f.email || "" }, cats: f.cats || [], invoiceSeq: 1000, features: { prizes: true, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [], clients: [], staff: [], orders: [], messages: [], broadcasts: [] };
+    const sup = { id: "s" + Date.now(), name: f.name, ...domainPatch(f.domains), regions: f.regions || "", status: byAdmin ? "active" : "pending", owner: { email: f.email, password: f.password, contact: f.contact, phone: f.phone }, terms: byAdmin ? null : { version: TERMS_VERSION, acceptedAt: Date.now() }, brand: { logo: "", tagline: "", color: "#1F7A4D" }, sub: newTrialSub(plan), biz: { taxId: "", address: "", phone: f.phone || "", email: f.email || "" }, cats: f.cats || [], invoiceSeq: 1000, features: { prizes: false, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [], clients: [], staff: [], orders: [], messages: [], broadcasts: [] };
     setState((root) => ({ ...root, suppliers: [...root.suppliers, sup] }));
     if (start === "pay") return setPayFor(sup); // פותח את טופס האשראי
     if (byAdmin && onDone) return onDone();
@@ -3027,7 +3249,7 @@ function AddProduct({ state, setState, onClose }) {
 function CenterWrap({ children, color }) {
   return <div dir="rtl" style={{ minHeight: "100vh", fontFamily: FONT, display: "flex", flexDirection: "column", alignItems: "center", padding: "40px 16px", background: `radial-gradient(1200px 500px at 50% -8%, ${color}22, ${C.bg})` }}>{children}</div>;
 }
-function StorePage({ supplier, state, setState, onLogin }) {
+function StorePage({ supplier, state, setState, onLogin, onHome }) {
   const [mode, setMode] = useState("view");
   const color = (supplier.brand && supplier.brand.color) || C.green;
   const font = (supplier.brand && supplier.brand.font) || "Rubik";
@@ -3045,9 +3267,14 @@ function StorePage({ supplier, state, setState, onLogin }) {
   const prods = supplier.products.filter((p) => p.stock > 0).slice(0, 12);
   return (
     <div dir="rtl" style={{ minHeight: "100vh", fontFamily: fam, background: bg, color: fontColor }}>
+      {onHome && <div style={{ background: "#0B1F4D", color: "#fff" }}><div style={{ maxWidth: 1000, margin: "0 auto", padding: "7px 16px", display: "flex", alignItems: "center", gap: 8 }}>
+        <button onClick={onHome} title="למסך הכניסה של B2B+" style={{ display: "flex", alignItems: "center", gap: 8, border: "none", background: "transparent", color: "#fff", cursor: "pointer", padding: 0, fontFamily: "inherit" }}><img src={LOGO_IMG} alt="B2B+" style={{ width: 28, height: 28, borderRadius: 8, objectFit: "cover" }} /><span style={{ fontWeight: 800, fontSize: 14 }}><bdi dir="ltr">B2B+</bdi></span></button>
+        <span style={{ flex: 1 }} />
+        <button onClick={onHome} style={{ border: "1px solid rgba(255,255,255,.35)", background: "transparent", color: "#fff", borderRadius: 8, padding: "5px 12px", fontSize: 12.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>מסך הכניסה</button>
+      </div></div>}
       <div style={{ background: `linear-gradient(135deg, ${color}, ${shade(color)})`, color: "#fff", padding: "40px 20px 46px", boxShadow: "0 4px 20px rgba(0,0,0,.12)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", display: "flex", alignItems: "center", gap: 18, flexWrap: "wrap" }}>
-          <Logo size={66} img={supplier.brand && supplier.brand.logo} name={supplier.name} />
+          <button onClick={onHome} disabled={!onHome} title={onHome ? "למסך הכניסה" : undefined} style={{ border: "none", background: "transparent", padding: 0, cursor: onHome ? "pointer" : "default", borderRadius: 16 }}><Logo size={66} img={supplier.brand && supplier.brand.logo} name={supplier.name} /></button>
           <div style={{ flex: 1, minWidth: 200 }}>
             <div style={{ fontSize: fs(27), fontWeight: 800, letterSpacing: "-0.5px" }}>{supplier.name}</div>
             <div style={{ opacity: .92, marginTop: 4, fontSize: fs(15) }}>{(supplier.brand && supplier.brand.tagline) || "ספק לעסקים"}</div>
@@ -3218,8 +3445,30 @@ function MgrPrizes({ state, setState }) {
   const addTier = () => setState((s) => { const mx = s.prizeTiers.reduce((m, t) => Math.max(m, t.points), 0); return { ...s, prizeTiers: [...s.prizeTiers, { id: "t" + Date.now(), points: mx + 100, title: "פרס חדש", detail: "", cost: 0 }] }; });
   const removeTier = (id) => setState((s) => ({ ...s, prizeTiers: s.prizeTiers.filter((t) => t.id !== id) }));
   const prizeCost = perClient.reduce((s, c) => { const t = reachedTier(c.pts, tiers); return s + (t ? t.cost || 0 : 0); }, 0);
+  const on = (state.features || {}).prizes !== false;
+  const setOn = (v) => setState((s) => ({ ...s, features: { ...(s.features || {}), prizes: v } }));
+  const toggle = (
+    <Panel style={{ boxShadow: SH, borderColor: on ? "#BFE3CC" : C.line, background: on ? "#F6FBF7" : "#fff" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 26 }}>🏆</span>
+        <div style={{ flex: 1, minWidth: 200 }}><div style={{ fontWeight: 800, fontSize: 16 }}>תוכנית יעדים ופרסים ללקוחות</div><div style={{ fontSize: 13, color: C.sub, lineHeight: 1.6 }}>אפשרות לבחירתכם: לקוחות צוברים נקודות על כל הזמנה ורואים כמה חסר להם לפרס — וזה דוחף אותם להזמין יותר. {on ? "התוכנית פעילה והלקוחות רואים אותה." : "כרגע כבויה — הלקוחות לא רואים אותה."}</div></div>
+        <button onClick={() => setOn(!on)} role="switch" aria-checked={on} style={{ display: "flex", alignItems: "center", gap: 8, border: "none", background: "transparent", cursor: "pointer", fontFamily: "inherit", fontWeight: 800, fontSize: 14, color: on ? C.greenDeep : C.sub }}>
+          <span style={{ width: 46, height: 26, borderRadius: 26, background: on ? C.green : "#CBD5E1", position: "relative", transition: "background .15s" }}><span style={{ position: "absolute", top: 3, right: on ? 3 : 23, width: 20, height: 20, borderRadius: "50%", background: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,.25)", transition: "right .15s" }} /></span>
+          {on ? "פעילה" : "כבויה"}
+        </button>
+      </div>
+    </Panel>
+  );
+  if (!on) return (
+    <div style={{ display: "grid", gap: 14 }}>{toggle}
+      <Panel style={{ boxShadow: SH, textAlign: "center", padding: 26 }}>
+        <div style={{ fontSize: 15, color: C.sub, lineHeight: 1.7, maxWidth: 460, margin: "0 auto" }}>רוצים לתת ללקוחות סיבה להזמין יותר? מפעילים את התוכנית, קובעים יעדים ופרסים (למשל: מארז פירות ב-30 נקודות), ובוחרים תקופה — מחודש ועד שנה. אפשר לכבות בכל רגע.</div>
+        <button onClick={() => setOn(true)} style={{ marginTop: 14, border: "none", background: C.green, color: "#fff", fontWeight: 800, fontSize: 15, padding: "11px 22px", borderRadius: 12, cursor: "pointer" }}>הפעלת התוכנית</button>
+      </Panel>
+    </div>
+  );
   return (
-    <Panel style={{ boxShadow: SH }}>
+    <div style={{ display: "grid", gap: 14 }}>{toggle}<Panel style={{ boxShadow: SH }}>
       <SectionTitle icon={<Gift size={18} />} extra={<button onClick={addTier} style={{ display: "flex", alignItems: "center", gap: 5, border: `1px solid ${C.line}`, background: "#fff", color: C.green, fontWeight: 700, fontSize: 13, padding: "6px 12px", borderRadius: 9, cursor: "pointer" }}><Plus size={15} /> הוסף יעד</button>}>תוכנית היעדים והפרסים · {periodLabel(state.periodMonths, state.periodAnchor)}</SectionTitle>
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
         <span style={{ fontSize: 13, color: C.sub }}>{state.kgPerPoint} ק"ג = נקודה · מתאפס בכל תקופה · לחיצה על מספר הלקוחות מציגה מי הגיע.</span>
@@ -3245,7 +3494,7 @@ function MgrPrizes({ state, setState }) {
         ); })}
       </div>
       <div style={{ marginTop: 14, padding: 12, background: C.amberSoft, borderRadius: 12, fontSize: 12.5, color: "#7A5A17", lineHeight: 1.6 }}>עלות הפרסים המשוערת לתקופה: <b>{NIS(prizeCost)}</b>.</div>
-    </Panel>
+    </Panel></div>
   );
 }
 function MgrClients({ state, setState }) {
