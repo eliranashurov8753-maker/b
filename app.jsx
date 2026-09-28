@@ -17,13 +17,19 @@ if (typeof window !== "undefined" && !window.storage) {
   };
 }
 
+// עיצוב: כחול חי, כרטיסים לבנים מבריקים, הדגשה בטורקיז, וי ירוק להצלחה
 const C = {
-  bg: "#EEF3F8", surface: "#FFFFFF", ink: "#0F1B2D", sub: "#5A6B80", line: "#DCE5EE",
-  green: "#1E6FE0", greenDeep: "#0B2A63", greenSoft: "#E7F0FD",
-  amber: "#C77D12", amberSoft: "#FBEFD9", plum: "#5B4BC4", plumSoft: "#ECEAFB",
-  red: "#C0392B", redSoft: "#FBEAE8", blue: "#1E6FE0", blueSoft: "#E7F0FD",
+  bg: "#EEF4FF", surface: "#FFFFFF", ink: "#0B1B3A", sub: "#5B6B86", line: "#E1E9F7",
+  green: "#1463FF", greenDeep: "#0A2A7A", greenSoft: "#EAF1FF",
+  amber: "#D9860B", amberSoft: "#FFF4DE", plum: "#6D4AE8", plumSoft: "#F0EBFF",
+  red: "#DC2626", redSoft: "#FDECEC", blue: "#1463FF", blueSoft: "#EAF1FF",
+  cyan: "#12C2EE", ok: "#16A34A", okSoft: "#E6F8EE",
 };
-const SH = "0 1px 2px rgba(20,45,30,.05), 0 4px 14px rgba(20,45,30,.05)";
+const GRAD = "linear-gradient(135deg, #2F80FF 0%, #1463FF 55%, #0A4BDB 100%)";
+const TONE_GRAD = { green: GRAD, blue: GRAD, amber: "linear-gradient(135deg,#FFC24D,#F08A00)", plum: "linear-gradient(135deg,#9B7BFF,#6D4AE8)", red: "linear-gradient(135deg,#FF7A7A,#DC2626)", cyan: "linear-gradient(135deg,#5EE0FF,#12A8E0)", ok: "linear-gradient(135deg,#34D399,#16A34A)" };
+const ART = { char: "/tour/art/char.webp", cart: "/tour/art/cart.webp", clip: "/tour/art/clip.webp" };
+function Art({ k, h = 110, style = {} }) { const [bad, setBad] = useState(false); if (bad) return null; return <img src={ART[k]} alt="" aria-hidden="true" onError={() => setBad(true)} style={{ height: h, width: "auto", display: "block", pointerEvents: "none", filter: "drop-shadow(0 10px 18px rgba(8,30,90,.28))", ...style }} />; }
+const SH = "0 10px 30px rgba(20,60,160,.07)";
 const FONT = "'Rubik', 'Assistant', 'Segoe UI', system-ui, sans-serif";
 const KEY = "vegapp:v12";
 const SUPER_PW = "super";
@@ -116,7 +122,7 @@ const AREAS = {
   "דרום": ["באר שבע", "אשדוד", "אשקלון", "אילת", "דימונה", "קרית גת", "נתיבות", "שדרות"],
 };
 const DEMO_TEMPLATES = {
-  veg: { name: "ירק+ שיווק השדה", category: "ירקות ופירות", domains: ["veg"], color: "#1F7A4D", cats: ["ירקות", "פירות", "עלים"], tagline: "טרי מהשדה כל בוקר", products: [
+  veg: { name: "ירק+ שיווק השדה", category: "ירקות ופירות", domains: ["veg"], color: "#1463FF", cats: ["ירקות", "פירות", "עלים"], tagline: "טרי מהשדה כל בוקר", products: [
     { name: "עגבניות", unit: "weight", cost: 3, price: 6.5, kg: 10, stock: 60, emoji: "🍅", cat: "ירקות" },
     { name: "מלפפונים", unit: "weight", cost: 2.5, price: 5.5, kg: 8, stock: 45, emoji: "🥒", cat: "ירקות" },
     { name: "פלפל אדום", unit: "weight", cost: 5, price: 9, kg: 6, stock: 30, emoji: "🫑", cat: "ירקות" },
@@ -256,12 +262,13 @@ const demoSupplier = (kind) => { const now = Date.now(); const id = "demo" + now
 const seed = () => ({
   superPw: SUPER_PW,
   superAgents: [{ id: "sa1", role: "superagent", name: "תמיכה B2B+", email: "support@b2bplus.co.il", password: "1234" }],
-  suppliers: [{ id: "s1", name: "שיווק השדה", category: "ירקות ופירות", domains: ["veg"], regions: "מרכז, השרון, תל אביב", status: "active", biz: { taxId: "515123456", address: "המסגר 20, תל אביב", phone: "03-5551234", email: "billing@sadeh.co.il" }, invoiceSeq: 1000, owner: { email: "admin@sadeh.co.il", password: "1234", contact: "בעל העסק", phone: "050-0000000" }, brand: { logo: "", tagline: "ירקות ופירות טריים לעסקים", color: "#1F7A4D", borderW: 2.5 }, sub: { plan: "pro", status: "active", method: "credit", since: Date.now() - 86400000 * 40, last4: "4417", invoices: [] }, cats: ["ירקות", "פירות"], features: { prizes: true, chat: true, minOrder: 5 }, ...supplierData() }, secondSupplier()],
+  suppliers: [{ id: "s1", name: "שיווק השדה", category: "ירקות ופירות", domains: ["veg"], regions: "מרכז, השרון, תל אביב", status: "active", biz: { taxId: "515123456", address: "המסגר 20, תל אביב", phone: "03-5551234", email: "billing@sadeh.co.il" }, invoiceSeq: 1000, owner: { email: "admin@sadeh.co.il", password: "1234", contact: "בעל העסק", phone: "050-0000000" }, brand: { logo: "", tagline: "ירקות ופירות טריים לעסקים", color: "#1463FF", borderW: 2.5 }, sub: { plan: "pro", status: "active", method: "credit", since: Date.now() - 86400000 * 40, last4: "4417", invoices: [] }, cats: ["ירקות", "פירות"], features: { prizes: true, chat: true, minOrder: 5 }, ...supplierData() }, secondSupplier()],
 });
 
 // מקטין נתונים ישנים: מסיר עותקים של לוגו ברירת המחדל שנשמרו אצל כל ספק
 const OLD_LOGO_SIG = "V1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ip"; // הלוגו הקודם (רקע שחור)
 const slimState = (st) => { if (!st || !st.suppliers) return st; let ch = false; const suppliers = st.suppliers.map((sp0) => { let sp = sp0;
+  if (sp.brand && sp.brand.color === "#1F7A4D") { ch = true; sp = { ...sp, brand: { ...sp.brand, color: "#1463FF" } }; }
   if (sp.brand && (sp.brand.logo === LOGO_IMG || (typeof sp.brand.logo === "string" && sp.brand.logo.includes(OLD_LOGO_SIG)))) { ch = true; sp = { ...sp, brand: { ...sp.brand, logo: "" } }; }
   // כל ספק מקבל חודש ניסיון: ספק בלי מנוי, או ניסיון ישן בלי תאריך סיום → 30 יום מהיום
   if (!isDemoSup(sp) && (!sp.sub || (sp.sub.status === "trial" && !sp.sub.trialEnds))) { ch = true; sp = { ...sp, sub: newTrialSub((sp.sub && sp.sub.plan === "basic") ? "basic" : "premium", sp.sub) }; }
@@ -430,12 +437,12 @@ export default function App() {
   const bizRec = session.kind === "client" ? (state.suppliers.map((sp) => sp.clients.find((c) => c.email.trim().toLowerCase() === (session.email || "").trim().toLowerCase())).find(Boolean) || null) : null;
   const staffRoles = (me && me.role) ? [me.role, ...((me.roles) || [])].filter((v, i, a) => a.indexOf(v) === i) : [];
   const isStaffView = ["picker", "driver", "agent"].includes(session.kind);
-  const headerBg = sup && sup.brand && sup.brand.color ? `linear-gradient(100deg, ${shade(sup.brand.color)}, ${sup.brand.color})` : `linear-gradient(100deg, ${C.greenDeep}, #1E6FE0)`;
+  const headerBg = sup && sup.brand && sup.brand.color ? `linear-gradient(100deg, ${shade(sup.brand.color)}, ${sup.brand.color})` : `linear-gradient(105deg, #0A2A7A 0%, #1463FF 70%, #2F80FF 100%)`;
   const themeFont = (sup && sup.brand && sup.brand.font) || "Rubik";
   const themeScale = Math.min(1.15, (sup && sup.brand && sup.brand.fontScale) || 1);
   const clientThemed = sup && (session.kind === "client");
   const themed2 = sup && (session.kind === "client" || session.kind === "supplier");
-  const pageBg = themed2 ? bgStyle((sup.brand && sup.brand.bg) || "soft", (sup.brand && sup.brand.color) || C.green, sup.brand && sup.brand.bgColor) : C.bg;
+  const pageBg = themed2 ? bgStyle((sup.brand && sup.brand.bg) || "soft", (sup.brand && sup.brand.color) || C.green, sup.brand && sup.brand.bgColor) : "radial-gradient(1200px 520px at 50% -12%, #D6E4FF, #EEF4FF 62%)";
   const themeFontColor = (sup && sup.brand && sup.brand.fontColor) || C.ink;
   const pageFont = themed2 ? `'${themeFont}', ${FONT}` : FONT;
 
@@ -507,7 +514,7 @@ const joinLink = (src) => { try { return window.location.origin + window.locatio
 const makeSupplier = (f, { plan, active, source }) => ({
   id: "s" + Date.now(), name: f.name.trim(), ...domainPatch(f.domains), regions: f.regions || "", status: active ? "active" : "pending",
   owner: { email: f.email.trim(), password: f.password, contact: f.contact.trim(), phone: f.phone.trim() }, terms: { version: TERMS_VERSION, acceptedAt: Date.now() },
-  brand: { logo: "", tagline: "", color: "#1F7A4D" }, sub: newTrialSub(plan), biz: { taxId: "", address: "", phone: f.phone.trim(), email: f.email.trim() },
+  brand: { logo: "", tagline: "", color: "#1463FF" }, sub: newTrialSub(plan), biz: { taxId: "", address: "", phone: f.phone.trim(), email: f.email.trim() },
   cats: Array.from(new Set(f.domains.flatMap((id) => (DOMAIN_BY_ID[id] || { cats: [] }).cats))), invoiceSeq: 1000, features: { prizes: false, chat: true, minOrder: 5 },
   kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [], clients: [], staff: [], orders: [], messages: [], broadcasts: [],
   source: source || "direct", createdAt: Date.now(), onboarding: { startedAt: Date.now() },
@@ -526,9 +533,9 @@ const LP_FEATURES = [
 // ראש מסך ההרשמה: מה מקבלים, בקצרה ובצורה ברורה
 function SignupIntro() {
   return (
-    <div style={{ background: `radial-gradient(700px 300px at 90% 0%, rgba(249,115,22,.30), transparent), linear-gradient(160deg, #0B1F4D, #1D4ED8)`, color: "#fff", borderRadius: 22, padding: "22px 16px 18px", marginBottom: 16, boxShadow: "0 14px 40px rgba(15,31,77,.22)" }}>
+    <div style={{ background: `radial-gradient(700px 300px at 90% 0%, rgba(18,194,238,.30), transparent), linear-gradient(160deg, #0B1F4D, #1D4ED8)`, color: "#fff", borderRadius: 22, padding: "22px 16px 18px", marginBottom: 16, boxShadow: "0 14px 40px rgba(15,31,77,.22)" }}>
       <div style={{ display: "inline-block", background: "rgba(255,255,255,.15)", borderRadius: 20, padding: "4px 12px", fontSize: 12.5, fontWeight: 700 }}>🎁 חודש ראשון חינם · בלי כרטיס אשראי</div>
-      <div style={{ fontSize: "clamp(22px, 5.5vw, 28px)", fontWeight: 800, lineHeight: 1.25, margin: "10px 0 4px", letterSpacing: "-0.5px" }}>כל מה שספק צריך — <span style={{ background: "linear-gradient(90deg,#FDBA74,#F9A8D4)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>באפליקציה אחת</span></div>
+      <div style={{ fontSize: "clamp(22px, 5.5vw, 28px)", fontWeight: 800, lineHeight: 1.25, margin: "10px 0 4px", letterSpacing: "-0.5px" }}>כל מה שספק צריך — <span style={{ background: "linear-gradient(90deg,#67E8F9,#A5F3FC)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>באפליקציה אחת</span></div>
       <div style={{ fontSize: 14, opacity: .9, lineHeight: 1.6, marginBottom: 14 }}>הלקוחות העסקיים שלכם מזמינים לבד מהטלפון, ואתם מקבלים הזמנה מסודרת — מוכנה לליקוט ולמשלוח.</div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(140px,1fr))", gap: 8 }}>
         {LP_FEATURES.map(([e, t, d, short]) => (
@@ -540,16 +547,16 @@ function SignupIntro() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 6, marginTop: 14, borderTop: "1px solid rgba(255,255,255,.16)", paddingTop: 12 }}>
         {[["נרשמים", "2 דקות"], ["מעלים מוצרים", "או מצלמים חשבונית"], ["שולחים קישור", "והלקוחות מזמינים"]].map(([t, d], i) => (
           <div key={t} style={{ textAlign: "center" }}>
-            <div style={{ width: 26, height: 26, borderRadius: "50%", background: "linear-gradient(135deg,#F97316,#DB2777)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, margin: "0 auto 4px" }}>{i + 1}</div>
+            <div style={{ width: 26, height: 26, borderRadius: "50%", background: "linear-gradient(135deg,#12C2EE,#1463FF)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, margin: "0 auto 4px" }}>{i + 1}</div>
             <div style={{ fontWeight: 800, fontSize: 13 }}>{t}</div><div style={{ fontSize: 11.5, opacity: .8 }}>{d}</div>
           </div>))}
       </div>
     </div>
   );
 }
-const APP_VERSION = "28.9.26-n"; // מופיע בתחתית מסך הכניסה — לבדוק שהעדכון עלה
-const LP = { navy: "#0B1F4D", blue: "#1D4ED8", orange: "#F97316", pink: "#DB2777", soft: "#F5F7FC" };
-const ctaStyle = (big) => ({ border: "none", background: `linear-gradient(135deg, ${LP.orange}, ${LP.pink})`, color: "#fff", fontWeight: 800, fontSize: big ? 18 : 15, padding: big ? "16px 28px" : "12px 20px", borderRadius: 14, cursor: "pointer", boxShadow: "0 8px 24px rgba(219,39,119,.35)", fontFamily: "inherit" });
+const APP_VERSION = "29.9.26-a"; // מופיע בתחתית מסך הכניסה — לבדוק שהעדכון עלה
+const LP = { navy: "#0A2A7A", blue: "#1463FF", orange: "#12C2EE", pink: "#1463FF", soft: "#F2F6FF" }; // accent: טורקיז → כחול
+const ctaStyle = (big) => ({ border: "none", background: "linear-gradient(135deg, #22D3EE 0%, #1463FF 60%, #0A4BDB 100%)", color: "#fff", fontWeight: 800, fontSize: big ? 18 : 15, padding: big ? "16px 28px" : "12px 20px", borderRadius: 14, cursor: "pointer", boxShadow: "0 8px 24px rgba(20,99,255,.35)", fontFamily: "inherit" });
 function PhoneMock({ items: itemsIn, title, store }) {
   const items = itemsIn || [["🍅", "עגבניות", "₪6.9 לק\"ג", 3], ["🥩", "אנטריקוט", "₪89 לק\"ג", 2], ["🥖", "באגט", "₪4.5", 12]];
   return (
@@ -627,7 +634,7 @@ function QuickSignup({ state, setState, onLogin, onCancel, source }) {
         </div>
       </div>}
       {step === 3 && <div>
-        <div style={{ background: "#FFF7ED", border: "1px solid #FED7AA", color: "#9A3412", borderRadius: 12, padding: "10px 14px", fontSize: 14, fontWeight: 700, marginBottom: 12 }}>🎁 מתחילים בחודש ניסיון חינם — בלי כרטיס אשראי. בחרו את המסלול שתרצו לנסות:</div>
+        <div style={{ background: "#EEF6FF", border: "1px solid #BFDBFE", color: "#0A4BDB", borderRadius: 12, padding: "10px 14px", fontSize: 14, fontWeight: 700, marginBottom: 12 }}>🎁 מתחילים בחודש ניסיון חינם — בלי כרטיס אשראי. בחרו את המסלול שתרצו לנסות:</div>
         <PlanCompare selected={plan} onSelect={setPlan} />
         <div style={{ fontSize: 12.5, color: C.sub, marginTop: 8 }}>אחרי החודש: {planPriceText(planOf(plan))} לחודש — רק אם תבחרו להמשיך. תקבלו תזכורת לפני שהניסיון נגמר.</div>
         <TermsBox agree={agree} setAgree={setAgree} />
@@ -648,7 +655,7 @@ const Demo = () => <div style={{ fontSize: 10, color: C.sub, textAlign: "center"
 function MockOrders() {
   const rows = [["#1047", "מסעדת הנמל", "18 פריטים", "₪2,340", ["חדשה", C.amberSoft, "#92400E"]], ["#1046", "קפה השכונה", "9 פריטים", "₪860", ["לוקטה", C.blueSoft, C.blue]], ["#1045", "קייטרינג אורן", "31 פריטים", "₪4,120", ["בדרך", C.plumSoft, C.plum]], ["#1044", "מכולת רוני", "12 פריטים", "₪1,150", ["נמסרה ✓", C.greenSoft, C.greenDeep]]];
   return <div style={mockCard}>
-    <div style={{ background: "linear-gradient(135deg,#FFF7ED,#FDF2F8)", border: "1px solid #FED7AA", borderRadius: 12, padding: "7px 10px", marginBottom: 8, fontWeight: 800, display: "flex", gap: 6, alignItems: "center" }}>🔔 הזמנה חדשה ממסעדת הנמל · ₪2,340</div>
+    <div style={{ background: "linear-gradient(135deg,#EEF6FF,#E9FBFF)", border: "1px solid #BFDBFE", borderRadius: 12, padding: "7px 10px", marginBottom: 8, fontWeight: 800, display: "flex", gap: 6, alignItems: "center" }}>🔔 הזמנה חדשה ממסעדת הנמל · ₪2,340</div>
     <MockHead icon="📋" title="הזמנות היום" extra={<Chip bg={C.greenSoft} fg={C.greenDeep}>₪8,470</Chip>} />
     {rows.map(([id, c, n, t, [st, bg, fg]]) => <div key={id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 0", borderTop: `1px solid ${C.line}` }}><div style={{ flex: 1, minWidth: 0 }}><div style={{ fontWeight: 800 }}>{c} <span style={{ color: C.sub, fontWeight: 500 }}>{id}</span></div><div style={{ fontSize: 11, color: C.sub }}>{n}</div></div><b>{t}</b><Chip bg={bg} fg={fg}>{st}</Chip></div>)}
     <Demo />
@@ -708,7 +715,7 @@ function Spot({ tag, title, text, bullets, visual, premium, flip }) {
     <div style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 22, padding: 16, marginBottom: 14, boxShadow: "0 4px 18px rgba(15,31,77,.05)" }}>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center", flexDirection: flip ? "row-reverse" : "row" }}>
         <div style={{ flex: "1 1 240px", minWidth: 0 }}>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8 }}><span style={{ background: "linear-gradient(135deg,#FFF1E6,#FDE2EF)", color: "#9D174D", borderRadius: 20, padding: "3px 10px", fontSize: 12, fontWeight: 800 }}>{tag}</span>{premium && <span style={{ fontSize: 11.5, fontWeight: 800, color: C.plum, background: C.plumSoft, borderRadius: 20, padding: "3px 9px" }}>⭐ פרימיום</span>}</div>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8 }}><span style={{ background: "linear-gradient(135deg,#E0F7FF,#E6EEFF)", color: "#0A4BDB", borderRadius: 20, padding: "3px 10px", fontSize: 12, fontWeight: 800 }}>{tag}</span>{premium && <span style={{ fontSize: 11.5, fontWeight: 800, color: C.plum, background: C.plumSoft, borderRadius: 20, padding: "3px 9px" }}>⭐ פרימיום</span>}</div>
           <div style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.3, letterSpacing: "-0.3px" }}>{title}</div>
           <div style={{ fontSize: 14.5, color: C.sub, lineHeight: 1.7, marginTop: 6 }}>{text}</div>
           <div style={{ display: "grid", gap: 6, marginTop: 10 }}>{bullets.map((b) => <div key={b} style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 14, fontWeight: 600 }}><span style={{ width: 20, height: 20, borderRadius: "50%", background: C.greenSoft, color: C.greenDeep, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}><Check size={12} strokeWidth={3} /></span>{b}</div>)}</div>
@@ -747,7 +754,7 @@ function ForEverySupplier() {
   return (
     <div style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 22, padding: 16, boxShadow: "0 4px 18px rgba(15,31,77,.05)" }}>
       <div style={{ fontSize: 14, fontWeight: 800, marginBottom: 8 }}>👇 בחרו את התחום שלכם, ותראו איך הלקוחות שלכם יזמינו:</div>
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>{SUP_DOMAINS.map((x) => { const on = x.id === d; return <button key={x.id} onClick={() => setD(x.id)} style={{ border: `1.5px solid ${on ? LP.pink : C.line}`, background: on ? "linear-gradient(135deg,#FFF1E6,#FDE2EF)" : "#fff", color: on ? "#9D174D" : C.ink, borderRadius: 20, padding: "6px 11px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>{x.emoji} {x.label}</button>; })}</div>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>{SUP_DOMAINS.map((x) => { const on = x.id === d; return <button key={x.id} onClick={() => setD(x.id)} style={{ border: `1.5px solid ${on ? LP.pink : C.line}`, background: on ? "linear-gradient(135deg,#E0F7FF,#E6EEFF)" : "#fff", color: on ? "#0A4BDB" : C.ink, borderRadius: 20, padding: "6px 11px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>{x.emoji} {x.label}</button>; })}</div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center" }}>
         <div style={{ flex: "0 1 240px", margin: "0 auto" }}><PhoneMock items={DOMAIN_SAMPLES[d]} store={dom.emoji + " " + dom.label} title="הזמנה חדשה" /><Demo /></div>
         <div style={{ flex: "1 1 260px", minWidth: 0 }}>
@@ -777,7 +784,7 @@ function MockPickDrive() {
 function MockChat() {
   return <div style={mockCard}>
     <MockHead icon="📣" title="הודעה לכל הלקוחות" extra={<Chip bg={C.greenSoft} fg={C.greenDeep}>נשלח ל-48</Chip>} />
-    <div style={{ background: "linear-gradient(135deg,#FFF7ED,#FDF2F8)", border: "1px solid #FED7AA", borderRadius: 12, padding: "9px 10px", fontWeight: 700 }}>🔥 מבצע השבוע: 10% הנחה על כל הירקות העליים!</div>
+    <div style={{ background: "linear-gradient(135deg,#EEF6FF,#E9FBFF)", border: "1px solid #BFDBFE", borderRadius: 12, padding: "9px 10px", fontWeight: 700 }}>🔥 מבצע השבוע: 10% הנחה על כל הירקות העליים!</div>
     <div style={{ borderTop: `1px dashed ${C.line}`, marginTop: 10, paddingTop: 8 }}><MockHead icon="💬" title="צ'אט · מסעדת הנמל" />
       <div style={{ display: "grid", gap: 6 }}>
         <div style={{ justifySelf: "end", background: "#EEF2F7", borderRadius: "12px 12px 4px 12px", padding: "6px 10px", maxWidth: "80%" }}>אפשר להוסיף 2 קרטוני חסה להזמנה של מחר?</div>
@@ -810,24 +817,27 @@ function CountUp({ from = 0, to, dur = 1200, delay = 0, fmt = (v) => Math.round(
   useEffect(() => { let raf, t0; const t = setTimeout(() => { const step = (ts) => { if (!t0) t0 = ts; const k = Math.min(1, (ts - t0) / dur); setV(from + (to - from) * (1 - Math.pow(1 - k, 3))); if (k < 1) raf = requestAnimationFrame(step); }; raf = requestAnimationFrame(step); }, delay); return () => { clearTimeout(t); cancelAnimationFrame(raf); }; }, [from, to]);
   return <>{fmt(v)}</>;
 }
-const STORY_CSS = `@keyframes tpScanLine{0%{top:10%}50%{top:86%}100%{top:10%}}@keyframes tpIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@keyframes tpPop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}@keyframes tpGrow{from{height:0}}@keyframes tpGrowW{from{transform:scaleX(0)}to{transform:scaleX(1)}}@keyframes tpDrop{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:none}}@keyframes tpFloat{0%{opacity:0;transform:translateY(10px)}30%{opacity:1}100%{opacity:0;transform:translateY(-40px)}}@keyframes tpTap{0%,100%{transform:scale(1)}50%{transform:scale(.85)}}@keyframes tpType{from{max-width:0}to{max-width:100%}}@keyframes tpGlow{0%,100%{box-shadow:0 0 0 0 rgba(249,115,22,.0)}50%{box-shadow:0 0 0 6px rgba(249,115,22,.25)}}@keyframes tpFill{from{width:var(--f0)}to{width:var(--f1)}}`;
-function StoryShell({ steps }) {
+const STORY_CSS = `@keyframes tpScanLine{0%{top:10%}50%{top:86%}100%{top:10%}}@keyframes tpIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@keyframes tpPop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}@keyframes tpGrow{from{height:0}}@keyframes tpGrowW{from{transform:scaleX(0)}to{transform:scaleX(1)}}@keyframes tpDrop{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:none}}@keyframes tpFloat{0%{opacity:0;transform:translateY(10px)}30%{opacity:1}100%{opacity:0;transform:translateY(-40px)}}@keyframes tpTap{0%,100%{transform:scale(1)}50%{transform:scale(.85)}}@keyframes tpType{from{max-width:0}to{max-width:100%}}@keyframes tpGlow{0%,100%{box-shadow:0 0 0 0 rgba(18,194,238,.0)}50%{box-shadow:0 0 0 6px rgba(18,194,238,.25)}}@keyframes tpFill{from{width:var(--f0)}to{width:var(--f1)}}`;
+function StoryShell({ steps, h = 300 }) {
   const [st, setSt] = useState(0); const [auto, setAuto] = useState(true);
   useEffect(() => { if (!auto) return; const t = setTimeout(() => setSt((x) => (x + 1) % steps.length), steps[st].dur || 3200); return () => clearTimeout(t); }, [st, auto]);
   const cur = steps[st];
   return (
-    <div style={{ background: "#fff", borderRadius: 18, boxShadow: "0 16px 40px rgba(15,31,77,.18)", overflow: "hidden", direction: "rtl" }}>
+    <div style={{ background: "#fff", borderRadius: 24, boxShadow: "0 18px 44px rgba(10,42,122,.22)", overflow: "hidden", direction: "rtl", border: "1px solid #E3ECFF" }}>
       <style>{STORY_CSS}</style>
-      <div style={{ display: "flex", borderBottom: `1px solid ${C.line}` }}>
-        {steps.map((x, i) => <button key={x.label} onClick={() => { setAuto(false); setSt(i); }} style={{ flex: 1, border: "none", background: st === i ? "linear-gradient(135deg,#FFF1E6,#FDE2EF)" : "#fff", padding: "9px 4px 7px", cursor: "pointer", fontFamily: "inherit", position: "relative" }}>
-          <div style={{ fontSize: 16 }}>{x.icon}</div><div style={{ fontSize: 11.5, fontWeight: 800, color: st === i ? "#9D174D" : C.sub }}>{i + 1}. {x.label}</div>
-          {st === i && auto && <div key={"p" + st} style={{ position: "absolute", bottom: 0, right: 0, height: 3, width: "100%", background: `linear-gradient(90deg, ${LP.orange}, ${LP.pink})`, transformOrigin: "right", animation: `tpGrowW ${(x.dur || 3200) / 1000}s linear forwards` }} />}
-        </button>)}
+      <div style={{ display: "flex", gap: 4, padding: 6, background: "#EEF4FF" }}>
+        {steps.map((x, i) => { const on = st === i; return <button key={x.label} onClick={() => { setAuto(false); setSt(i); }} style={{ flex: 1, border: "none", borderRadius: 14, background: on ? "linear-gradient(135deg,#2F80FF,#1463FF 60%,#0A4BDB)" : "#fff", boxShadow: on ? "0 8px 16px rgba(20,99,255,.32)" : "0 2px 6px rgba(20,60,160,.06)", padding: "8px 4px 7px", cursor: "pointer", fontFamily: "inherit", position: "relative", overflow: "hidden" }}>
+          <div style={{ fontSize: 18, lineHeight: 1.1 }}>{x.icon}</div><div style={{ fontSize: 11.5, fontWeight: 800, color: on ? "#fff" : C.ink, marginTop: 2 }}>{i + 1}. {x.label}</div>
+          {on && auto && <div key={"p" + st} style={{ position: "absolute", bottom: 0, right: 0, height: 3, width: "100%", background: "#67E8F9", transformOrigin: "right", animation: `tpGrowW ${(x.dur || 3200) / 1000}s linear forwards` }} />}
+        </button>; })}
       </div>
-      <div style={{ height: 300, position: "relative", background: "linear-gradient(180deg,#F5F7FC,#fff)", overflow: "hidden" }}>
+      <div style={{ height: h, position: "relative", background: "linear-gradient(180deg,#F6F9FF,#fff)", overflow: "hidden" }}>
         <div key={st} style={{ position: "absolute", inset: 0, padding: 12, animation: "tpIn .35s ease", display: "flex", flexDirection: "column", justifyContent: "center" }}>{cur.render()}</div>
       </div>
-      <div style={{ padding: "8px 12px", fontSize: 12.5, fontWeight: 700, textAlign: "center", borderTop: `1px solid ${C.line}`, background: "#FAFBFD" }}>{cur.caption}</div>
+      <div style={{ margin: "0 10px 10px", display: "flex", alignItems: "center", gap: 10, background: "linear-gradient(135deg,#EAF2FF,#F3F8FF)", border: "1px solid #D8E6FF", borderRadius: 16, padding: "9px 12px" }}>
+        <span style={{ width: 34, height: 34, borderRadius: "50%", background: GRAD, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0, boxShadow: "0 6px 14px rgba(20,99,255,.35)" }}>⚡</span>
+        <span style={{ fontSize: 13, fontWeight: 800, color: C.ink, lineHeight: 1.45 }}>{cur.caption}</span>
+      </div>
     </div>
   );
 }
@@ -842,12 +852,12 @@ function CustomersStory() {
       <div style={{ background: "#075E54", color: "#fff", padding: "10px 12px", fontWeight: 800, fontSize: 12 }}>שיווק השדה</div>
       <div style={{ padding: 10 }}><div style={{ ...card({ borderRadius: "12px 12px 12px 4px", maxWidth: "92%" }), ...anim("tpIn", .3) }}>
         <div style={{ fontSize: 11.5 }}>שלום! מעכשיו מזמינים אצלנו אונליין 🛒</div>
-        <div style={{ marginTop: 6, borderRadius: 10, overflow: "hidden", border: `1px solid ${C.line}` }}><div style={{ height: 46, background: "linear-gradient(135deg,#1F7A4D,#124A2B)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13 }}>🥬 שיווק השדה</div><div dir="ltr" style={{ padding: "5px 7px", fontSize: 10, color: "#0B7", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", textAlign: "left" }}>b2b-plus.onrender.com/?store=s1</div></div>
+        <div style={{ marginTop: 6, borderRadius: 10, overflow: "hidden", border: `1px solid ${C.line}` }}><div style={{ height: 46, background: "linear-gradient(135deg,#2F80FF,#1463FF 60%,#0A4BDB)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13 }}>🥬 שיווק השדה</div><div dir="ltr" style={{ padding: "5px 7px", fontSize: 10, color: "#0B7", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", textAlign: "left" }}>b2b-plus.onrender.com/?store=s1</div></div>
       </div>
       <div style={{ textAlign: "center", fontSize: 24, marginTop: 10, animation: "tpTap 1s ease-in-out 1s infinite" }}>👆</div></div>
     </PhoneBox> },
     { icon: "🛒", label: "בוחרים מוצרים", dur: 3600, caption: "בוחרים מוצרים עם תמונות ומחירים — בכמה לחיצות", render: () => <PhoneBox>
-      <div style={{ background: "linear-gradient(135deg,#1F7A4D,#124A2B)", color: "#fff", padding: "9px 12px", fontWeight: 800, fontSize: 12 }}>הזמנה חדשה</div>
+      <div style={{ background: "linear-gradient(135deg,#2F80FF,#1463FF 60%,#0A4BDB)", color: "#fff", padding: "9px 12px", fontWeight: 800, fontSize: 12 }}>הזמנה חדשה</div>
       <div style={{ padding: 8, display: "grid", gap: 6 }}>{VEG.map(([e, n, p, q], i) => <div key={n} style={{ ...card({ display: "flex", alignItems: "center", gap: 7, padding: "6px 7px" }), ...anim("tpIn", .2 + i * .2) }}><ProductPic name={n} emoji={e} size={30} /><div style={{ flex: 1, lineHeight: 1.2 }}><div style={{ fontWeight: 800, fontSize: 11.5 }}>{n}</div><div style={{ fontSize: 10, color: C.sub }}>₪{p} לקרטון</div></div><b style={{ fontSize: 13, minWidth: 14, textAlign: "center" }}><CountUp to={q} dur={900} delay={600 + i * 350} /></b><span style={{ width: 20, height: 20, borderRadius: 6, background: LP.blue, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13 }}>+</span></div>)}</div>
       <div style={{ position: "absolute", bottom: 8, left: 8, right: 8, background: `linear-gradient(135deg, ${LP.orange}, ${LP.pink})`, color: "#fff", borderRadius: 11, padding: "8px 10px", display: "flex", justifyContent: "space-between", fontWeight: 800, fontSize: 12 }}><span>שליחת הזמנה</span><span>₪<CountUp to={VEG.reduce((a, x) => a + x[2] * x[3], 0)} dur={1600} delay={700} /></span></div>
     </PhoneBox> },
@@ -888,34 +898,63 @@ function StockStory() {
   ]} />;
 }
 // ---- 4. צילום חשבוניות (עם חשבונית "אמיתית") ----
-const INV_ROWS = [[42.2, "🍅", "עגבניות שרי", 20, 38, 52], [47.5, "🫑", "פלפל אדום", 12, 45, 62], [52.7, "🥒", "מלפפון", 25, 21, 29]];
-function ScanStory() {
-  const total = INV_ROWS.reduce((a, r) => a + r[3] * r[4], 0);
-  return <StoryShell steps={[
-    { icon: "📸", label: "מצלמים", caption: "מצלמים את החשבונית מהספק — גם כמה דפים", render: () => <PhoneBox bg="#222">
-      <img src="/tour/invoice-photo.jpg" alt="חשבונית" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { e.currentTarget.style.display = "none"; }} />
-      {[["top", "right"], ["top", "left"], ["bottom", "right"], ["bottom", "left"]].map(([v, h], i) => <div key={i} style={{ position: "absolute", [v]: 30, [h]: 16, width: 18, height: 18, [`border${v[0].toUpperCase() + v.slice(1)}`]: "3px solid #FDBA74", [`border${h[0].toUpperCase() + h.slice(1)}`]: "3px solid #FDBA74", borderRadius: 4 }} />)}
-      <div style={{ position: "absolute", left: 14, right: 14, height: 2, background: "linear-gradient(90deg,transparent,#F97316,#DB2777,transparent)", boxShadow: "0 0 12px #F97316", animation: "tpScanLine 2.2s ease-in-out infinite" }} />
-      <div style={{ position: "absolute", top: 8, left: 0, right: 0, textAlign: "center" }}><span style={{ background: "rgba(0,0,0,.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 10, padding: "2px 8px" }}>דף 1 מתוך 1</span></div>
-      <div style={{ position: "absolute", bottom: 10, left: "50%", marginLeft: -19, width: 38, height: 38, borderRadius: "50%", border: "3px solid #fff", background: "rgba(255,255,255,.3)", animation: "tpTap 1.2s ease-in-out 1s infinite" }} />
-    </PhoneBox> },
-    { icon: "✨", label: "נקרא לבד", dur: 3800, caption: "המערכת קוראת ספק, מוצרים, כמויות ומחירים", render: () => <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-      <div style={{ width: 112, flexShrink: 0, position: "relative", borderRadius: 6, overflow: "hidden", boxShadow: "0 6px 16px rgba(0,0,0,.18)" }}>
-        <img src="/tour/invoice-scan.jpg" alt="" style={{ width: "100%", display: "block" }} />
-        <div style={{ position: "absolute", left: "44.8%", top: "5.4%", width: "50.2%", height: "4.7%", background: "rgba(249,115,22,.35)", borderRadius: 2, ...anim("tpIn", .2) }} />
-        {INV_ROWS.map(([y], i) => <div key={i} style={{ position: "absolute", left: "5.1%", top: y + "%", width: "89.9%", height: "5.2%", background: "rgba(219,39,119,.28)", outline: "1.5px solid rgba(219,39,119,.8)", ...anim("tpIn", .6 + i * .55) }} />)}
+const INV_ROWS = [["🍅", "עגבניות שרי", 20, 38, 52], ["🫑", "פלפל אדום", 12, 45, 62], ["🥒", "מלפפון", 25, 21, 29]];
+// חשבונית ספק ריאליסטית — מצוירת בקוד, תמיד חדה וקריאה (בלי תלות בקובצי תמונה)
+function InvoiceDoc({ hl, width = 170 }) {
+  const k = width / 170; const f = (n) => Math.round(n * k * 10) / 10;
+  const mark = (d) => hl ? { background: "rgba(20,99,255,.16)", outline: "1.5px solid rgba(20,99,255,.75)", animation: `tpIn .3s ease ${d}s both` } : {};
+  const sub = INV_ROWS.reduce((a, r) => a + r[2] * r[3], 0); const vat = sub * 0.18;
+  return (
+    <div style={{ width, background: "#FFFDF6", borderRadius: 4, padding: `${f(9)}px ${f(9)}px ${f(8)}px`, color: "#1d1d1d", boxShadow: "0 10px 24px rgba(0,0,0,.28)", direction: "rtl", boxSizing: "border-box", fontFamily: "inherit", position: "relative", backgroundImage: "linear-gradient(180deg, rgba(0,0,0,.0) 45%, rgba(0,0,0,.035) 46%, rgba(0,0,0,0) 47%)" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: `${f(2)}px solid #1f5130`, paddingBottom: f(4) }}>
+        <div style={{ ...(hl ? { background: "rgba(18,194,238,.22)", borderRadius: 2, animation: "tpIn .3s ease .2s both" } : {}) }}><div style={{ fontWeight: 800, fontSize: f(8.6), color: "#1f5130", lineHeight: 1.2 }}>המשק — סיטונאות ירקות בע"מ</div><div style={{ fontSize: f(5.8), color: "#555" }}>ח.פ 514782361 · שוק סיטונאי, צריפין</div></div>
+        <div style={{ width: f(20), height: f(20), borderRadius: "50%", background: "#1f5130", color: "#fff", fontSize: f(4.6), fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", lineHeight: 1.05, flexShrink: 0 }}>המשק</div>
       </div>
-      <div style={{ fontSize: 16, color: LP.pink, fontWeight: 800 }}>←</div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", margin: `${f(5)}px 0 ${f(4)}px` }}>
+        <div style={{ fontWeight: 800, fontSize: f(8.2) }}>חשבונית מס / קבלה</div>
+        <div style={{ border: "1px solid #bbb", borderRadius: 3, padding: `${f(2)}px ${f(4)}px`, fontSize: f(5.6), lineHeight: 1.45 }}>מס' <b style={{ ...(hl ? { background: "rgba(18,194,238,.25)" } : {}) }}>58213</b><br />20/09/2026</div>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1.9fr .7fr .8fr .9fr", fontSize: f(6), border: "1px solid #aab", borderBottom: "none" }}>
+        {["תיאור", "כמות", "מחיר", "סה\"כ"].map((h) => <div key={h} style={{ background: "#EEF3EE", fontWeight: 800, padding: `${f(2.5)}px ${f(3)}px`, borderBottom: "1px solid #aab" }}>{h}</div>)}
+        {INV_ROWS.map(([e, n, q, p], i) => <React.Fragment key={n}>{[n, q, p.toFixed(2), (q * p).toFixed(2)].map((c, ci) => <div key={ci} style={{ padding: `${f(3)}px ${f(3)}px`, borderBottom: "1px solid #ccd", fontWeight: ci === 0 ? 700 : 500, ...mark(0.5 + i * 0.55) }}>{c}</div>)}</React.Fragment>)}
+      </div>
+      <div style={{ width: "62%", marginInlineStart: "auto", marginTop: f(4), fontSize: f(6) }}>
+        <div style={{ display: "flex", justifyContent: "space-between", padding: `${f(1.5)}px 0`, borderBottom: "1px dotted #aaa" }}><span>לפני מע"מ</span><span>{sub.toLocaleString()}.00</span></div>
+        <div style={{ display: "flex", justifyContent: "space-between", padding: `${f(1.5)}px 0`, borderBottom: "1px dotted #aaa" }}><span>מע"מ 18%</span><span>{vat.toFixed(2)}</span></div>
+        <div style={{ display: "flex", justifyContent: "space-between", padding: `${f(2)}px ${f(2)}px`, fontWeight: 800, fontSize: f(7), background: "#EEF3EE", borderBottom: "1.5px solid #222" }}><span>לתשלום</span><span>₪{(sub + vat).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: f(5) }}>
+        <div style={{ width: f(30), height: f(30), borderRadius: "50%", border: `${f(1.6)}px solid #2743a6`, color: "#2743a6", opacity: .75, transform: "rotate(-14deg)", fontSize: f(4.4), fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", lineHeight: 1.1 }}>המשק<br />בע"מ</div>
+        <div style={{ fontSize: f(10), fontStyle: "italic", color: "#223", transform: "rotate(-4deg)" }}>א. כהן</div>
+      </div>
+    </div>
+  );
+}
+function ScanStory() {
+  const total = INV_ROWS.reduce((a, r) => a + r[2] * r[3], 0);
+  const desk = "repeating-linear-gradient(100deg,#8A6446 0 7px,#7C5A3E 7px 15px)";
+  return <StoryShell h={340} steps={[
+    { icon: "📸", label: "מצלמים", caption: "מצלמים את החשבונית מהספק — גם כמה דפים", render: () => <div style={{ width: 210, margin: "0 auto", background: "#0f172a", borderRadius: 28, padding: 6, boxShadow: "0 14px 30px rgba(0,0,0,.3)" }}>
+      <div style={{ height: 300, borderRadius: 23, overflow: "hidden", background: desk, position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ transform: "rotate(-3deg)" }}><InvoiceDoc width={168} /></div>
+        {[["top", "right"], ["top", "left"], ["bottom", "right"], ["bottom", "left"]].map(([v, hh], i) => <div key={i} style={{ position: "absolute", [v]: 26, [hh]: 12, width: 18, height: 18, [`border${v[0].toUpperCase() + v.slice(1)}`]: "3px solid #67E8F9", [`border${hh[0].toUpperCase() + hh.slice(1)}`]: "3px solid #67E8F9", borderRadius: 4 }} />)}
+        <div style={{ position: "absolute", left: 12, right: 12, height: 2, background: "linear-gradient(90deg,transparent,#12C2EE,#1463FF,transparent)", boxShadow: "0 0 12px #12C2EE", animation: "tpScanLine 2.2s ease-in-out infinite" }} />
+        <div style={{ position: "absolute", top: 7, left: 0, right: 0, textAlign: "center" }}><span style={{ background: "rgba(0,0,0,.55)", color: "#fff", fontSize: 10, fontWeight: 700, borderRadius: 10, padding: "2px 8px" }}>דף 1 מתוך 1</span></div>
+        <div style={{ position: "absolute", bottom: 8, left: "50%", marginLeft: -18, width: 36, height: 36, borderRadius: "50%", border: "3px solid #fff", background: "rgba(255,255,255,.3)", animation: "tpTap 1.2s ease-in-out 1s infinite" }} />
+      </div>
+    </div> },
+    { icon: "✨", label: "נקרא לבד", dur: 4000, caption: "המערכת קוראת ספק, מוצרים, כמויות ומחירים", render: () => <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+      <div style={{ flexShrink: 0 }}><InvoiceDoc hl width={158} /></div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 11.5, fontWeight: 800, marginBottom: 5, ...anim("tpIn", .2) }}><span style={{ background: "linear-gradient(135deg,#EEF2FF,#FAF5FF)", borderRadius: 8, padding: "1px 6px", color: "#6D28D9" }}>✨ זוהה</span> המשק — סיטונאות · #58213</div>
-        {INV_ROWS.map(([, e, n, q, p], i) => <div key={n} style={{ ...card({ display: "flex", alignItems: "center", gap: 6, padding: "5px 7px", marginBottom: 5 }), ...anim("tpIn", .65 + i * .55) }}><ProductPic name={n} emoji={e} size={26} /><div style={{ flex: 1, minWidth: 0, lineHeight: 1.2 }}><div style={{ fontWeight: 800, fontSize: 12 }}>{n}</div><div style={{ fontSize: 10.5, color: C.sub }}>{q} קרט' × ₪{p}</div></div><span style={{ width: 17, height: 17, borderRadius: "50%", background: C.green, color: "#fff", fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", ...anim("tpPop", .9 + i * .55) }}>✓</span></div>)}
+        <div style={{ fontSize: 11.5, fontWeight: 800, marginBottom: 6, lineHeight: 1.4, ...anim("tpIn", .2) }}><span style={{ background: "linear-gradient(135deg,#EEF2FF,#FAF5FF)", borderRadius: 8, padding: "1px 6px", color: "#6D28D9" }}>✨ זוהה</span><br />המשק — סיטונאות · #58213</div>
+        {INV_ROWS.map(([e, n, q, p], i) => <div key={n} style={{ ...card({ display: "flex", alignItems: "center", gap: 6, padding: "6px 7px", marginBottom: 6 }), ...anim("tpIn", .65 + i * .55) }}><ProductPic name={n} emoji={e} size={28} /><div style={{ flex: 1, minWidth: 0, lineHeight: 1.2 }}><div style={{ fontWeight: 800, fontSize: 12 }}>{n}</div><div style={{ fontSize: 10.5, color: C.sub, whiteSpace: "nowrap" }}>{q} × ₪{p}</div></div><span style={{ width: 18, height: 18, borderRadius: "50%", background: C.green, color: "#fff", fontSize: 10, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, ...anim("tpPop", .9 + i * .55) }}>✓</span></div>)}
         <div style={{ fontSize: 11.5, color: C.sub, ...anim("tpIn", 2.4) }}>סה"כ לפני מע"מ: <b style={{ color: C.ink }}>₪{total.toLocaleString()}</b></div>
       </div>
     </div> },
-    { icon: "🏪", label: "בחנות ובדוח", caption: "המוצרים בחנות ובמלאי, ההוצאה בדוח והחשבונית שמורה", render: () => <div style={{ display: "grid", gap: 8 }}>
-      <div style={{ fontSize: 12, fontWeight: 800 }}>🏪 נוסף לחנות <span style={{ fontSize: 10.5, color: C.sub, fontWeight: 600 }}>· קבעתם מחיר מכירה</span></div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 6 }}>{INV_ROWS.map(([, e, n, q, buy, sell], i) => <div key={n} style={{ ...card({ border: `1.5px solid ${C.green}`, padding: "7px 4px", textAlign: "center" }), ...anim("tpPop", .1 + i * .25) }}><div style={{ display: "flex", justifyContent: "center" }}><ProductPic name={n} emoji={e} size={38} /></div><div style={{ fontWeight: 800, fontSize: 11, marginTop: 3 }}>{n}</div><div style={{ fontWeight: 800, color: C.greenDeep, fontSize: 13 }}>₪{sell}</div><div style={{ fontSize: 9.5, color: C.sub }}>מלאי +{q} · רווח ₪{sell - buy}</div></div>)}</div>
-      <div style={{ ...card({ display: "flex", alignItems: "flex-end", gap: 10 }), ...anim("tpIn", .8) }}><div style={{ flex: 1 }}><div style={{ fontSize: 12, fontWeight: 800 }}>📊 דוח ספטמבר עודכן</div><div style={{ fontSize: 11, color: C.sub, marginTop: 2 }}>הוצאה על סחורה <b style={{ color: C.red }}>+₪{total.toLocaleString()}</b> · 🗂️ החשבונית נשמרה</div></div><div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 40 }}>{[55, 70, 62, 88].map((h, i) => <div key={i} style={{ width: 9, height: h + "%", background: i === 3 ? `linear-gradient(180deg, ${LP.orange}, ${LP.pink})` : "#CBD5E1", borderRadius: 2, animation: i === 3 ? "tpGrow .6s ease 1s both" : "none" }} />)}</div></div>
+    { icon: "🏪", label: "בחנות ובדוח", caption: "המוצרים בחנות ובמלאי, ההוצאה בדוח והחשבונית שמורה", render: () => <div style={{ display: "grid", gap: 10 }}>
+      <div style={{ fontSize: 12.5, fontWeight: 800 }}>🏪 נוסף לחנות <span style={{ fontSize: 11, color: C.sub, fontWeight: 600 }}>· קבעתם מחיר מכירה</span></div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 7 }}>{INV_ROWS.map(([e, n, q, buy, sell], i) => <div key={n} style={{ ...card({ border: `1.5px solid ${C.green}`, padding: "9px 4px", textAlign: "center" }), ...anim("tpPop", .1 + i * .25) }}><div style={{ display: "flex", justifyContent: "center" }}><ProductPic name={n} emoji={e} size={46} /></div><div style={{ fontWeight: 800, fontSize: 11.5, marginTop: 4 }}>{n}</div><div style={{ fontWeight: 800, color: C.greenDeep, fontSize: 15 }}>₪{sell}</div><div style={{ fontSize: 10, color: C.sub, lineHeight: 1.35 }}>מלאי +{q}<br />רווח ₪{sell - buy} לקרטון</div></div>)}</div>
+      <div style={{ ...card({ display: "flex", alignItems: "flex-end", gap: 10, padding: "10px 12px" }), ...anim("tpIn", .8) }}><div style={{ flex: 1 }}><div style={{ fontSize: 12.5, fontWeight: 800 }}>📊 דוח ספטמבר עודכן</div><div style={{ fontSize: 11.5, color: C.sub, marginTop: 3, lineHeight: 1.5 }}>הוצאה על סחורה <b style={{ color: C.red }}>+₪{total.toLocaleString()}</b><br />🗂️ החשבונית נשמרה בתיקיית ספטמבר</div></div><div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 44 }}>{[55, 70, 62, 88].map((hh, i) => <div key={i} style={{ width: 10, height: hh + "%", background: i === 3 ? `linear-gradient(180deg, ${LP.orange}, ${LP.pink})` : "#CBD5E1", borderRadius: 2, animation: i === 3 ? "tpGrow .6s ease 1s both" : "none" }} />)}</div></div>
     </div> },
   ]} />;
 }
@@ -966,7 +1005,7 @@ function MessagesStory() {
 // ---- 9. יעדים ופרסים ----
 function PrizesStory() {
   return <StoryShell steps={[
-    { icon: "⭐", label: "צוברים נקודות", caption: "כל הזמנה של הלקוח צוברת לו נקודות", render: () => <div style={{ textAlign: "center", position: "relative" }}><div style={card({ padding: 14, maxWidth: 240, margin: "0 auto" })}><div style={{ fontWeight: 800 }}>מסעדת הנמל · #1047</div><div style={{ fontSize: 12, color: C.sub }}>120 ק"ג סחורה</div></div><div style={{ fontSize: 20, marginTop: 10, color: LP.pink, ...anim("tpIn", .4) }}>↓</div><div style={{ display: "inline-block", marginTop: 6, fontWeight: 800, fontSize: 24, color: "#fff", background: `linear-gradient(135deg, ${LP.orange}, ${LP.pink})`, borderRadius: 30, padding: "6px 18px", boxShadow: "0 8px 20px rgba(219,39,119,.35)", ...anim("tpPop", .7) }}>+12 נק' ⭐</div></div> },
+    { icon: "⭐", label: "צוברים נקודות", caption: "כל הזמנה של הלקוח צוברת לו נקודות", render: () => <div style={{ textAlign: "center", position: "relative" }}><div style={card({ padding: 14, maxWidth: 240, margin: "0 auto" })}><div style={{ fontWeight: 800 }}>מסעדת הנמל · #1047</div><div style={{ fontSize: 12, color: C.sub }}>120 ק"ג סחורה</div></div><div style={{ fontSize: 20, marginTop: 10, color: LP.pink, ...anim("tpIn", .4) }}>↓</div><div style={{ display: "inline-block", marginTop: 6, fontWeight: 800, fontSize: 24, color: "#fff", background: `linear-gradient(135deg, ${LP.orange}, ${LP.pink})`, borderRadius: 30, padding: "6px 18px", boxShadow: "0 8px 20px rgba(20,99,255,.35)", ...anim("tpPop", .7) }}>+12 נק' ⭐</div></div> },
     { icon: "📈", label: "מתקדמים ליעד", dur: 3400, caption: "הלקוח רואה כמה חסר לו לפרס — ומזמין יותר", render: () => <div style={card({ padding: 14 })}><div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800 }}><span>מסעדת הנמל</span><span style={{ color: C.plum }}><CountUp from={52} to={64} dur={1400} delay={400} /> נק'</span></div><div style={{ height: 12, borderRadius: 12, background: "#EEF2F7", margin: "12px 0 6px", overflow: "hidden" }}><div style={{ height: "100%", borderRadius: 12, background: `linear-gradient(90deg, ${LP.orange}, ${LP.pink})`, "--f0": "52%", "--f1": "64%", animation: "tpFill 1.4s ease .4s both" }} /></div><div style={{ fontSize: 12, color: C.sub }}>עוד <b style={{ color: C.ink }}>36 נק'</b> ל-☕ מכונת קפה</div></div> },
     { icon: "🎁", label: "פרס!", caption: "הלקוח זוכה — ונשאר נאמן אליכם. אתם קובעים את הפרסים", render: () => <div style={{ textAlign: "center", position: "relative" }}>{["🎉", "✨", "🎊", "⭐", "🎉"].map((e, i) => <span key={i} style={{ position: "absolute", top: 20 + (i % 2) * 30, left: 10 + i * 20 + "%", fontSize: 22, animation: `tpFloat 1.6s ease ${.2 + i * .15}s infinite` }}>{e}</span>)}<div style={{ fontSize: 50, ...anim("tpPop", .2) }}>🎁</div><div style={{ fontWeight: 800, fontSize: 17, ...anim("tpIn", .6) }}>מסעדת הנמל זכתה!</div><div style={{ fontSize: 13, color: C.sub, ...anim("tpIn", .9) }}>מארז פירות עונתי · 30 נק'</div></div> },
   ]} />;
@@ -1007,35 +1046,45 @@ function ShotFrame({ f }) {
     </div>
   );
 }
+const TOUR_ART = ["char", "clip", "cart", "char", "clip", "clip", "clip", "cart", "cart"];
+const splitTitle = (t) => { const p = t.split(" — "); if (p.length > 1) return [p[0], p.slice(1).join(" — ")]; const w = t.split(" "); const k = Math.ceil(w.length / 2); return [w.slice(0, k).join(" "), w.slice(k).join(" ")]; };
 function FeatureViewer({ index, onClose, onNav, onSignup }) {
-  useEffect(() => { FEATURE_TOUR.forEach((x) => { if (x.shot) { const im = new Image(); im.src = x.shot; } }); }, []); // טעינה מוקדמת של התמונות
-  const f = FEATURE_TOUR[index]; const n = FEATURE_TOUR.length;
+  useEffect(() => { FEATURE_TOUR.forEach((x) => { if (x.shot) { const im = new Image(); im.src = x.shot; } }); }, []);
+  const f = FEATURE_TOUR[index]; const n = FEATURE_TOUR.length; const [t1, t2] = splitTitle(f.title);
   const touch = React.useRef(null);
   useEffect(() => { const k = (e) => { if (e.key === "Escape") onClose(); if (e.key === "ArrowLeft") onNav((index + 1) % n); if (e.key === "ArrowRight") onNav((index - 1 + n) % n); }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, [index]);
-  const navBtn = (dir, lbl) => <button onClick={() => onNav((index + dir + n) % n)} aria-label={lbl} style={{ width: 40, height: 40, borderRadius: "50%", border: `1px solid ${C.line}`, background: "#fff", cursor: "pointer", fontSize: 18, fontWeight: 800, color: C.ink, flexShrink: 0 }}>{dir > 0 ? "‹" : "›"}</button>;
+  const navBtn = (dir, lbl) => <button onClick={() => onNav((index + dir + n) % n)} aria-label={lbl} style={{ width: 42, height: 42, borderRadius: "50%", border: `1px solid ${C.line}`, background: "#fff", cursor: "pointer", fontSize: 18, fontWeight: 800, color: C.blue, flexShrink: 0, boxShadow: "0 4px 12px rgba(20,60,160,.1)" }}>{dir > 0 ? "‹" : "›"}</button>;
   return (
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(8,15,40,.62)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 12 }}>
-      <div onClick={(e) => e.stopPropagation()} onTouchStart={(e) => { touch.current = e.touches[0].clientX; }} onTouchEnd={(e) => { const s = touch.current; if (s == null) return; const d = e.changedTouches[0].clientX - s; if (Math.abs(d) > 50) onNav((index + (d > 0 ? 1 : -1) + n) % n); touch.current = null; }}
-        style={{ width: "100%", maxWidth: 480, maxHeight: "92vh", overflow: "auto", background: "#fff", borderRadius: 24, boxShadow: "0 30px 80px rgba(0,0,0,.35)", direction: "rtl" }}>
-        <div style={{ background: `radial-gradient(400px 200px at 90% 0%, rgba(249,115,22,.35), transparent), linear-gradient(160deg, ${LP.navy}, ${LP.blue})`, color: "#fff", padding: "16px 16px 70px", position: "relative", borderRadius: "24px 24px 0 0" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 13, fontWeight: 700, opacity: .85 }}><bdi dir="ltr">{index + 1} / {n}</bdi></span>
-            {f.premium && <span style={{ fontSize: 11.5, fontWeight: 800, background: "rgba(255,255,255,.18)", borderRadius: 20, padding: "2px 9px" }}>⭐ פרימיום · פתוח בחודש הניסיון</span>}
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(6,18,54,.66)", backdropFilter: "blur(5px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 10 }}>
+      <div onClick={(e) => e.stopPropagation()} onTouchStart={(e) => { touch.current = e.touches[0].clientX; }} onTouchEnd={(e) => { const s0 = touch.current; if (s0 == null) return; const d = e.changedTouches[0].clientX - s0; if (Math.abs(d) > 50) onNav((index + (d > 0 ? 1 : -1) + n) % n); touch.current = null; }}
+        style={{ width: "100%", maxWidth: 480, maxHeight: "94vh", overflow: "auto", background: "linear-gradient(180deg, #0A2A7A 0px, #1463FF 250px, #EEF4FF 251px)", borderRadius: 28, boxShadow: "0 30px 80px rgba(0,0,0,.4)", direction: "rtl" }}>
+        <div style={{ position: "relative", padding: "14px 16px 64px", color: "#fff", overflow: "hidden" }}>
+          <HeroWaves />
+          <div style={{ position: "absolute", left: 4, top: 34 }}><Art k={TOUR_ART[index] || "char"} h={TOUR_ART[index] === "char" ? 150 : 108} /></div>
+          <div style={{ position: "relative", display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontSize: 13, fontWeight: 800, background: "rgba(0,0,0,.22)", borderRadius: 20, padding: "4px 11px" }}><bdi dir="ltr">{index + 1} / {n}</bdi></span>
+            {f.premium && <span style={{ fontSize: 11.5, fontWeight: 800, border: "1.5px solid rgba(255,255,255,.5)", borderRadius: 20, padding: "3px 10px" }}>⭐ פרימיום · פתוח בחודש הניסיון</span>}
             <span style={{ flex: 1 }} />
-            <button onClick={onClose} aria-label="סגור" style={{ width: 32, height: 32, borderRadius: "50%", border: "none", background: "rgba(255,255,255,.18)", color: "#fff", cursor: "pointer", fontSize: 16 }}>✕</button>
+            <button onClick={onClose} aria-label="סגור" style={{ width: 34, height: 34, borderRadius: "50%", border: "none", background: "rgba(255,255,255,.2)", color: "#fff", cursor: "pointer", fontSize: 16 }}>✕</button>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10 }}><span style={{ width: 44, height: 44, borderRadius: 13, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>{f.icon}</span><div style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.3 }}>{f.title}</div></div>
+          <div style={{ position: "relative", display: "flex", alignItems: "flex-start", gap: 12, marginTop: 14, paddingLeft: 118 }}>
+            <span style={{ width: 54, height: 54, borderRadius: 16, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0, boxShadow: "0 8px 18px rgba(0,0,0,.2)" }}>{f.icon}</span>
+            <div style={{ minWidth: 0 }}><div style={{ fontSize: 22, fontWeight: 800, lineHeight: 1.2, letterSpacing: "-0.4px" }}>{t1}</div>{t2 && <div style={{ fontSize: 22, fontWeight: 800, lineHeight: 1.2, color: "#67E8F9", letterSpacing: "-0.4px" }}>{t2}</div>}</div>
+          </div>
         </div>
-        <div style={{ margin: "-56px 16px 0", position: "relative" }}><div style={{ maxWidth: 340, margin: "0 auto" }}><ShotFrame f={f} /></div>{f.shot && !f.story && <div style={{ fontSize: 11, color: C.sub, textAlign: "center", marginTop: 6 }}>📱 צילום מסך מהאפליקציה · נתוני הדגמה</div>}</div>
-        <div style={{ padding: "14px 18px 18px" }}>
-          <div style={{ fontSize: 14.5, color: C.sub, lineHeight: 1.7 }}>{f.text}</div>
-          <div style={{ display: "grid", gap: 6, marginTop: 10 }}>{f.bullets.map((b) => <div key={b} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 14, fontWeight: 700 }}><span style={{ width: 20, height: 20, borderRadius: "50%", background: C.greenSoft, color: C.greenDeep, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Check size={12} strokeWidth={3} /></span>{b}</div>)}</div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 16 }}>
+        <div style={{ margin: "-50px 12px 0", position: "relative" }}><div style={{ maxWidth: 360, margin: "0 auto" }}><ShotFrame f={f} /></div>{f.shot && !f.story && <div style={{ fontSize: 11, color: C.sub, textAlign: "center", marginTop: 6 }}>📱 צילום מסך מהאפליקציה · נתוני הדגמה</div>}</div>
+        <div style={{ padding: "12px 16px 18px" }}>
+          <div style={{ fontSize: 14.5, color: C.sub, lineHeight: 1.7, textAlign: "center" }}>{f.text}</div>
+          <div style={{ display: "grid", gridTemplateColumns: f.bullets.length === 4 ? "repeat(2,1fr)" : "repeat(3,1fr)", gap: 0, marginTop: 12, background: "#fff", border: `1px solid ${C.line}`, borderRadius: 18, padding: "10px 4px", boxShadow: "0 8px 20px rgba(20,60,160,.07)" }}>
+            {f.bullets.map((b, i) => <div key={b} style={{ textAlign: "center", padding: "6px 8px", borderInlineStart: i % (f.bullets.length === 4 ? 2 : 3) ? `1px solid ${C.line}` : "none" }}><span style={{ width: 26, height: 26, borderRadius: "50%", background: "linear-gradient(135deg,#34D399,#16A34A)", color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 10px rgba(22,163,74,.35)" }}><Check size={15} strokeWidth={3.2} /></span><div style={{ fontSize: 12.5, fontWeight: 800, color: C.ink, marginTop: 5, lineHeight: 1.35 }}>{b}</div></div>)}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14 }}>
             {navBtn(-1, "הקודם")}
-            <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: 5, flexWrap: "wrap" }}>{FEATURE_TOUR.map((x, i) => <button key={x.short} onClick={() => onNav(i)} aria-label={x.short} style={{ width: i === index ? 18 : 8, height: 8, borderRadius: 8, border: "none", padding: 0, cursor: "pointer", background: i === index ? `linear-gradient(90deg, ${LP.orange}, ${LP.pink})` : "#D5DBE5", transition: "width .15s" }} />)}</div>
+            <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: 5, flexWrap: "wrap" }}>{FEATURE_TOUR.map((x, i) => <button key={x.short} onClick={() => onNav(i)} aria-label={x.short} style={{ width: i === index ? 20 : 8, height: 8, borderRadius: 8, border: "none", padding: 0, cursor: "pointer", background: i === index ? GRAD : "#C9D6EE", transition: "width .15s" }} />)}</div>
             {navBtn(1, "הבא")}
           </div>
           <button onClick={onSignup} style={{ ...ctaStyle(false), width: "100%", marginTop: 14, fontSize: 16, padding: "14px" }}>אני רוצה את זה — להרשמה בחינם ←</button>
+          <div style={{ textAlign: "center", marginTop: 12 }}><div style={{ display: "inline-block", fontFamily: "'Segoe Script','Comic Sans MS',cursive", fontStyle: "italic", fontSize: 19, fontWeight: 700, color: C.blue }}>פשוט. מהיר. חכם.</div><svg width="150" height="10" viewBox="0 0 150 10" style={{ display: "block", margin: "0 auto" }}><path d="M3 7 C40 1, 100 1, 147 5" stroke="#12C2EE" strokeWidth="3" fill="none" strokeLinecap="round" /></svg></div>
           <div style={{ fontSize: 12, color: C.sub, textAlign: "center", marginTop: 6 }}>חודש ניסיון · בלי כרטיס אשראי · החליקו לצדדים לכלי הבא</div>
         </div>
       </div>
@@ -1096,16 +1145,16 @@ function SignupPage({ state, setState, onLogin, onCancel, source, onLoginClick, 
     <div style={{ maxWidth: 1120, margin: "0 auto", padding: "14px 14px 100px" }}>
       <div className="tp-2col" style={{ alignItems: "start" }}>
         <div>
-          <div style={{ background: `radial-gradient(700px 320px at 90% 0%, rgba(249,115,22,.34), transparent), linear-gradient(160deg, #0B1F4D, #1D4ED8)`, color: "#fff", borderRadius: 24, padding: "22px 16px 18px", boxShadow: "0 14px 40px rgba(15,31,77,.22)" }}>
+          <div style={{ background: `radial-gradient(700px 320px at 90% 0%, rgba(18,194,238,.34), transparent), linear-gradient(160deg, #0B1F4D, #1D4ED8)`, color: "#fff", borderRadius: 24, padding: "22px 16px 18px", boxShadow: "0 14px 40px rgba(15,31,77,.22)" }}>
             <div style={{ display: "inline-block", background: "rgba(255,255,255,.15)", borderRadius: 20, padding: "4px 12px", fontSize: 12.5, fontWeight: 700 }}>🎁 חודש ראשון חינם · בלי כרטיס אשראי</div>
-            <h1 style={{ fontSize: "clamp(27px, 7vw, 38px)", fontWeight: 800, lineHeight: 1.15, margin: "12px 0 8px", letterSpacing: "-0.8px" }}>חוסכים זמן וכסף.<br /><span style={{ background: "linear-gradient(90deg,#FDBA74,#F9A8D4)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>מרוויחים יותר.</span></h1>
+            <h1 style={{ fontSize: "clamp(27px, 7vw, 38px)", fontWeight: 800, lineHeight: 1.15, margin: "12px 0 8px", letterSpacing: "-0.8px" }}>חוסכים זמן וכסף.<br /><span style={{ background: "linear-gradient(90deg,#67E8F9,#A5F3FC)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>מרוויחים יותר.</span></h1>
             <div style={{ fontSize: 15.5, opacity: .92, lineHeight: 1.6 }}>כל מה שספק צריך באפליקציה אחת — נוח לכם, ונוח ללקוחות שלכם.</div>
-            <button onClick={() => setTour(3)} className="tp-click" style={{ display: "block", width: "100%", textAlign: "right", marginTop: 16, padding: 2, borderRadius: 18, border: "none", cursor: "pointer", background: "linear-gradient(135deg,#FDBA74,#F472B6,#A78BFA)", fontFamily: "inherit", boxShadow: "0 10px 26px rgba(219,39,119,.35)" }}>
+            <button onClick={() => setTour(3)} className="tp-click" style={{ display: "block", width: "100%", textAlign: "right", marginTop: 16, padding: 2, borderRadius: 18, border: "none", cursor: "pointer", background: "linear-gradient(135deg,#67E8F9,#38BDF8,#818CF8)", fontFamily: "inherit", boxShadow: "0 10px 26px rgba(20,99,255,.35)" }}>
               <div style={{ background: "linear-gradient(160deg,#13275E,#1E3FA8)", borderRadius: 16, padding: "14px 14px 12px", color: "#fff" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                   <span style={{ width: 48, height: 48, borderRadius: 14, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, flexShrink: 0 }}>📸</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "inline-block", fontSize: 11, fontWeight: 800, background: "linear-gradient(90deg,#F97316,#DB2777)", borderRadius: 20, padding: "2px 9px", marginBottom: 3 }}>⚡ הכי חוסך זמן</div>
+                    <div style={{ display: "inline-block", fontSize: 11, fontWeight: 800, background: "linear-gradient(90deg,#12C2EE,#1463FF)", borderRadius: 20, padding: "2px 9px", marginBottom: 3 }}>⚡ הכי חוסך זמן</div>
                     <div style={{ fontWeight: 800, fontSize: 18, lineHeight: 1.25 }}>מצלמים חשבונית — והכל מתעדכן לבד</div>
                   </div>
                 </div>
@@ -1113,7 +1162,7 @@ function SignupPage({ state, setState, onLogin, onCancel, source, onLoginClick, 
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 6, marginTop: 8 }}>
                   {[["🏪", "המוצרים עולים לחנות"], ["📦", "המלאי מתעדכן"], ["📊", "ההוצאה נרשמת בדוח"], ["🗂️", "החשבונית נשמרת מסודרת"]].map(([e, t]) => <div key={t} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,.12)", borderRadius: 10, padding: "7px 8px", fontSize: 12.5, fontWeight: 800 }}><span>{e}</span>{t}</div>)}
                 </div>
-                <div style={{ fontSize: 12.5, fontWeight: 800, marginTop: 10, color: "#FDBA74" }}>ראו איך זה עובד ›</div>
+                <div style={{ fontSize: 12.5, fontWeight: 800, marginTop: 10, color: "#67E8F9" }}>ראו איך זה עובד ›</div>
               </div>
             </button>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 7, marginTop: 10 }}>
@@ -1124,7 +1173,7 @@ function SignupPage({ state, setState, onLogin, onCancel, source, onLoginClick, 
                   <span style={{ opacity: .7, fontSize: 18 }}>‹</span>
                 </button>))}
             </div>
-            <div style={{ marginTop: 14, background: "linear-gradient(135deg, rgba(249,115,22,.95), rgba(219,39,119,.95))", borderRadius: 14, padding: "12px 14px", fontSize: 14.5, fontWeight: 700, lineHeight: 1.55 }}>
+            <div style={{ marginTop: 14, background: "linear-gradient(135deg, rgba(18,194,238,.95), rgba(20,99,255,.95))", borderRadius: 14, padding: "12px 14px", fontSize: 14.5, fontWeight: 700, lineHeight: 1.55 }}>
               ✨ הכל כבר מוכן בשבילכם: נרשמים ב-2 דקות, מעלים מוצרים ושולחים ללקוחות קישור — ומתחילים לקבל הזמנות. בלי סוכן, בלי התקנה, <u>והחודש הראשון עלינו</u>.
             </div>
             <div style={{ fontSize: 13.5, fontWeight: 700, margin: "16px 0 8px", opacity: .95 }}>👇 רוצים לראות איך זה נראה? לחצו על כל חלון</div>
@@ -1138,7 +1187,7 @@ function SignupPage({ state, setState, onLogin, onCancel, source, onLoginClick, 
                 <div style={{ fontWeight: 800, fontSize: 13.5 }}>{t}</div><div style={{ fontSize: 11.5, color: C.sub, marginTop: 1 }}>{d}</div>
               </div>))}
           </div>
-          <div style={{ marginTop: 10, background: "linear-gradient(135deg,#FFF7ED,#FDF2F8)", border: "1px solid #FED7AA", borderRadius: 16, padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ marginTop: 10, background: "linear-gradient(135deg,#EEF6FF,#E9FBFF)", border: "1px solid #BFDBFE", borderRadius: 16, padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
             <span style={{ fontSize: 24 }}>🎁</span>
             <div style={{ fontSize: 13.5, color: C.ink, lineHeight: 1.55 }}><b>החודש הראשון עלינו.</b> אחר כך מ-{planPriceText(basic)} לחודש — רק אם תבחרו להמשיך. ביטול בכל עת.</div>
           </div>
@@ -1198,11 +1247,11 @@ function SupplierLanding({ state, setState, onLogin, onBack, source, startSignup
           </div>
         </div>
       ) : (<>
-        <div style={{ background: `radial-gradient(900px 400px at 85% 0%, rgba(249,115,22,.35), transparent), linear-gradient(160deg, ${LP.navy}, ${LP.blue})`, color: "#fff" }}>
+        <div style={{ background: `radial-gradient(900px 400px at 85% 0%, rgba(18,194,238,.35), transparent), linear-gradient(160deg, ${LP.navy}, ${LP.blue})`, color: "#fff" }}>
           <div style={{ ...sec, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 30, paddingTop: 40 }}>
             <div style={{ flex: "1 1 340px" }}>
               <div style={{ display: "inline-block", background: "rgba(255,255,255,.14)", borderRadius: 20, padding: "5px 12px", fontSize: 13, fontWeight: 700, marginBottom: 14 }}>🇮🇱 לספקים שמוכרים לעסקים · בכל הארץ</div>
-              <h1 style={{ fontSize: "clamp(30px, 6vw, 46px)", lineHeight: 1.15, margin: 0, fontWeight: 800, letterSpacing: "-1px" }}>הלקוחות מזמינים לבד.<br /><span style={{ background: `linear-gradient(90deg, #FDBA74, #F9A8D4)`, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>אתם רק מכינים ושולחים.</span></h1>
+              <h1 style={{ fontSize: "clamp(30px, 6vw, 46px)", lineHeight: 1.15, margin: 0, fontWeight: 800, letterSpacing: "-1px" }}>הלקוחות מזמינים לבד.<br /><span style={{ background: `linear-gradient(90deg, #67E8F9, #A5F3FC)`, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>אתם רק מכינים ושולחים.</span></h1>
               <p style={{ fontSize: 17, lineHeight: 1.7, opacity: .92, margin: "16px 0 22px", maxWidth: 520 }}>חנות דיגיטלית לספקים — מסעדות, מכולות וקפה מזמינים מכם 24/7 מהטלפון, וההזמנה מגיעה אליכם מסודרת. בלי טלפונים, בלי פתקים, בלי טעויות.</p>
               <button onClick={open} style={ctaStyle(true)}>פתחו חנות בחינם ←</button>
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 14, fontSize: 13.5, opacity: .95 }}><span>✓ חודש ניסיון חינם</span><span>✓ בלי כרטיס אשראי</span><span>✓ בלי סוכן ובלי פגישה</span><span>✓ ביטול בכל עת</span></div>
@@ -1278,15 +1327,15 @@ function OnboardingCard({ state, setState, go }) {
   if (n === steps.length) return null;
   const nextStep = steps.find((x) => !x.done);
   return (
-    <Panel style={{ boxShadow: SH, marginBottom: 16, borderColor: "#FED7AA", background: "linear-gradient(135deg,#FFF7ED,#fff 60%)" }}>
+    <Panel style={{ boxShadow: SH, marginBottom: 16, borderColor: "#BFDBFE", background: "linear-gradient(135deg,#EEF6FF,#fff 60%)" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
         <div style={{ fontSize: 24 }}>🚀</div>
         <div style={{ flex: 1, minWidth: 180 }}><div style={{ fontWeight: 800, fontSize: 17 }}>צעדים ראשונים לחנות שלך</div><div style={{ fontSize: 13, color: C.sub }}>{n} מתוך {steps.length} הושלמו · הצעד הבא: {nextStep.t}</div></div>
         <button onClick={() => setState((s) => ({ ...s, onboarding: { ...(s.onboarding || {}), dismissed: true } }))} style={{ border: "none", background: "transparent", color: C.sub, fontSize: 12.5, cursor: "pointer", textDecoration: "underline" }}>הסתר</button>
       </div>
-      <div style={{ height: 8, borderRadius: 8, background: "#FDE7D3", margin: "12px 0" }}><div style={{ height: "100%", width: (n / steps.length * 100) + "%", borderRadius: 8, background: `linear-gradient(90deg, ${LP.orange}, ${LP.pink})` }} /></div>
+      <div style={{ height: 8, borderRadius: 8, background: "#DBEAFE", margin: "12px 0" }}><div style={{ height: "100%", width: (n / steps.length * 100) + "%", borderRadius: 8, background: `linear-gradient(90deg, ${LP.orange}, ${LP.pink})` }} /></div>
       <div style={{ display: "grid", gap: 8 }}>{steps.map((x, i) => (
-        <button key={x.id} onClick={x.go} className="tp-click" style={{ display: "flex", alignItems: "center", gap: 12, textAlign: "right", border: `1px solid ${x === nextStep ? "#FDBA74" : C.line}`, background: x.done ? "#F6FBF7" : "#fff", borderRadius: 12, padding: "10px 12px", cursor: "pointer", font: "inherit", color: "inherit" }}>
+        <button key={x.id} onClick={x.go} className="tp-click" style={{ display: "flex", alignItems: "center", gap: 12, textAlign: "right", border: `1px solid ${x === nextStep ? "#67E8F9" : C.line}`, background: x.done ? "#F6FBF7" : "#fff", borderRadius: 12, padding: "10px 12px", cursor: "pointer", font: "inherit", color: "inherit" }}>
           <span style={{ width: 28, height: 28, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 13, background: x.done ? C.green : (x === nextStep ? `linear-gradient(135deg, ${LP.orange}, ${LP.pink})` : "#EEF2F7"), color: x.done || x === nextStep ? "#fff" : C.sub }}>{x.done ? <Check size={15} /> : i + 1}</span>
           <div style={{ flex: 1, minWidth: 0 }}><div style={{ fontWeight: 800, fontSize: 14.5, textDecoration: x.done ? "line-through" : "none", color: x.done ? C.sub : C.ink }}>{x.t}</div>{!x.done && <div style={{ fontSize: 12.5, color: C.sub }}>{x.d}</div>}</div>
           {!x.done && <span style={{ fontSize: 12.5, fontWeight: 800, color: LP.pink }}>{x.cta} ›</span>}
@@ -1305,7 +1354,7 @@ function RecruitPanel({ state, setState }) {
   const SRC = [["facebook", "פייסבוק / אינסטגרם"], ["google", "גוגל"], ["tiktok", "טיקטוק"], ["whatsapp", "וואטסאפ"]];
   const srcName = (k) => (SRC.find((x) => x[0] === k) || [k, k === "direct" ? "ישיר" : k])[1];
   return (
-    <Panel style={{ boxShadow: SH, borderColor: "#FED7AA" }}>
+    <Panel style={{ boxShadow: SH, borderColor: "#BFDBFE" }}>
       <button onClick={() => setOpen(!open)} style={{ width: "100%", border: "none", background: "transparent", padding: 0, cursor: "pointer", textAlign: "right", display: "flex", alignItems: "center", gap: 10, font: "inherit", color: "inherit" }}>
         <span style={{ fontSize: 24 }}>📣</span>
         <div style={{ flex: 1 }}><div style={{ fontWeight: 800, fontSize: 16 }}>גיוס ספקים בפרסום</div><div style={{ fontSize: 12.5, color: C.sub }}>{recent.length} ספקים נרשמו ב-30 יום האחרונים · {auto ? "פתיחה מיידית (ללא אישור)" : "דורש אישור שלך"}</div></div>
@@ -1334,14 +1383,17 @@ function AuthScreen({ state, setState, onLogin }) {
   const [mode, setMode] = useState("menu");
   if (mode === "landing") return <SupplierLanding state={state} setState={setState} onLogin={onLogin} onBack={() => setMode("menu")} source={readUtm()} startSignup />;
   return (
-    <div dir="rtl" style={{ minHeight: "100vh", color: C.ink, fontFamily: FONT, display: "flex", flexDirection: "column", alignItems: "center", padding: "44px 16px", background: `radial-gradient(1200px 500px at 50% -8%, ${C.greenSoft}, ${C.bg})` }}>
-      <div style={{ marginBottom: 12 }}><Logo size={122} /></div>
-      <div style={{ color: C.blue, fontWeight: 800, fontSize: 16, marginBottom: 4 }}>B2B+ Marketplace</div>
-      <div style={{ color: C.sub, fontSize: 13, marginBottom: 22 }}>ממשק הזמנות מהספק לעסק · כל ספק, החנות שלו</div>
+    <div dir="rtl" style={{ minHeight: "100vh", color: C.ink, fontFamily: FONT, display: "flex", flexDirection: "column", alignItems: "center", padding: "36px 16px", background: "linear-gradient(180deg, #0A2A7A 0px, #1463FF 268px, #D6E4FF 269px, #EEF4FF 560px)", backgroundRepeat: "no-repeat" }}>
+      <div style={{ position: "relative", width: "100%", maxWidth: 380, display: "flex", alignItems: "flex-end", justifyContent: "center", gap: 6, marginBottom: 14 }}>
+        <div style={{ borderRadius: 30, background: "#fff", padding: 6, boxShadow: "0 16px 34px rgba(8,30,90,.35)" }}><Logo size={112} /></div>
+        <Art k="char" h={150} style={{ marginBottom: -12 }} />
+      </div>
+      <div style={{ color: "#fff", fontWeight: 800, fontSize: 17, marginBottom: 2 }}><bdi dir="ltr">B2B+ Marketplace</bdi></div>
+      <div style={{ color: "#CFE0FF", fontSize: 13, fontWeight: 600, marginBottom: 26 }}>ממשק הזמנות מהספק לעסק · כל ספק, החנות שלו</div>
       {mode === "menu" && (
         <div style={{ width: "100%", maxWidth: 380, display: "grid", gap: 12 }}>
           <BigBtn icon={<LogIn size={18} />} onClick={() => setMode("login")} primary>התחברות</BigBtn>
-          <button onClick={() => setMode("landing")} className="tp-click" style={{ border: "none", borderRadius: 14, padding: "14px 16px", cursor: "pointer", background: `linear-gradient(135deg, ${LP.orange}, ${LP.pink})`, color: "#fff", textAlign: "right", fontFamily: "inherit", boxShadow: "0 8px 22px rgba(219,39,119,.28)" }}><div style={{ fontWeight: 800, fontSize: 16 }}>🏪 הרשמת ספק — פתחו חנות בחינם</div><div style={{ fontSize: 12.5, opacity: .92, marginTop: 2 }}>חודש ניסיון · בלי כרטיס אשראי · הרשמה ב-2 דקות</div></button>
+          <button onClick={() => setMode("landing")} className="tp-click" style={{ border: "none", borderRadius: 14, padding: "14px 16px", cursor: "pointer", background: `linear-gradient(135deg, ${LP.orange}, ${LP.pink})`, color: "#fff", textAlign: "right", fontFamily: "inherit", boxShadow: "0 8px 22px rgba(20,99,255,.28)" }}><div style={{ fontWeight: 800, fontSize: 16 }}>🏪 הרשמת ספק — פתחו חנות בחינם</div><div style={{ fontSize: 12.5, opacity: .92, marginTop: 2 }}>חודש ניסיון · בלי כרטיס אשראי · הרשמה ב-2 דקות</div></button>
           <BigBtn icon={<UserPlus size={18} />} onClick={() => setMode("register")}>הרשמת עסק (לקוח)</BigBtn>
         </div>
       )}
@@ -1370,7 +1422,7 @@ function SupplierRegister({ state, setState, back, byAdmin, onDone }) {
     if (!byAdmin && !agree) return setErr("יש לאשר את התקנון כדי להמשיך");
     const em = f.email.trim().toLowerCase();
     if (state.suppliers.some((sp) => sp.owner && sp.owner.email.trim().toLowerCase() === em)) return setErr("אימייל זה כבר רשום כספק");
-    const sup = { id: "s" + Date.now(), name: f.name, ...domainPatch(f.domains), regions: f.regions || "", status: byAdmin ? "active" : "pending", owner: { email: f.email, password: f.password, contact: f.contact, phone: f.phone }, terms: byAdmin ? null : { version: TERMS_VERSION, acceptedAt: Date.now() }, brand: { logo: "", tagline: "", color: "#1F7A4D" }, sub: newTrialSub(plan), biz: { taxId: "", address: "", phone: f.phone || "", email: f.email || "" }, cats: f.cats || [], invoiceSeq: 1000, features: { prizes: false, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [], clients: [], staff: [], orders: [], messages: [], broadcasts: [] };
+    const sup = { id: "s" + Date.now(), name: f.name, ...domainPatch(f.domains), regions: f.regions || "", status: byAdmin ? "active" : "pending", owner: { email: f.email, password: f.password, contact: f.contact, phone: f.phone }, terms: byAdmin ? null : { version: TERMS_VERSION, acceptedAt: Date.now() }, brand: { logo: "", tagline: "", color: "#1463FF" }, sub: newTrialSub(plan), biz: { taxId: "", address: "", phone: f.phone || "", email: f.email || "" }, cats: f.cats || [], invoiceSeq: 1000, features: { prizes: false, chat: true, minOrder: 5 }, kgPerPoint: 10, periodMonths: 1, prizeTiers: defaultTiers(), products: [], clients: [], staff: [], orders: [], messages: [], broadcasts: [] };
     setState((root) => ({ ...root, suppliers: [...root.suppliers, sup] }));
     if (start === "pay") return setPayFor(sup); // פותח את טופס האשראי
     if (byAdmin && onDone) return onDone();
@@ -1729,11 +1781,16 @@ function SuperAdminView({ state, setState, onEnter, onEnterAs, agentMode }) {
   const reject = (id) => setState((r) => ({ ...r, suppliers: r.suppliers.filter((s) => s.id !== id) }));
   return (
     <div style={{ display: "grid", gap: 20 }}>
-      {(
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", background: C.surface, border: `1px solid ${C.line}`, borderRadius: 14, padding: 8, boxShadow: SH }}>
-          {[["main", "ספקים", Building2], ["demo", "הדגמה", Star], ["billing", "חיובים ומנויים", CreditCard]].map(([id, label, Icon]) => { const on = saTab === id; return <button key={id} onClick={() => setSaTab(id)} style={{ display: "flex", alignItems: "center", gap: 7, border: "none", background: on ? C.green : "transparent", color: on ? "#fff" : C.sub, fontWeight: 700, fontSize: 14, padding: "9px 16px", borderRadius: 10, cursor: "pointer" }}><Icon size={16} />{label}</button>; })}
+      {(<>
+        <div style={{ position: "relative", borderRadius: 26, overflow: "hidden", background: "linear-gradient(135deg, #2F80FF 0%, #1463FF 50%, #0A2A7A 100%)", boxShadow: "0 16px 36px rgba(20,60,160,.28)", color: "#fff", minHeight: 118 }}>
+          <HeroWaves />
+          <div style={{ position: "absolute", left: 6, bottom: 0 }}><Art k="char" h={118} /></div>
+          <div style={{ position: "relative", padding: "22px 20px 22px clamp(110px, 32vw, 150px)" }}><div style={{ fontSize: 14, fontWeight: 700, opacity: .85 }}>{agentMode ? "סוכן-על" : "מנהל-על"}</div><div style={{ fontWeight: 800, fontSize: 25 }}>ניהול B2B+</div><div style={{ fontSize: 14, color: "#A5F3FC", fontWeight: 700, marginTop: 4 }}>ספקים, מנויים וגיוס — במקום אחד</div></div>
         </div>
-      )}
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", background: C.surface, border: `1px solid ${C.line}`, borderRadius: 18, padding: 6, boxShadow: SH }}>
+          {[["main", "ספקים", Building2], ["demo", "הדגמה", Star], ["billing", "חיובים ומנויים", CreditCard]].map(([id, label, Icon]) => { const on = saTab === id; return <button key={id} onClick={() => setSaTab(id)} style={{ display: "flex", alignItems: "center", gap: 7, border: "none", background: on ? GRAD : "transparent", color: on ? "#fff" : C.sub, fontWeight: 800, fontSize: 14, padding: "10px 16px", borderRadius: 13, cursor: "pointer", fontFamily: "inherit", boxShadow: on ? "0 8px 18px rgba(20,99,255,.3)" : "none" }}><Icon size={16} />{label}</button>; })}
+        </div>
+      </>)}
       {saTab === "billing" && <BillingCenter state={state} setState={setState} agentMode={agentMode} byName={agentMode ? "סוכן-על" : "מנהל-על"} />}
       {saTab === "demo" && <DemoCenter demoSup={demoSup} createDemo={createDemo} resetDemo={resetDemo} enterRole={enterRole} />}
       {saTab === "main" && <>
@@ -2100,12 +2157,15 @@ function BusinessHub({ state, setState, email, onEnter, onJoin }) {
   ); };
   return (
     <div style={{ display: "grid", gap: 20 }}>
-      <Panel pad={0} style={{ overflow: "hidden", boxShadow: SH }}>
-        <div style={{ padding: "24px 26px", background: `linear-gradient(120deg, ${C.greenSoft}, #fff 78%)` }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}><Logo size={46} img={anyRec && anyRec.logo} name={businessName} /><div><div style={{ fontSize: 14, color: C.sub, fontWeight: 600 }}>שלום,</div><div style={{ fontWeight: 800, fontSize: 24 }}>{businessName}</div></div></div>
-          <div style={{ fontSize: 14, color: C.sub, marginTop: 4 }}>בחר ספק להזמנה, או גלה ספקים חדשים לפי אזור ומוצר</div>
+      <div style={{ position: "relative", borderRadius: 26, overflow: "hidden", background: "linear-gradient(135deg, #2F80FF 0%, #1463FF 50%, #0A2A7A 100%)", boxShadow: "0 16px 36px rgba(20,60,160,.28)", color: "#fff", minHeight: 130 }}>
+        <div style={{ position: "absolute", top: -60, right: -40, width: 200, height: 200, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,.22), transparent 70%)" }} />
+        <HeroWaves />
+        <div style={{ position: "absolute", left: 8, bottom: 2 }}><Art k="cart" h={100} /></div>
+        <div style={{ position: "relative", padding: "22px 20px 22px clamp(96px, 28vw, 130px)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}><Logo size={50} img={anyRec && anyRec.logo} name={businessName} /><div><div style={{ fontSize: 14, color: "rgba(255,255,255,.85)", fontWeight: 700 }}>שלום,</div><div style={{ fontWeight: 800, fontSize: 25 }}>{businessName}</div></div></div>
+          <div style={{ fontSize: 14, color: "#A5F3FC", fontWeight: 700, marginTop: 6 }}>בחרו ספק להזמנה, או גלו ספקים חדשים לפי אזור ומוצר</div>
         </div>
-      </Panel>
+      </div>
       <Tabs tabs={tabs} active={tab} onChange={setTab} badges={{ mine: mine.length }} />
       {tab === "mine" && (mine.length === 0 ? <Empty>עדיין לא הצטרפת לספקים. עבור ל"מצא ספקים".</Empty> :
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: 14 }}>
@@ -2236,25 +2296,27 @@ function BrandBadge({ sup, size = 60, accent }) {
   const col = (sup && sup.brand && sup.brand.color) || C.greenDeep;
   return <div title={sup && sup.name} style={{ width: size, height: size, borderRadius: Math.round(size * 0.24), flexShrink: 0, background: accent ? "rgba(255,255,255,.95)" : col, color: accent ? col : "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: Math.round(size * 0.36), boxShadow: "0 3px 12px rgba(0,0,0,.14)" }}>{ini || "🏪"}</div>;
 }
-function RoleHome({ name, prompt, cards, onOpen, accent, sup }) {
-  const grad = { green: "linear-gradient(135deg,#2FA268,#124A2B)", blue: "linear-gradient(135deg,#3E86B5,#1E5478)", plum: "linear-gradient(135deg,#8B5CB0,#4E2A6B)", amber: "linear-gradient(135deg,#E0A93C,#9A6A16)" };
+const HeroWaves = () => <svg viewBox="0 0 400 120" preserveAspectRatio="none" style={{ position: "absolute", inset: "auto 0 0 0", width: "100%", height: "55%", opacity: .22, pointerEvents: "none" }}><path d="M0,70 C80,30 160,110 260,60 C320,30 360,50 400,40 L400,120 L0,120 Z" fill="#fff" /><path d="M0,95 C90,65 170,120 270,88 C330,70 370,85 400,78 L400,120 L0,120 Z" fill="#fff" opacity=".6" /></svg>;
+function RoleHome({ name, prompt, cards, onOpen, accent, sup, art = "char" }) {
+  const grad = { green: GRAD, blue: "linear-gradient(135deg,#38BDF8,#0A84E0)", plum: TONE_GRAD.plum, amber: TONE_GRAD.amber };
   return (
     <div style={{ display: "grid", gap: 18 }}>
-      <Panel pad={0} style={{ overflow: "hidden", boxShadow: SH }}>
-        <div style={{ padding: "26px 28px", background: accent ? `linear-gradient(135deg, ${accent}, ${shade(accent)})` : `linear-gradient(120deg, ${C.greenSoft}, #fff 78%)` }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            {sup && <BrandBadge sup={sup} size={64} accent={accent} />}
-            <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 14, color: accent ? "rgba(255,255,255,.85)" : C.sub, fontWeight: 600 }}>שלום,</div>
-              <div style={{ fontWeight: 800, fontSize: 25, letterSpacing: "-0.5px", color: accent ? "#fff" : C.ink }}>{name}</div>
-              <div style={{ fontSize: 14, color: accent ? "rgba(255,255,255,.9)" : C.sub, marginTop: 4 }}>{prompt || "מה תרצה לעשות היום?"}{sup && sup.name && sup.name !== name ? " · " + sup.name : ""}</div>
-            </div>
+      <div style={{ position: "relative", borderRadius: 26, overflow: "hidden", background: accent ? `linear-gradient(135deg, ${accent}, ${shade(accent)})` : "linear-gradient(135deg, #2F80FF 0%, #1463FF 50%, #0A2A7A 100%)", boxShadow: "0 16px 36px rgba(20,60,160,.28)", color: "#fff", minHeight: 136 }}>
+        <div style={{ position: "absolute", top: -60, right: -40, width: 200, height: 200, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,.22), transparent 70%)" }} />
+        <HeroWaves />
+        <div style={{ position: "absolute", left: 4, bottom: 0 }}><Art k={art} h={art === "char" ? 124 : 96} style={{ maxWidth: "30vw", height: "auto", maxHeight: art === "char" ? 124 : 96 }} /></div>
+        <div style={{ position: "relative", padding: "22px 20px 22px clamp(104px, 30vw, 150px)", display: "flex", alignItems: "center", gap: 12 }}>
+          {sup && <BrandBadge sup={sup} size={60} accent="#fff" />}
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: 14, color: "rgba(255,255,255,.85)", fontWeight: 700 }}>שלום,</div>
+            <div style={{ fontWeight: 800, fontSize: 26, letterSpacing: "-0.5px", lineHeight: 1.15 }}>{name}</div>
+            <div style={{ fontSize: 14, color: "#A5F3FC", fontWeight: 700, marginTop: 5 }}>{prompt || "מה תרצה לעשות היום?"}{sup && sup.name && sup.name !== name ? " · " + sup.name : ""}</div>
           </div>
         </div>
-      </Panel>
+      </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(220px,1fr))", gap: 16 }}>
         {cards.map((c) => { const Ic = c.Icon; const pill = c.stat || c.badge; return (
-          <button key={c.id} onClick={() => onOpen(c.id)} style={{ textAlign: "right", border: `1px solid ${C.line}`, borderRadius: 20, overflow: "hidden", padding: 0, background: "#fff", cursor: "pointer", boxShadow: SH }}>
+          <button key={c.id} onClick={() => onOpen(c.id)} className="tp-click" style={{ textAlign: "right", border: `1px solid ${C.line}`, borderRadius: 22, overflow: "hidden", padding: 0, background: "#fff", cursor: "pointer", boxShadow: "0 10px 26px rgba(20,60,160,.09)", fontFamily: "inherit" }}>
             <div style={{ height: 96, background: grad[c.tone], position: "relative", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
               <div style={{ position: "absolute", top: -24, left: -18, width: 84, height: 84, borderRadius: "50%", background: "rgba(255,255,255,.13)" }} />
               <div style={{ position: "absolute", bottom: -30, right: 14, width: 66, height: 66, borderRadius: "50%", background: "rgba(255,255,255,.10)" }} />
@@ -2299,7 +2361,7 @@ function ClientHome({ state, clientId, unread, onOpen }) {
           <ChevronLeft size={20} style={{ opacity: .8 }} />
         </button>
       )}
-      <RoleHome sup={state} name={client.name} accent={state.brand && state.brand.color} cards={cards.filter((c) => (c.id !== "prizes" || (feat.prizes !== false && hasFeature(state, "prizes"))) && (c.id !== "chat" || feat.chat !== false))} onOpen={onOpen} />
+      <RoleHome art="cart" sup={state} name={client.name} accent={state.brand && state.brand.color} cards={cards.filter((c) => (c.id !== "prizes" || (feat.prizes !== false && hasFeature(state, "prizes"))) && (c.id !== "chat" || feat.chat !== false))} onOpen={onOpen} />
     </div>
   );
 }
@@ -3315,7 +3377,7 @@ function StoreDesign({ state, setState }) {
   const pickLogo = (file) => pickImage(file, 360, (d) => setState((s) => ({ ...s, brand: { ...(s.brand || {}), logo: d } })));
   const save = () => setState((s) => ({ ...s, name: f.name || s.name, category: f.category, regions: f.regions, brand: { ...(s.brand || {}), tagline: f.tagline, color: f.color, bg: f.bg, bgColor: f.bgColor, fontColor: f.fontColor, font: f.font, fontScale: f.fontScale, borderW: f.borderW } }));
   const setFeat = (k, v) => setState((s) => ({ ...s, features: { ...(s.features || { prizes: true, chat: true, minOrder: 5 }), [k]: v } }));
-  const swatches = ["#1F7A4D", "#2C6E9B", "#B23B3B", "#B4791F", "#6D3B8E", "#0E7C86", "#C2410C", "#334155"];
+  const swatches = ["#1463FF", "#1F7A4D", "#2C6E9B", "#B23B3B", "#B4791F", "#6D3B8E", "#0E7C86", "#C2410C", "#334155"];
   const fam = `'${f.font}', ${FONT}`;
   return (
     <div style={{ display: "grid", gap: 20 }}>
@@ -3597,7 +3659,7 @@ function PickerView({ state, setState, me }) {
   const tabs = [["home", "בית", Home], ["queue", "ממתינות לליקוט", Scale], ["picked", "לוקטו", ClipboardCheck]];
   return (
     <div><Tabs tabs={tabs} active={tab} onChange={setTab} badges={{ queue: queue.length }} />
-      {tab === "home" && <RoleHome sup={state} name={me ? me.name : "מלקט"} prompt="ליקוט ושקילת הזמנות" cards={[
+      {tab === "home" && <RoleHome art="clip" sup={state} name={me ? me.name : "מלקט"} prompt="ליקוט ושקילת הזמנות" cards={[
         { id: "queue", title: "ממתינות לליקוט", desc: queue.length ? `${queue.length} הזמנות ממתינות` : "אין הזמנות לליקוט", Icon: Scale, tone: "amber", badge: queue.length ? queue.length + " ממתינות" : null },
         { id: "picked", title: "לוקטו", desc: `${picked.length} הזמנות שלוקטו`, Icon: ClipboardCheck, tone: "green" },
       ]} onOpen={setTab} />}
@@ -3680,7 +3742,7 @@ function DriverView({ state, setState, me }) {
   const doneTodayList = done.filter((o) => new Date(o.date).toDateString() === new Date().toDateString());
   return (
     <div><Tabs tabs={tabs} active={tab} onChange={setTab} badges={{ deliveries: mine.length }} />
-      {tab === "home" && <RoleHome sup={state} name={me.name} prompt="ניהול המשלוחים שלך" cards={[{ id: "deliveries", title: "המשלוחים שלי", desc: mine.length ? `${mine.length} משלוחים פעילים` : "אין משלוחים כרגע", Icon: Truck, tone: "plum", badge: mine.length ? mine.length + " פעילים" : null }]} onOpen={setTab} />}
+      {tab === "home" && <RoleHome art="clip" sup={state} name={me.name} prompt="ניהול המשלוחים שלך" cards={[{ id: "deliveries", title: "המשלוחים שלי", desc: mine.length ? `${mine.length} משלוחים פעילים` : "אין משלוחים כרגע", Icon: Truck, tone: "plum", badge: mine.length ? mine.length + " פעילים" : null }]} onOpen={setTab} />}
       {tab === "deliveries" && (
         <div style={{ display: "grid", gap: 20 }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 12 }}>
@@ -3717,7 +3779,7 @@ function AgentView({ state, setState, me }) {
   const orders = [...state.orders].sort((a, b) => b.date - a.date).filter(match);
   return (
     <div><Tabs tabs={tabs} active={tab} onChange={setTab} />
-      {tab === "home" && <RoleHome sup={state} name={me.name} prompt="מרכז הסוכן" cards={[
+      {tab === "home" && <RoleHome art="clip" sup={state} name={me.name} prompt="מרכז הסוכן" cards={[
         { id: "orders", title: "מעקב הזמנות", desc: "כל ההזמנות במערכת", Icon: ClipboardList, tone: "blue" },
         { id: "new", title: "הזמנה ללקוח", desc: "צור הזמנה עבור לקוח", Icon: ShoppingCart, tone: "green" },
         { id: "chat", title: "תמיכה בלקוחות", desc: "שיחות ופניות לקוחות", Icon: MessageSquare, tone: "amber" },
@@ -3824,12 +3886,11 @@ function ClientModal({ client, state, setState, onClose }) {
 
 /* ============ UI primitives ============ */
 function Tabs({ tabs, active, onChange, badges = {} }) {
-  return (<div style={{ display: "flex", gap: 8, overflowX: "auto", marginBottom: 20, paddingBottom: 4 }}>
+  return (<div style={{ display: "flex", gap: 6, overflowX: "auto", marginBottom: 20, padding: 6, background: "#fff", border: `1px solid ${C.line}`, borderRadius: 18, boxShadow: "0 8px 24px rgba(20,60,160,.07)" }}>
     {tabs.map(([id, label, Icon]) => { const on = active === id; const b = badges[id]; return (
-      <button key={id} onClick={() => onChange(id)} style={{ display: "flex", alignItems: "center", gap: 7, whiteSpace: "nowrap", border: `1px solid ${on ? C.green : C.line}`, background: on ? C.green : "#fff", color: on ? "#fff" : C.sub, fontWeight: 700, fontSize: 14, padding: "9px 15px", borderRadius: 11, cursor: "pointer", boxShadow: on ? "0 3px 10px rgba(31,122,77,.25)" : "none" }}>
-        <Icon size={16} />{label}{b ? <span style={{ background: on ? "rgba(255,255,255,.25)" : C.amber, color: "#fff", borderRadius: 20, fontSize: 11, padding: "1px 7px", fontWeight: 800 }}>{b}</span> : null}
-      </button>
-    ); })}
+      <button key={id} onClick={() => onChange(id)} style={{ display: "flex", alignItems: "center", gap: 7, whiteSpace: "nowrap", border: "none", background: on ? GRAD : "transparent", color: on ? "#fff" : C.sub, fontWeight: 800, fontSize: 14, padding: "10px 15px", borderRadius: 13, cursor: "pointer", fontFamily: "inherit", boxShadow: on ? "0 8px 18px rgba(20,99,255,.3)" : "none", position: "relative" }}>
+        {Icon && <Icon size={17} />}{label}{b ? <span style={{ background: on ? "#fff" : C.red, color: on ? C.blue : "#fff", borderRadius: 20, fontSize: 11, fontWeight: 800, padding: "1px 7px", minWidth: 18, textAlign: "center" }}>{b}</span> : null}
+      </button>); })}
   </div>);
 }
 function Modal({ title, children, onClose }) {
@@ -3861,17 +3922,17 @@ function ProdThumb({ p, size = 46, tint }) {
   if (p.img) return <img src={p.img} alt={p.name} style={{ width: size, height: size, borderRadius: 12, objectFit: "cover" }} />;
   return <div style={{ width: size, height: size, borderRadius: 12, background: tint ? tint + "1A" : "#F2F5EE", display: "flex", alignItems: "center", justifyContent: "center" }}><ProdIcon p={p} s={Math.round(size * 0.64)} /></div>;
 }
-function Panel({ children, pad = 20, style = {} }) { return <div style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 18, padding: pad, ...style }}>{children}</div>; }
-function SectionTitle({ icon, children, extra }) { return <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14, flexWrap: "wrap" }}><span style={{ color: C.green, display: "flex" }}>{icon}</span><h2 style={{ margin: 0, fontSize: 17, fontWeight: 800 }}>{children}</h2><div style={{ flex: 1 }} />{extra}</div>; }
+function Panel({ children, pad = 20, style = {}, id }) { return <div id={id} style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 22, padding: pad, boxShadow: "0 10px 30px rgba(20,60,160,.07)", ...style }}>{children}</div>; }
+function SectionTitle({ icon, children, extra }) { return <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, flexWrap: "wrap" }}>{icon && <span style={{ width: 34, height: 34, borderRadius: 11, background: GRAD, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 6px 14px rgba(20,99,255,.3)", flexShrink: 0 }}>{icon}</span>}<h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: C.ink }}>{children}</h2><div style={{ flex: 1 }} />{extra}</div>; }
 function Stepper({ value, onDec, onInc, maxed, accent }) { const ac = accent || C.greenDeep; return <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", border: `1px solid ${C.line}`, borderRadius: 10, overflow: "hidden" }}><button onClick={onDec} style={stepBtn}><Minus size={16} /></button><span style={{ fontWeight: 800, minWidth: 22, textAlign: "center" }}>{value}</span><button onClick={onInc} disabled={maxed} style={{ ...stepBtn, background: maxed ? "#F0F0F0" : ac + "18", color: maxed ? "#B7BDB4" : ac, cursor: maxed ? "default" : "pointer" }}><Plus size={16} /></button></div>; }
 const stepBtn = { border: "none", background: "#fff", padding: "8px 12px", cursor: "pointer", display: "flex", alignItems: "center", color: C.sub };
 const miniBtn = { border: `1px solid ${C.line}`, background: "#fff", borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer", color: C.sub, display: "inline-flex", alignItems: "center", gap: 4 };
 const kpiBtn = (on) => ({ border: "none", background: "transparent", padding: 0, cursor: "pointer", textAlign: "right", outline: on ? `2px solid ${C.green}` : "none", borderRadius: 18 });
-function Kpi({ icon, label, value, tone, bare, onClick, active, hint }) { const map = { green: [C.greenSoft, C.greenDeep], amber: [C.amberSoft, C.amber], plum: [C.plumSoft, C.plum], red: [C.redSoft, C.red], blue: [C.blueSoft, C.blue] }; const [bg, fg] = map[tone] || ["#EEF1EC", C.ink]; const inner = <><div style={{ display: "flex", alignItems: "center", gap: 10 }}><div style={{ width: 36, height: 36, borderRadius: 11, background: bg, color: fg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{icon}</div><div style={{ fontSize: 12.5, color: C.sub, flex: 1 }}>{label}</div>{onClick && <ChevronLeft size={16} color={C.sub} />}</div><div style={{ fontWeight: 800, fontSize: 22, marginTop: 8, color: fg }}>{value}</div>{onClick && hint && <div style={{ fontSize: 11.5, color: C.blue, fontWeight: 700, marginTop: 2 }}>{hint}</div>}</>;
-  if (onClick) return <button onClick={onClick} className="tp-click" style={{ display: "block", width: "100%", textAlign: "right", font: "inherit", color: "inherit", cursor: "pointer", background: C.surface, border: `1px solid ${active ? C.green : C.line}`, outline: active ? `2px solid ${C.green}` : "none", borderRadius: 18, padding: 15, boxShadow: SH }}>{inner}</button>;
-  return bare ? <div style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 18, padding: 15, boxShadow: SH }}>{inner}</div> : <Panel pad={15} style={{ boxShadow: SH }}>{inner}</Panel>; }
+function Kpi({ icon, label, value, tone, bare, onClick, active, hint }) { const map = { green: [C.greenSoft, C.greenDeep], amber: [C.amberSoft, C.amber], plum: [C.plumSoft, C.plum], red: [C.redSoft, C.red], blue: [C.blueSoft, C.blue] }; const [bg, fg] = map[tone] || ["#EEF1EC", C.ink]; const tg = TONE_GRAD[tone] || GRAD; const inner = <><div style={{ display: "flex", alignItems: "center", gap: 10 }}><div style={{ width: 38, height: 38, borderRadius: 12, background: tg, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 6px 14px rgba(20,60,160,.22)" }}>{icon}</div><div style={{ fontSize: 12.5, color: C.sub, flex: 1 }}>{label}</div>{onClick && <ChevronLeft size={16} color={C.sub} />}</div><div style={{ fontWeight: 800, fontSize: 22, marginTop: 8, color: fg }}>{value}</div>{onClick && hint && <div style={{ fontSize: 11.5, color: C.blue, fontWeight: 700, marginTop: 2 }}>{hint}</div>}</>;
+  if (onClick) return <button onClick={onClick} className="tp-click" style={{ display: "block", width: "100%", textAlign: "right", font: "inherit", color: "inherit", cursor: "pointer", background: C.surface, border: `1px solid ${active ? C.green : C.line}`, outline: active ? `2px solid ${C.green}` : "none", borderRadius: 20, padding: 15, boxShadow: "0 10px 26px rgba(20,60,160,.08)" }}>{inner}</button>;
+  return bare ? <div style={{ background: C.surface, border: `1px solid ${C.line}`, borderRadius: 20, padding: 15, boxShadow: "0 10px 26px rgba(20,60,160,.08)" }}>{inner}</div> : <Panel pad={15} style={{ boxShadow: SH }}>{inner}</Panel>; }
 const scrollToId = (id) => { setTimeout(() => { const el = document.getElementById(id); if (el && el.scrollIntoView) el.scrollIntoView({ behavior: "smooth", block: "start" }); }, 30); };
-function Badge({ children, tone, icon }) { const map = { green: [C.greenSoft, C.greenDeep], amber: [C.amberSoft, C.amber], plum: [C.plumSoft, C.plum] }; const [bg, fg] = map[tone] || ["#EEF1EC", C.sub]; return <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: bg, color: fg, borderRadius: 20, padding: "4px 10px", fontSize: 12, fontWeight: 700 }}>{icon}{children}</span>; }
+function Badge({ children, tone, icon }) { const map = { green: [C.okSoft, C.ok], amber: [C.amberSoft, C.amber], plum: [C.plumSoft, C.plum], red: [C.redSoft, C.red], blue: [C.blueSoft, C.blue] }; const [bg, fg] = map[tone] || ["#EEF1EC", C.sub]; return <span style={{ display: "inline-flex", alignItems: "center", gap: 4, background: bg, color: fg, borderRadius: 20, padding: "4px 10px", fontSize: 12, fontWeight: 700 }}>{icon}{children}</span>; }
 function Empty({ children }) { return <div style={{ color: C.sub, fontSize: 14, textAlign: "center", padding: "18px 0" }}>{children}</div>; }
 function Th({ children }) { return <th style={{ padding: "6px 8px", fontWeight: 600, whiteSpace: "nowrap" }}>{children}</th>; }
 function Td({ children, strong, color }) { return <td style={{ padding: "8px", fontWeight: strong ? 800 : 400, color: color || C.ink }}>{children}</td>; }
@@ -3879,8 +3940,8 @@ const fieldStyle = { width: "100%", border: `1px solid ${C.line}`, borderRadius:
 function Field({ label, ...p }) { return <label style={{ display: "block", marginBottom: 10 }}><div style={{ fontSize: 13, color: C.sub, marginBottom: 4 }}>{label}</div><input style={fieldStyle} {...p} /></label>; }
 function MiniField({ label, value, onChange }) { return <label style={{ display: "block" }}><div style={{ fontSize: 12, color: C.sub, marginBottom: 3 }}>{label}</div><input value={value} onChange={(e) => onChange(e.target.value)} style={{ ...fieldStyle, padding: "8px 10px" }} /></label>; }
 function Select({ label, options, ...p }) { return <label style={{ display: "block", marginBottom: 10 }}><div style={{ fontSize: 13, color: C.sub, marginBottom: 4 }}>{label}</div><select style={fieldStyle} {...p}>{options.map((o) => <option key={o} value={o}>{o}</option>)}</select></label>; }
-function SubmitBtn({ onClick, children }) { return <button onClick={onClick} style={{ width: "100%", marginTop: 8, padding: 12, borderRadius: 12, border: "none", background: C.green, color: "#fff", fontWeight: 800, fontSize: 15, cursor: "pointer" }}>{children}</button>; }
-function BigBtn({ icon, children, onClick, primary }) { return <button onClick={onClick} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: 15, borderRadius: 14, border: primary ? "none" : `1.5px solid ${C.line}`, background: primary ? C.green : "#fff", color: primary ? "#fff" : C.ink, fontWeight: 700, fontSize: 15, cursor: "pointer", boxShadow: primary ? "0 4px 14px rgba(31,122,77,.3)" : "none" }}>{icon}{children}</button>; }
+function SubmitBtn({ onClick, children }) { return <button onClick={onClick} style={{ width: "100%", marginTop: 8, padding: 13, borderRadius: 14, border: "none", background: GRAD, color: "#fff", fontWeight: 800, fontSize: 15.5, cursor: "pointer", boxShadow: "0 10px 22px rgba(20,99,255,.32)", fontFamily: "inherit" }}>{children}</button>; }
+function BigBtn({ icon, children, onClick, primary }) { return <button onClick={onClick} className="tp-click" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: 15, borderRadius: 16, border: primary ? "none" : `1.5px solid ${C.line}`, background: primary ? GRAD : "#fff", color: primary ? "#fff" : C.ink, fontWeight: 800, fontSize: 16, cursor: "pointer", fontFamily: "inherit", boxShadow: primary ? "0 12px 26px rgba(20,99,255,.32)" : "0 4px 12px rgba(20,60,160,.06)" }}>{icon}{children}</button>; }
 function SmallBtn({ children, onClick }) { return <button onClick={onClick} style={{ flex: "1 0 28%", padding: "9px", borderRadius: 10, border: `1px solid ${C.line}`, background: "#fff", color: C.sub, fontWeight: 700, fontSize: 13, cursor: "pointer" }}>{children}</button>; }
 function ErrBox({ children }) { return <div style={{ background: C.redSoft, color: C.red, padding: "9px 12px", borderRadius: 10, fontSize: 13, marginTop: 8, fontWeight: 600 }}>{children}</div>; }
 function LabIn({ label, val, onChange, step }) { return <label style={{ display: "block" }}><div style={{ fontSize: 11, color: C.sub, marginBottom: 3 }}>{label}</div><input type="number" step={step} value={Math.round((val + Number.EPSILON) * 100) / 100} onChange={(e) => onChange(+e.target.value)} style={{ width: 78, border: `1px solid ${C.line}`, borderRadius: 8, padding: "6px", textAlign: "center", fontSize: 14 }} /></label>; }
