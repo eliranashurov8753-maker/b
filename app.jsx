@@ -409,7 +409,7 @@ export default function App() {
   const [joinMode, setJoinMode] = useState(() => { try { return new URL(window.location.href).searchParams.has("join"); } catch { return false; } }); // קישור מפרסום: ?join=1
   const [joinSrc] = useState(readUtm);
   const [showProfile, setShowProfile] = useState(false); const [showBell, setShowBell] = useState(false); const [mgrIntent, setMgrIntent] = useState(null);
-  useEffect(() => { if (!document.getElementById("ff-rubik")) { const l = document.createElement("link"); l.id = "ff-rubik"; l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap"; document.head.appendChild(l); } if (!document.getElementById("tp-css")) { const st = document.createElement("style"); st.id = "tp-css"; st.textContent = ".tp-click{transition:transform .12s ease,box-shadow .12s ease}.tp-click:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(18,40,80,.14)!important}.tp-click:active{transform:translateY(0)}.tp-2col{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:20px}.tp-2eq{grid-template-columns:1fr 1fr}.tp-staff{grid-template-columns:1fr 1fr 1fr 1fr auto}@media(max-width:760px){.tp-2col{grid-template-columns:1fr}.tp-staff{grid-template-columns:1fr 1fr}}@media(max-width:560px){.tp-2eq{grid-template-columns:1fr}}"; document.head.appendChild(st); } }, []);
+  useEffect(() => { if (!document.getElementById("ff-rubik")) { const l = document.createElement("link"); l.id = "ff-rubik"; l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap"; document.head.appendChild(l); } if (!document.getElementById("tp-css")) { const st = document.createElement("style"); st.id = "tp-css"; st.textContent = ".tp-click{transition:transform .12s ease,box-shadow .12s ease}.tp-click:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(18,40,80,.14)!important}.tp-click:active{transform:translateY(0)}.tp-2col{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:20px}.tp-2eq{grid-template-columns:1fr 1fr}.tp-staff{grid-template-columns:1fr 1fr 1fr 1fr auto}.tp-2col-hide{display:none}@media(max-width:760px){.tp-2col-hide{display:block}.tp-2col{grid-template-columns:1fr}.tp-staff{grid-template-columns:1fr 1fr}}@media(max-width:560px){.tp-2eq{grid-template-columns:1fr}}"; document.head.appendChild(st); } }, []);
   if (!state) return <div dir="rtl" style={{ background: C.bg, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: C.sub }}>טוען…</div>;
   if (session.kind === "none") { const storeSup = storeId ? state.suppliers.find((x) => x.id === storeId && x.status === "active") : null; if (joinMode && !storeSup) return <SupplierLanding state={state} setState={setState} onLogin={setSession} onBack={() => setJoinMode(false)} source={joinSrc} />; return storeSup ? <StorePage supplier={storeSup} state={state} setState={setState} onLogin={setSession} /> : <AuthScreen state={state} setState={setState} onLogin={setSession} />; }
   const save = async () => { try { await window.storage.set(KEY, JSON.stringify(state)); } catch {} setSaved(true); setTimeout(() => setSaved(false), 1600); };
@@ -546,14 +546,15 @@ function SignupIntro() {
     </div>
   );
 }
+const APP_VERSION = "28.9.26-h"; // מופיע בתחתית מסך הכניסה — לבדוק שהעדכון עלה
 const LP = { navy: "#0B1F4D", blue: "#1D4ED8", orange: "#F97316", pink: "#DB2777", soft: "#F5F7FC" };
 const ctaStyle = (big) => ({ border: "none", background: `linear-gradient(135deg, ${LP.orange}, ${LP.pink})`, color: "#fff", fontWeight: 800, fontSize: big ? 18 : 15, padding: big ? "16px 28px" : "12px 20px", borderRadius: 14, cursor: "pointer", boxShadow: "0 8px 24px rgba(219,39,119,.35)", fontFamily: "inherit" });
-function PhoneMock() {
-  const items = [["🍅", "עגבניות", "₪6.9 לק\"ג", 3], ["🥩", "אנטריקוט", "₪89 לק\"ג", 2], ["🥖", "באגט", "₪4.5", 12]];
+function PhoneMock({ items: itemsIn, title, store }) {
+  const items = itemsIn || [["🍅", "עגבניות", "₪6.9 לק\"ג", 3], ["🥩", "אנטריקוט", "₪89 לק\"ג", 2], ["🥖", "באגט", "₪4.5", 12]];
   return (
     <div style={{ width: 230, borderRadius: 34, background: "#0f172a", padding: 10, boxShadow: "0 30px 60px rgba(0,0,0,.35)", margin: "0 auto" }}>
       <div style={{ background: "#fff", borderRadius: 26, overflow: "hidden", color: C.ink }}>
-        <div style={{ background: `linear-gradient(135deg, ${LP.blue}, ${LP.navy})`, color: "#fff", padding: "14px 14px 12px" }}><div style={{ fontSize: 11, opacity: .8 }}>החנות שלך</div><div style={{ fontWeight: 800, fontSize: 15 }}>הזמנה חדשה</div></div>
+        <div style={{ background: `linear-gradient(135deg, ${LP.blue}, ${LP.navy})`, color: "#fff", padding: "14px 14px 12px" }}><div style={{ fontSize: 11, opacity: .8 }}>{store || "החנות שלך"}</div><div style={{ fontWeight: 800, fontSize: 15 }}>{title || "הזמנה חדשה"}</div></div>
         <div style={{ padding: 10, display: "grid", gap: 8 }}>
           {items.map(([e, n, p, q]) => (
             <div key={n} style={{ display: "flex", alignItems: "center", gap: 8, border: `1px solid ${C.line}`, borderRadius: 12, padding: "7px 8px" }}>
@@ -638,8 +639,309 @@ function QuickSignup({ state, setState, onLogin, onCancel, source }) {
     </div>
   );
 }
-function SupplierLanding({ state, setState, onLogin, onBack, source }) {
-  const [signup, setSignup] = useState(false); const [login, setLogin] = useState(false); const [faq, setFaq] = useState(null);
+// ---------- תצוגות מוקטנות של מסכי האפליקציה (לדוגמה) ----------
+const mockCard = { background: "#fff", border: `1px solid ${C.line}`, borderRadius: 16, padding: 12, boxShadow: "0 10px 30px rgba(15,31,77,.10)", fontSize: 12.5, color: C.ink, width: "100%", boxSizing: "border-box" };
+const MockHead = ({ icon, title, extra }) => <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8, fontWeight: 800, fontSize: 13 }}><span>{icon}</span><span style={{ flex: 1 }}>{title}</span>{extra}</div>;
+const Chip = ({ bg, fg, children }) => <span style={{ background: bg, color: fg, borderRadius: 20, padding: "2px 8px", fontSize: 11, fontWeight: 800, whiteSpace: "nowrap" }}>{children}</span>;
+const Demo = () => <div style={{ fontSize: 10, color: C.sub, textAlign: "center", marginTop: 6 }}>תצוגה לדוגמה</div>;
+function MockOrders() {
+  const rows = [["#1047", "מסעדת הנמל", "18 פריטים", "₪2,340", ["חדשה", C.amberSoft, "#92400E"]], ["#1046", "קפה השכונה", "9 פריטים", "₪860", ["לוקטה", C.blueSoft, C.blue]], ["#1045", "קייטרינג אורן", "31 פריטים", "₪4,120", ["בדרך", C.plumSoft, C.plum]], ["#1044", "מכולת רוני", "12 פריטים", "₪1,150", ["נמסרה ✓", C.greenSoft, C.greenDeep]]];
+  return <div style={mockCard}>
+    <div style={{ background: "linear-gradient(135deg,#FFF7ED,#FDF2F8)", border: "1px solid #FED7AA", borderRadius: 12, padding: "7px 10px", marginBottom: 8, fontWeight: 800, display: "flex", gap: 6, alignItems: "center" }}>🔔 הזמנה חדשה ממסעדת הנמל · ₪2,340</div>
+    <MockHead icon="📋" title="הזמנות היום" extra={<Chip bg={C.greenSoft} fg={C.greenDeep}>₪8,470</Chip>} />
+    {rows.map(([id, c, n, t, [st, bg, fg]]) => <div key={id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 0", borderTop: `1px solid ${C.line}` }}><div style={{ flex: 1, minWidth: 0 }}><div style={{ fontWeight: 800 }}>{c} <span style={{ color: C.sub, fontWeight: 500 }}>{id}</span></div><div style={{ fontSize: 11, color: C.sub }}>{n}</div></div><b>{t}</b><Chip bg={bg} fg={fg}>{st}</Chip></div>)}
+    <Demo />
+  </div>;
+}
+function MockStock() {
+  const rows = [["🍅", "עגבניות", 42, 60], ["🥒", "מלפפונים", 35, 60], ["🧅", "בצל יבש", 3, 60], ["🥬", "חסה", 18, 60]];
+  return <div style={mockCard}>
+    <MockHead icon="📦" title="מלאי" extra={<Chip bg={C.redSoft} fg={C.red}>1 במלאי נמוך</Chip>} />
+    {rows.map(([e, n, q, max]) => { const low = q <= 5; return <div key={n} style={{ padding: "6px 0", borderTop: `1px solid ${C.line}` }}><div style={{ display: "flex", alignItems: "center", gap: 6 }}><span>{e}</span><span style={{ flex: 1, fontWeight: 700 }}>{n}</span><b style={{ color: low ? C.red : C.ink }}>{q} קרט'</b></div><div style={{ height: 6, borderRadius: 6, background: "#EEF2F7", marginTop: 4 }}><div style={{ height: "100%", width: Math.max(6, q / max * 100) + "%", borderRadius: 6, background: low ? C.red : C.green }} /></div>{low && <div style={{ fontSize: 11, color: C.red, fontWeight: 700, marginTop: 3 }}>⚠️ מלאי נמוך — כדאי להזמין</div>}</div>; })}
+    <Demo />
+  </div>;
+}
+function MockScan() {
+  const step = (bg, children) => <div style={{ flex: 1, minWidth: 0, background: bg, borderRadius: 12, padding: "10px 8px", textAlign: "center", border: `1px solid ${C.line}` }}>{children}</div>;
+  const arrow = <div style={{ alignSelf: "center", color: C.sub, fontWeight: 800 }}>←</div>;
+  return <div style={mockCard}>
+    <MockHead icon="📸" title="סריקת חשבונית ספק" />
+    <div style={{ display: "flex", gap: 6, alignItems: "stretch" }}>
+      {step("#F7F9FC", <><div style={{ fontSize: 26 }}>🧾</div><div style={{ fontWeight: 800 }}>מצלמים</div><div style={{ fontSize: 10.5, color: C.sub }}>גם כמה דפים</div></>)}
+      {arrow}
+      {step("linear-gradient(135deg,#EEF2FF,#FAF5FF)", <><div style={{ fontSize: 26 }}>✨</div><div style={{ fontWeight: 800 }}>נקרא לבד</div><div style={{ fontSize: 10.5, color: C.sub }}>14 מוצרים · כמויות · מחירים</div></>)}
+      {arrow}
+      {step(C.greenSoft, <><div style={{ fontSize: 26 }}>🏪</div><div style={{ fontWeight: 800 }}>בחנות</div><div style={{ fontSize: 10.5, color: C.sub }}>+ מלאי + דוח</div></>)}
+    </div>
+    <div style={{ marginTop: 10, borderTop: `1px dashed ${C.line}`, paddingTop: 8, display: "grid", gap: 5 }}>
+      {[["עגבניות שרי", "20 קרט'", "₪38 → מכירה ₪52"], ["פלפל אדום", "12 קרט'", "₪45 → מכירה ₪62"]].map(([n, q, p]) => <div key={n} style={{ display: "flex", gap: 6, alignItems: "center" }}><span style={{ color: C.green }}>✓</span><span style={{ flex: 1, fontWeight: 700 }}>{n}</span><span style={{ color: C.sub }}>{q}</span><span style={{ fontSize: 11 }}>{p}</span></div>)}
+    </div>
+    <Demo />
+  </div>;
+}
+function MockReport() {
+  const bars = [[62, 41], [70, 44], [66, 40], [81, 50], [77, 47], [92, 55]];
+  return <div style={mockCard}>
+    <MockHead icon="📊" title="דוח חודשי · ספטמבר" extra={<Chip bg={C.blueSoft} fg={C.blue}>⬇ לאקסל</Chip>} />
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 6 }}>
+      {[["הכנסות", "₪92,400", C.greenDeep], ["הוצאות סחורה", "₪55,100", C.red], ["רווח גולמי", "₪37,300", C.blue]].map(([l, v, c]) => <div key={l} style={{ background: "#F7F9FC", borderRadius: 10, padding: "7px 6px", textAlign: "center" }}><div style={{ fontSize: 10.5, color: C.sub }}>{l}</div><div style={{ fontWeight: 800, color: c, fontSize: 13 }}>{v}</div></div>)}
+    </div>
+    <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 70, marginTop: 10, padding: "0 4px" }}>
+      {bars.map(([a, b], i) => <div key={i} style={{ flex: 1, display: "flex", gap: 2, alignItems: "flex-end", height: "100%" }}><div style={{ flex: 1, height: a + "%", background: C.green, borderRadius: 3 }} /><div style={{ flex: 1, height: b + "%", background: "#F87171", borderRadius: 3 }} /></div>)}
+    </div>
+    <div style={{ display: "flex", gap: 10, justifyContent: "center", fontSize: 10.5, color: C.sub, marginTop: 4 }}><span>■ <span style={{ color: C.green }}>הכנסות</span></span><span>■ <span style={{ color: C.red }}>הוצאות</span></span></div>
+    <Demo />
+  </div>;
+}
+function MockInvoice() {
+  return <div style={mockCard}>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}><div><div style={{ fontWeight: 800, fontSize: 14 }}>חשבונית מס / קבלה</div><div style={{ fontSize: 11, color: C.sub }}>מס' 1047 · מסעדת הנמל</div></div><Chip bg={C.greenSoft} fg={C.greenDeep}>שולם ✓</Chip></div>
+    {[["עגבניות · 4 קרט'", "₪208"], ["חסה · 6 קרט'", "₪270"], ["בצל · 2 קרט'", "₪96"]].map(([n, v]) => <div key={n} style={{ display: "flex", justifyContent: "space-between", padding: "4px 0", borderTop: `1px solid ${C.line}` }}><span>{n}</span><span>{v}</span></div>)}
+    <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 6, marginTop: 4, borderTop: `2px solid ${C.ink}`, fontWeight: 800 }}><span>סה"כ כולל מע"מ</span><span>₪677.32</span></div>
+    <div style={{ display: "flex", gap: 6, marginTop: 8 }}><Chip bg="#F1F5F9" fg={C.ink}>📥 הורדה</Chip><Chip bg="#F1F5F9" fg={C.ink}>💬 שליחה בוואטסאפ</Chip></div>
+    <Demo />
+  </div>;
+}
+function Spot({ tag, title, text, bullets, visual, premium, flip }) {
+  return (
+    <div style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 22, padding: 16, marginBottom: 14, boxShadow: "0 4px 18px rgba(15,31,77,.05)" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center", flexDirection: flip ? "row-reverse" : "row" }}>
+        <div style={{ flex: "1 1 240px", minWidth: 0 }}>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 8 }}><span style={{ background: "linear-gradient(135deg,#FFF1E6,#FDE2EF)", color: "#9D174D", borderRadius: 20, padding: "3px 10px", fontSize: 12, fontWeight: 800 }}>{tag}</span>{premium && <span style={{ fontSize: 11.5, fontWeight: 800, color: C.plum, background: C.plumSoft, borderRadius: 20, padding: "3px 9px" }}>⭐ פרימיום</span>}</div>
+          <div style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.3, letterSpacing: "-0.3px" }}>{title}</div>
+          <div style={{ fontSize: 14.5, color: C.sub, lineHeight: 1.7, marginTop: 6 }}>{text}</div>
+          <div style={{ display: "grid", gap: 6, marginTop: 10 }}>{bullets.map((b) => <div key={b} style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 14, fontWeight: 600 }}><span style={{ width: 20, height: 20, borderRadius: "50%", background: C.greenSoft, color: C.greenDeep, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}><Check size={12} strokeWidth={3} /></span>{b}</div>)}</div>
+        </div>
+        <div style={{ flex: "1 1 230px", minWidth: 0, maxWidth: 340, margin: "0 auto" }}>{visual}</div>
+      </div>
+    </div>
+  );
+}
+// דוגמת מוצרים לכל תחום — לתצוגת "ככה הלקוחות שלכם יזמינו"
+const DOMAIN_SAMPLES = {
+  meat: [["🥩", "אנטריקוט", "₪89 לק\"ג", 4], ["🍗", "חזה עוף", "₪36 לק\"ג", 10], ["🌭", "נקניקיות", "₪42 לקרטון", 2]],
+  fish: [["🐟", "פילה סלמון", "₪98 לק\"ג", 3], ["🦐", "שרימפס", "₪75 לק\"ג", 2], ["🐠", "דניס שלם", "₪58 לק\"ג", 5]],
+  food: [["🍚", "אורז 25 ק\"ג", "₪119 ליחידה", 2], ["🫒", "שמן זית 5 ל'", "₪145", 3], ["🥫", "רסק עגבניות", "₪68 לקרטון", 4]],
+  frozen: [["🥐", "בצק עלים", "₪54 לקרטון", 5], ["🍟", "צ'יפס קפוא", "₪72 לקרטון", 6], ["🥦", "ברוקולי קפוא", "₪48 לקרטון", 3]],
+  spices: [["🌶️", "פפריקה מתוקה", "₪38 לק\"ג", 2], ["🧂", "מלח גס", "₪12 ליחידה", 6], ["🌿", "כמון טחון", "₪44 לק\"ג", 1]],
+  eggs: [["🥚", "ביצים L · 30", "₪39 לתבנית", 12], ["🥚", "ביצי חופש", "₪52 לתבנית", 4], ["🍳", "חלבון נוזלי", "₪29 ליחידה", 3]],
+  soft: [["🥤", "קולה פחית", "₪58 למארז", 6], ["💧", "מים מינרליים", "₪24 לשישייה", 10], ["🧃", "מיץ תפוזים", "₪46 למארז", 4]],
+  alcohol: [["🍷", "יין אדום", "₪45 לבקבוק", 12], ["🍺", "בירה חבית", "₪420 לחבית", 1], ["🥃", "וויסקי", "₪129 לבקבוק", 3]],
+  sweets: [["🍫", "חטיפי שוקולד", "₪79 למארז", 3], ["🍬", "סוכריות", "₪35 לק\"ג", 2], ["🍪", "עוגיות חמאה", "₪48 לקרטון", 4]],
+  pet: [["🐶", "מזון לכלבים 15 ק\"ג", "₪189", 2], ["🐱", "מזון לחתולים", "₪95", 3], ["🦴", "חטיפי לעיסה", "₪42", 6]],
+  veg: [["🍅", "עגבניות", "₪6.9 לק\"ג", 20], ["🥒", "מלפפונים", "₪5.5 לק\"ג", 15], ["🥬", "חסה", "₪4.5 ליחידה", 24]],
+  dairy: [["🧀", "גבינה צהובה", "₪46 לק\"ג", 5], ["🥛", "חלב 3%", "₪6.5 לליטר", 30], ["🧈", "חמאה", "₪9 ליחידה", 20]],
+  icecream: [["🍦", "גלידת וניל 5 ל'", "₪79", 4], ["🍨", "סורבה פירות", "₪85", 2], ["🍡", "ארטיקים", "₪64 למארז", 5]],
+  chilled: [["🥗", "חומוס 3 ק\"ג", "₪48", 4], ["🥓", "פסטרמה", "₪58 לק\"ג", 3], ["🫙", "טחינה", "₪39 לק\"ג", 5]],
+  cleaning: [["🧴", "נוזל כלים 4 ל'", "₪29", 6], ["🧻", "נייר מגבת", "₪65 לשק", 4], ["🧽", "ספוגים", "₪18 למארז", 10]],
+  disposable: [["🍽️", "צלחות חד\"פ", "₪32 לקרטון", 8], ["🥡", "קופסאות טייק אוויי", "₪55 לקרטון", 6], ["🥤", "כוסות קפה", "₪48 לקרטון", 5]],
+  bakery: [["🥖", "באגט", "₪4.5 ליחידה", 40], ["🥐", "קרואסון חמאה", "₪6 ליחידה", 30], ["🍞", "לחם מחמצת", "₪16 ליחידה", 12]],
+  importers: [["🚢", "שמן זית מיובא", "₪160", 3], ["🍝", "פסטה איטלקית", "₪68 לקרטון", 5], ["🧀", "פרמזן", "₪149 לק\"ג", 2]],
+};
+const CUSTOMER_TYPES = [["🍽️", "מסעדות"], ["☕", "בתי קפה"], ["🛒", "מכולות וסופרים"], ["🍱", "קייטרינג"], ["🏨", "מלונות וצימרים"], ["🍺", "ברים ופאבים"], ["🥐", "מאפיות וקונדיטוריות"], ["🥙", "דוכנים ומזנונים"], ["🏫", "מוסדות וגני אירועים"], ["🏢", "משרדים וחברות"], ["🏪", "חנויות ועסקים קטנים"], ["🚚", "משווקים וסיטונאים"]];
+const CUSTOMER_EASY = ["קישור אחד — בלי להוריד אפליקציה", "קטלוג עם תמונות ומחירים שלכם", "מחיר לפי קרטון, יחידה או ק\"ג", "🔁 הזמן שוב בלחיצה", "מעקב סטטוס עד שההזמנה מגיעה", "כל ההזמנות והחשבוניות שמורות", "צ'אט ישיר איתכם", "מבצעים שלכם ישר לטלפון"];
+function ForEverySupplier() {
+  const [d, setD] = useState("veg");
+  const dom = DOMAIN_BY_ID[d] || SUP_DOMAINS[0];
+  return (
+    <div style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 22, padding: 16, boxShadow: "0 4px 18px rgba(15,31,77,.05)" }}>
+      <div style={{ fontSize: 14, fontWeight: 800, marginBottom: 8 }}>👇 בחרו את התחום שלכם, ותראו איך הלקוחות שלכם יזמינו:</div>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 14 }}>{SUP_DOMAINS.map((x) => { const on = x.id === d; return <button key={x.id} onClick={() => setD(x.id)} style={{ border: `1.5px solid ${on ? LP.pink : C.line}`, background: on ? "linear-gradient(135deg,#FFF1E6,#FDE2EF)" : "#fff", color: on ? "#9D174D" : C.ink, borderRadius: 20, padding: "6px 11px", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>{x.emoji} {x.label}</button>; })}</div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "center" }}>
+        <div style={{ flex: "0 1 240px", margin: "0 auto" }}><PhoneMock items={DOMAIN_SAMPLES[d]} store={dom.emoji + " " + dom.label} title="הזמנה חדשה" /><Demo /></div>
+        <div style={{ flex: "1 1 260px", minWidth: 0 }}>
+          <div style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.35 }}>ממשק הזמנות נוח לכל עסק שהוא לקוח שלכם</div>
+          <div style={{ fontSize: 14, color: C.sub, lineHeight: 1.65, margin: "6px 0 10px" }}>לא משנה מה אתם מוכרים — {dom.label.replace(/^מוצרי /, "")} או כל דבר אחר — הלקוחות שלכם מקבלים חנות מסודרת עם הקטלוג והמחירים שלכם, ומזמינים ממנה בכמה לחיצות.</div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(170px,1fr))", gap: 6 }}>{CUSTOMER_EASY.map((t) => <div key={t} style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 13, fontWeight: 600 }}><span style={{ color: C.green, fontWeight: 800 }}>✓</span>{t}</div>)}</div>
+        </div>
+      </div>
+      <div style={{ marginTop: 16, borderTop: `1px dashed ${C.line}`, paddingTop: 14 }}>
+        <div style={{ fontSize: 14, fontWeight: 800, marginBottom: 8 }}>מתאים לכל עסק שקונה מכם:</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(140px,1fr))", gap: 6 }}>{CUSTOMER_TYPES.map(([e, t]) => <div key={t} style={{ background: "#F7F9FC", borderRadius: 12, padding: "8px 10px", fontSize: 13, fontWeight: 700, display: "flex", gap: 6, alignItems: "center" }}><span style={{ fontSize: 17 }}>{e}</span>{t}</div>)}</div>
+      </div>
+    </div>
+  );
+}
+function MockPickDrive() {
+  return <div style={{ ...mockCard, display: "grid", gap: 10 }}>
+    <div><MockHead icon="⚖️" title="ליקוט · הזמנה #1047" extra={<Chip bg={C.amberSoft} fg="#92400E">2/3</Chip>} />
+      {[["עגבניות", "4 קרט' · 38.6 ק\"ג", true], ["חסה", "6 קרט'", true], ["בצל", "2 קרט'", false]].map(([n, q, d]) => <div key={n} style={{ display: "flex", gap: 8, alignItems: "center", padding: "5px 0", borderTop: `1px solid ${C.line}` }}><span style={{ width: 18, height: 18, borderRadius: 5, background: d ? C.green : "#fff", border: `1.5px solid ${d ? C.green : C.line}`, color: "#fff", fontSize: 11, display: "flex", alignItems: "center", justifyContent: "center" }}>{d ? "✓" : ""}</span><span style={{ flex: 1, fontWeight: 700, textDecoration: d ? "line-through" : "none", color: d ? C.sub : C.ink }}>{n}</span><span style={{ fontSize: 11, color: C.sub }}>{q}</span></div>)}
+    </div>
+    <div style={{ borderTop: `1px dashed ${C.line}`, paddingTop: 8 }}><MockHead icon="🚚" title="המשלוחים של דני היום" />
+      {[["מסעדת הנמל", "הרצל 12, חיפה", "נמסר ✓", C.greenSoft, C.greenDeep], ["קפה השכונה", "הנביאים 4, חיפה", "בדרך", C.plumSoft, C.plum]].map(([n, a, st, bg, fg]) => <div key={n} style={{ display: "flex", gap: 8, alignItems: "center", padding: "5px 0" }}><span>📍</span><div style={{ flex: 1 }}><div style={{ fontWeight: 700 }}>{n}</div><div style={{ fontSize: 11, color: C.sub }}>{a}</div></div><Chip bg={bg} fg={fg}>{st}</Chip></div>)}
+    </div>
+    <Demo />
+  </div>;
+}
+function MockChat() {
+  return <div style={mockCard}>
+    <MockHead icon="📣" title="הודעה לכל הלקוחות" extra={<Chip bg={C.greenSoft} fg={C.greenDeep}>נשלח ל-48</Chip>} />
+    <div style={{ background: "linear-gradient(135deg,#FFF7ED,#FDF2F8)", border: "1px solid #FED7AA", borderRadius: 12, padding: "9px 10px", fontWeight: 700 }}>🔥 מבצע השבוע: 10% הנחה על כל הירקות העליים!</div>
+    <div style={{ borderTop: `1px dashed ${C.line}`, marginTop: 10, paddingTop: 8 }}><MockHead icon="💬" title="צ'אט · מסעדת הנמל" />
+      <div style={{ display: "grid", gap: 6 }}>
+        <div style={{ justifySelf: "end", background: "#EEF2F7", borderRadius: "12px 12px 4px 12px", padding: "6px 10px", maxWidth: "80%" }}>אפשר להוסיף 2 קרטוני חסה להזמנה של מחר?</div>
+        <div style={{ justifySelf: "start", background: LP.blue, color: "#fff", borderRadius: "12px 12px 12px 4px", padding: "6px 10px", maxWidth: "80%" }}>בטח, הוספתי ✓</div>
+      </div>
+    </div>
+    <Demo />
+  </div>;
+}
+function MockPrizes() {
+  const tiers = [[20, "🎁 מארז פירות"], [50, "☕ מכונת קפה"], [100, "✈️ סופ\"ש זוגי"]]; const pts = 64;
+  return <div style={mockCard}>
+    <MockHead icon="🏆" title="מסעדת הנמל · מסלול הפרסים" extra={<Chip bg={C.plumSoft} fg={C.plum}>{pts} נק'</Chip>} />
+    <div style={{ height: 10, borderRadius: 10, background: "#EEF2F7", margin: "6px 0 10px" }}><div style={{ height: "100%", width: pts + "%", borderRadius: 10, background: `linear-gradient(90deg, ${LP.orange}, ${LP.pink})` }} /></div>
+    {tiers.map(([n, t]) => <div key={n} style={{ display: "flex", gap: 8, alignItems: "center", padding: "6px 0", borderTop: `1px solid ${C.line}` }}><span style={{ width: 22, height: 22, borderRadius: "50%", background: pts >= n ? C.green : "#EEF2F7", color: pts >= n ? "#fff" : C.sub, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800 }}>{pts >= n ? "✓" : n}</span><span style={{ flex: 1, fontWeight: 700 }}>{t}</span><span style={{ fontSize: 11, color: pts >= n ? C.greenDeep : C.sub, fontWeight: 700 }}>{pts >= n ? "הושג!" : "עוד " + (n - pts) + " נק'"}</span></div>)}
+    <Demo />
+  </div>;
+}
+// סיור בכלים — חלונות בראש מסך ההרשמה; לחיצה פותחת המחשה גדולה
+const FEATURE_TOUR = [
+  { icon: "🛒", short: "ממשק ללקוחות", title: "ממשק הזמנות נוח ללקוחות שלכם", text: "הלקוחות שלכם פותחים קישור ומזמינים מהטלפון תוך שניות — עם תמונות, מחירים וכמויות. בלי אפליקציה ובלי להתקשר.", bullets: ["מזמינים 24/7", "🔁 הזמן שוב בלחיצה", "מבצעים ישר לטלפון שלהם"], visual: () => <PhoneMock /> },
+  { icon: "📋", short: "הזמנות", title: "כל ההזמנות — מפורטות ומסודרות", text: "כל הזמנה מגיעה עם התראה ופירוט מלא, ועוברת שלבים ברורים עד שהיא נמסרת ללקוח.", bullets: ["התראה על כל הזמנה חדשה", "סטטוס: חדשה · לוקטה · בדרך · נמסרה", "סכום ההזמנות של היום"], visual: () => <MockOrders /> },
+  { icon: "📦", short: "מלאי", title: "מעקב מלאי אוטומטי", text: "המלאי יורד עם כל הזמנה ועולה עם כל חשבונית קנייה. תמיד יודעים מה יש ומה עומד להיגמר.", bullets: ["התראת מלאי נמוך", "קרטון, יחידה או ק\"ג", "מתעדכן מסריקת חשבוניות"], visual: () => <MockStock /> },
+  { icon: "📸", short: "סריקת חשבוניות", premium: true, title: "מצלמים חשבונית — והמוצרים עולים לחנות ולדוחות", text: "מצלמים את החשבונית מהספק שלכם (גם כמה דפים). המערכת קוראת מוצרים, כמויות ומחירים — ואתם רק קובעים מחיר מכירה.", bullets: ["בלי להקליד מוצר אחרי מוצר", "רווח לכל מוצר מחושב לבד", "החשבוניות שמורות לפי חודשים"], visual: () => <MockScan /> },
+  { icon: "📊", short: "דוחות חודשיים", premium: true, title: "דוח הכנסות והוצאות — בלחיצה", text: "בוחרים חודש ושנה ורואים כמה נכנס, כמה יצא על סחורה ומה נשאר. כל נתון נפתח לפירוט מלא.", bullets: ["השוואה בין חודשים וסיכום שנתי", "פירוט כל ההזמנות והחשבוניות", "הורדה לאקסל לרואה החשבון"], visual: () => <MockReport /> },
+  { icon: "🧾", short: "חשבוניות וגבייה", title: "חשבונית לכל הזמנה, ומעקב מי שילם", text: "חשבונית מסודרת עם פרטי העסק שלכם לכל הזמנה, ויתרת חוב לכל לקוח — בלי לרדוף אחרי אף אחד.", bullets: ["הורדה או שליחה בוואטסאפ", "יתרת חוב לכל לקוח", "מזומן, אשראי, צ'ק או העברה"], visual: () => <MockInvoice /> },
+  { icon: "🚚", short: "ליקוט ומשלוחים", premium: true, title: "ליקוט, שקילה ומשלוחים — מסונכרנים", text: "המלקט רואה מה להכין ושוקל, הנהג רואה לאן לנסוע, ואתם רואים הכל בזמן אמת.", bullets: ["רשימת ליקוט לכל הזמנה", "שקילה ועדכון משקל אמיתי", "סימון \"נמסר\" אצל הנהג"], visual: () => <MockPickDrive /> },
+  { icon: "💬", short: "מבצעים וצ'אט", title: "מבצעים וצ'אט עם הלקוחות", text: "שולחים מבצע לכל הלקוחות בלחיצה, ומדברים עם כל לקוח במקום אחד — בלי לפזר הודעות.", bullets: ["הודעה לכולם בלחיצה", "רעיונות למבצעים מהמוצרים שלכם", "צ'אט אישי עם כל לקוח"], visual: () => <MockChat /> },
+  { icon: "🏆", short: "יעדים ופרסים", premium: true, title: "מועדון לקוחות: יעדים ופרסים", text: "הלקוחות צוברים נקודות על כל הזמנה ורואים כמה חסר להם לפרס הבא — ומזמינים יותר.", bullets: ["אתם קובעים את הפרסים", "תקופה: מחודש ועד שנה", "הלקוח רואה את ההתקדמות שלו"], visual: () => <MockPrizes /> },
+];
+function FeatureTiles({ onOpen }) {
+  return <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr))", gap: 8 }}>
+    {FEATURE_TOUR.map((f, i) => (
+      <button key={f.short} onClick={() => onOpen(i)} className="tp-click" style={{ position: "relative", background: "rgba(255,255,255,.10)", border: "1px solid rgba(255,255,255,.22)", borderRadius: 16, padding: "12px 6px 10px", cursor: "pointer", color: "#fff", fontFamily: "inherit", textAlign: "center", backdropFilter: "blur(4px)" }}>
+        {f.premium && <span style={{ position: "absolute", top: 6, left: 6, fontSize: 10 }}>⭐</span>}
+        <div style={{ width: 42, height: 42, borderRadius: 13, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, margin: "0 auto 6px", boxShadow: "0 6px 14px rgba(0,0,0,.18)" }}>{f.icon}</div>
+        <div style={{ fontWeight: 800, fontSize: 13, lineHeight: 1.25 }}>{f.short}</div>
+        <div style={{ fontSize: 10.5, opacity: .75, marginTop: 3 }}>לצפייה ›</div>
+      </button>))}
+  </div>;
+}
+function FeatureViewer({ index, onClose, onNav, onSignup }) {
+  const f = FEATURE_TOUR[index]; const n = FEATURE_TOUR.length;
+  const touch = React.useRef(null);
+  useEffect(() => { const k = (e) => { if (e.key === "Escape") onClose(); if (e.key === "ArrowLeft") onNav((index + 1) % n); if (e.key === "ArrowRight") onNav((index - 1 + n) % n); }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, [index]);
+  const navBtn = (dir, lbl) => <button onClick={() => onNav((index + dir + n) % n)} aria-label={lbl} style={{ width: 40, height: 40, borderRadius: "50%", border: `1px solid ${C.line}`, background: "#fff", cursor: "pointer", fontSize: 18, fontWeight: 800, color: C.ink, flexShrink: 0 }}>{dir > 0 ? "‹" : "›"}</button>;
+  return (
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(8,15,40,.62)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 12 }}>
+      <div onClick={(e) => e.stopPropagation()} onTouchStart={(e) => { touch.current = e.touches[0].clientX; }} onTouchEnd={(e) => { const s = touch.current; if (s == null) return; const d = e.changedTouches[0].clientX - s; if (Math.abs(d) > 50) onNav((index + (d > 0 ? 1 : -1) + n) % n); touch.current = null; }}
+        style={{ width: "100%", maxWidth: 480, maxHeight: "92vh", overflow: "auto", background: "#fff", borderRadius: 24, boxShadow: "0 30px 80px rgba(0,0,0,.35)", direction: "rtl" }}>
+        <div style={{ background: `radial-gradient(400px 200px at 90% 0%, rgba(249,115,22,.35), transparent), linear-gradient(160deg, ${LP.navy}, ${LP.blue})`, color: "#fff", padding: "16px 16px 70px", position: "relative", borderRadius: "24px 24px 0 0" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontSize: 13, fontWeight: 700, opacity: .85 }}>{index + 1} / {n}</span>
+            {f.premium && <span style={{ fontSize: 11.5, fontWeight: 800, background: "rgba(255,255,255,.18)", borderRadius: 20, padding: "2px 9px" }}>⭐ פרימיום · פתוח בחודש הניסיון</span>}
+            <span style={{ flex: 1 }} />
+            <button onClick={onClose} aria-label="סגור" style={{ width: 32, height: 32, borderRadius: "50%", border: "none", background: "rgba(255,255,255,.18)", color: "#fff", cursor: "pointer", fontSize: 16 }}>✕</button>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10 }}><span style={{ width: 44, height: 44, borderRadius: 13, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>{f.icon}</span><div style={{ fontSize: 20, fontWeight: 800, lineHeight: 1.3 }}>{f.title}</div></div>
+        </div>
+        <div style={{ margin: "-56px 16px 0", position: "relative" }}><div style={{ maxWidth: 340, margin: "0 auto" }}>{f.visual()}</div></div>
+        <div style={{ padding: "14px 18px 18px" }}>
+          <div style={{ fontSize: 14.5, color: C.sub, lineHeight: 1.7 }}>{f.text}</div>
+          <div style={{ display: "grid", gap: 6, marginTop: 10 }}>{f.bullets.map((b) => <div key={b} style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 14, fontWeight: 700 }}><span style={{ width: 20, height: 20, borderRadius: "50%", background: C.greenSoft, color: C.greenDeep, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Check size={12} strokeWidth={3} /></span>{b}</div>)}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 16 }}>
+            {navBtn(-1, "הקודם")}
+            <div style={{ flex: 1, display: "flex", justifyContent: "center", gap: 5, flexWrap: "wrap" }}>{FEATURE_TOUR.map((x, i) => <button key={x.short} onClick={() => onNav(i)} aria-label={x.short} style={{ width: i === index ? 18 : 8, height: 8, borderRadius: 8, border: "none", padding: 0, cursor: "pointer", background: i === index ? `linear-gradient(90deg, ${LP.orange}, ${LP.pink})` : "#D5DBE5", transition: "width .15s" }} />)}</div>
+            {navBtn(1, "הבא")}
+          </div>
+          <button onClick={onSignup} style={{ ...ctaStyle(false), width: "100%", marginTop: 14, fontSize: 16, padding: "14px" }}>אני רוצה את זה — להרשמה בחינם ←</button>
+          <div style={{ fontSize: 12, color: C.sub, textAlign: "center", marginTop: 6 }}>חודש ניסיון · בלי כרטיס אשראי · החליקו לצדדים לכלי הבא</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+function ProductShowcase() {
+  return <>
+    <Spot tag="🛒 ללקוחות שלכם" title="ממשק הזמנות שהלקוחות שלכם יאהבו" text="הלקוחות העסקיים שלכם פותחים קישור ומזמינים מהטלפון תוך שניות — עם תמונות, מחירים וכמויות. בלי להוריד אפליקציה, בלי להתקשר ובלי לחכות." bullets={["הזמנה חוזרת בלחיצה אחת", "מזמינים 24/7 — גם בלילה ובסופ\"ש", "מבצעים ועדכונים ישר לטלפון שלהם"]} visual={<PhoneMock />} />
+    <Spot flip tag="📋 הזמנות" title="כל ההזמנות — מפורטות ומסודרות במקום אחד" text="כל הזמנה מגיעה אליכם עם התראה, עם פירוט מלא של המוצרים והכמויות, ועוברת שלבים ברורים עד המסירה ללקוח." bullets={["התראה על כל הזמנה חדשה", "סטטוס לכל הזמנה: חדשה, לוקטה, בדרך, נמסרה", "מלקט ונהג רואים רק את מה שצריך"]} visual={<MockOrders />} />
+    <Spot tag="📦 מלאי" title="מעקב מלאי אוטומטי" text="המלאי מתעדכן לבד — יורד עם כל הזמנה ועולה עם כל חשבונית קנייה. תמיד יודעים מה יש, ומה עומד להיגמר." bullets={["התראת מלאי נמוך לפני שנגמר", "מלאי לפי קרטון, יחידה או ק\"ג", "מלאי מתעדכן אוטומטית מסריקת חשבוניות"]} visual={<MockStock />} />
+    <Spot flip premium tag="📸 סריקת חשבוניות" title="מצלמים חשבונית — והמוצרים עולים ישר לחנות ולדוחות" text="צלמו את החשבונית מהספק שלכם (גם כמה דפים). המערכת קוראת את שם הספק, המוצרים, הכמויות והמחירים — אתם קובעים מחיר מכירה, והכל נכנס לחנות, למלאי ולדוח החודשי." bullets={["חוסך הקלדה של מוצר אחרי מוצר", "רווח לכל מוצר מחושב לפי מחיר הקנייה", "כל החשבוניות שמורות לפי חודשים"]} visual={<MockScan />} />
+    <Spot premium tag="📊 דוחות" title="דוח הכנסות והוצאות חודשי — בלי אקסלים" text="בוחרים חודש ושנה ורואים מיד: כמה נכנס מהזמנות, כמה יצא על סחורה ומה נשאר. לחיצה על כל נתון פותחת את הפירוט המלא." bullets={["פירוט כל ההזמנות וכל החשבוניות של החודש", "סיכום שנתי והשוואה בין חודשים", "הורדה לאקסל או להדפסה — לרואה החשבון"]} visual={<MockReport />} />
+    <Spot flip tag="🧾 חשבוניות וגבייה" title="חשבונית לכל הזמנה, ומעקב מי שילם" text="כל הזמנה מקבלת חשבונית מסודרת עם פרטי העסק שלכם. רואים בכל רגע מי שילם, מי חייב וכמה." bullets={["חשבונית בלחיצה — להורדה או לשליחה", "יתרת חוב לכל לקוח", "סימון תשלום: מזומן, אשראי, צ'ק או העברה"]} visual={<MockInvoice />} />
+  </>;
+}
+const MORE_FEATURES = [["🚚", "ליקוט ומשלוחים", "מלקט שוקל ומכין, נהג רואה את המסלול", true], ["👥", "צוות", "מלקטים, נהגים וסוכנים — כל אחד עם הרשאות משלו", true], ["🏆", "יעדים ופרסים", "לקוחות צוברים נקודות ומזמינים יותר", true], ["💬", "צ'אט ומבצעים", "הודעה לכל הלקוחות בלחיצה אחת", false], ["🔎", "לקוחות חדשים", "עסקים באזור שלכם מוצאים אתכם בחיפוש", false], ["🎨", "חנות במיתוג שלכם", "לוגו, צבעים וקישור אישי לשיתוף", true]];
+function BeforeAfter() {
+  const rows = [["הזמנות בטלפון, בוואטסאפ ובהודעות קוליות", "הלקוח מזמין לבד — ההזמנה מגיעה מסודרת"], ["מקלידים מחדש כל הזמנה", "הכל כבר כתוב, מוכן לליקוט"], ["לא בטוחים מה נשאר במלאי", "מלאי מתעדכן לבד + התראת מלאי נמוך"], ["מקלידים מוצרים אחד אחד", "מצלמים חשבונית — והמוצרים עולים"], ["דוחות באקסל בסוף החודש", "דוח חודשי מוכן בלחיצה"], ["רודפים אחרי תשלומים", "רואים מי שילם ומי חייב"]];
+  return <div style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 20, overflow: "hidden" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", fontWeight: 800, fontSize: 14 }}><div style={{ padding: "10px 12px", background: "#FEF2F2", color: C.red }}>😩 בלי <bdi dir="ltr">B2B+</bdi></div><div style={{ padding: "10px 12px", background: C.greenSoft, color: C.greenDeep }}>😎 עם <bdi dir="ltr">B2B+</bdi></div></div>
+    {rows.map(([a, b]) => <div key={a} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderTop: `1px solid ${C.line}`, fontSize: 13.5 }}><div style={{ padding: "10px 12px", color: C.sub, display: "flex", gap: 6 }}><span style={{ color: C.red }}>✗</span>{a}</div><div style={{ padding: "10px 12px", fontWeight: 700, display: "flex", gap: 6, background: "#FBFEFC" }}><span style={{ color: C.green }}>✓</span>{b}</div></div>)}
+  </div>;
+}
+
+// מסך "הרשמה בחינם": כל היתרונות מפורטים + הטופס. במחשב — שתי עמודות (הטופס נשאר בצד), בטלפון — יתרונות ואז טופס, עם כפתור צף להרשמה
+const SIGNUP_WHY = [
+  ["⏱️", "חוסכים שעות כל יום", "במקום לענות לטלפונים ולהעתיק הזמנות מוואטסאפ — הלקוחות מזמינים לבד, וההזמנה מגיעה אליכם מסודרת ומוכנה לליקוט."],
+  ["✅", "הרבה פחות טעויות", "כל הזמנה כתובה עם מוצרים וכמויות ברורים. אין \"לא הבנתי מה ביקש\", והמלקט רואה בדיוק מה להכין."],
+  ["📈", "יותר הזמנות מכל לקוח", "הלקוחות מזמינים 24/7 — גם בלילה ובשבת בערב. מבצע שאתם שולחים מגיע ישר לטלפון שלהם, ואפשר להזמין בלחיצה."],
+  ["💰", "גבייה מסודרת", "רואים בכל רגע מי שילם ומי חייב, וכל הזמנה מגיעה עם חשבונית — בלי לרדוף אחרי אף אחד."],
+  ["🏪", "נראים כמו חברה גדולה", "חנות דיגיטלית עם השם, הלוגו והצבעים שלכם, שאפשר לשלוח לכל לקוח חדש כבר מהיום הראשון."],
+  ["🇮🇱", "מוכרים בכל הארץ, בלי סוכנים", "עסקים באזורים שבחרתם מוצאים אתכם בחיפוש ושולחים בקשת הצטרפות — בלי לצאת לשטח."],
+];
+const SIGNUP_EASY = [
+  "הכל מהטלפון — מנהלים את החנות ומאשרים הזמנות מכל מקום",
+  "הלקוחות לא מורידים אפליקציה — רק לוחצים על קישור",
+  "מקימים בדקות: מצלמים חשבונית ספק והמוצרים עולים לבד",
+  "בלי התקנות, בלי ציוד ובלי הדרכה",
+  "התראה על כל הזמנה חדשה, ברגע שהיא נכנסת",
+  "כל אחד בצוות רואה רק את שלו: מלקט, נהג וסוכן",
+];
+const PREMIUM_FEAT = { "ליקוט ומשלוחים": 1, "סריקת חשבוניות": 1, "דוח רווח חודשי": 1, "מועדון לקוחות": 1 };
+function SignupPage({ state, setState, onLogin, onCancel, source, onLoginClick, onMore }) {
+  const formRef = React.useRef(null); const [formSeen, setFormSeen] = useState(false); const [tour, setTour] = useState(null);
+  useEffect(() => { const el = formRef.current; if (!el || typeof IntersectionObserver === "undefined") return; const io = new IntersectionObserver((es) => setFormSeen(es[0].isIntersecting), { threshold: 0.15 }); io.observe(el); return () => io.disconnect(); }, []);
+  const toForm = () => { const el = formRef.current; if (el && el.scrollIntoView) el.scrollIntoView({ behavior: "smooth", block: "start" }); };
+  const basic = PLANS.basic;
+  return (
+    <div style={{ maxWidth: 1120, margin: "0 auto", padding: "14px 14px 100px" }}>
+      <div className="tp-2col" style={{ alignItems: "start" }}>
+        <div>
+          <div style={{ background: `radial-gradient(700px 320px at 90% 0%, rgba(249,115,22,.34), transparent), linear-gradient(160deg, #0B1F4D, #1D4ED8)`, color: "#fff", borderRadius: 24, padding: "22px 16px 18px", boxShadow: "0 14px 40px rgba(15,31,77,.22)" }}>
+            <div style={{ display: "inline-block", background: "rgba(255,255,255,.15)", borderRadius: 20, padding: "4px 12px", fontSize: 12.5, fontWeight: 700 }}>🎁 חודש ראשון חינם · בלי כרטיס אשראי</div>
+            <h1 style={{ fontSize: "clamp(27px, 7vw, 38px)", fontWeight: 800, lineHeight: 1.15, margin: "12px 0 8px", letterSpacing: "-0.8px" }}>חוסכים זמן וכסף.<br /><span style={{ background: "linear-gradient(90deg,#FDBA74,#F9A8D4)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>מרוויחים יותר.</span></h1>
+            <div style={{ fontSize: 15.5, opacity: .92, lineHeight: 1.6 }}>כל מה שספק צריך באפליקציה אחת — נוח לכם, ונוח ללקוחות שלכם.</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 6, marginTop: 14 }}>
+              {[["⏱️", "חוסך שעות עבודה"], ["💰", "חוסך טעויות וכסף"], ["📈", "מוסיף הזמנות ורווח"], ["😊", "נוח לכם וללקוחות"]].map(([e, t]) => <div key={t} style={{ display: "flex", alignItems: "center", gap: 7, background: "rgba(255,255,255,.12)", borderRadius: 12, padding: "8px 10px", fontSize: 13.5, fontWeight: 800 }}><span style={{ fontSize: 17 }}>{e}</span>{t}</div>)}
+            </div>
+            <div style={{ fontSize: 13.5, fontWeight: 700, margin: "16px 0 8px", opacity: .95 }}>👇 לחצו על חלון וראו איך זה נראה</div>
+            <FeatureTiles onOpen={setTour} />
+            <button onClick={toForm} className="tp-2col-hide" style={{ ...ctaStyle(false), width: "100%", marginTop: 14, fontSize: 16, padding: "14px" }}>פתחו חנות בחינם — 2 דקות ↓</button>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginTop: 12 }}>
+            {[["נרשמים", "2 דקות"], ["מעלים מוצרים", "או מצלמים חשבונית"], ["שולחים קישור", "והלקוחות מזמינים"]].map(([t, d], i) => (
+              <div key={t} style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 16, padding: "12px 6px", textAlign: "center" }}>
+                <div style={{ width: 28, height: 28, borderRadius: "50%", background: `linear-gradient(135deg, ${LP.orange}, ${LP.pink})`, color: "#fff", fontWeight: 800, fontSize: 14, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 5px" }}>{i + 1}</div>
+                <div style={{ fontWeight: 800, fontSize: 13.5 }}>{t}</div><div style={{ fontSize: 11.5, color: C.sub, marginTop: 1 }}>{d}</div>
+              </div>))}
+          </div>
+          <div style={{ marginTop: 10, background: "linear-gradient(135deg,#FFF7ED,#FDF2F8)", border: "1px solid #FED7AA", borderRadius: 16, padding: "12px 14px", display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 24 }}>🎁</span>
+            <div style={{ fontSize: 13.5, color: C.ink, lineHeight: 1.55 }}><b>החודש הראשון עלינו.</b> אחר כך מ-{planPriceText(basic)} לחודש — רק אם תבחרו להמשיך. ביטול בכל עת.</div>
+          </div>
+        </div>
+
+        <div ref={formRef} style={{ position: "sticky", top: 76, scrollMarginTop: 76 }}>
+          <div style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 20, padding: "20px 16px", boxShadow: "0 12px 40px rgba(15,31,77,.12)" }}>
+            <div style={{ fontWeight: 800, fontSize: 21, marginBottom: 2 }}>פותחים חנות בחינם</div>
+            <div style={{ fontSize: 13.5, color: C.sub, marginBottom: 14 }}>3 שלבים קצרים · בלי כרטיס אשראי</div>
+            <QuickSignup state={state} setState={setState} onLogin={onLogin} onCancel={onCancel} source={source} />
+          </div>
+          <div style={{ display: "flex", justifyContent: "center", gap: 14, flexWrap: "wrap", marginTop: 10, fontSize: 12.5, fontWeight: 700, color: C.sub }}><span>🔒 מאובטח</span><span>✓ בלי התחייבות</span><span>↩ ביטול בכל עת</span></div>
+          <div style={{ textAlign: "center", marginTop: 8, fontSize: 13.5, color: C.sub }}>כבר רשומים? <button onClick={onLoginClick} style={{ border: "none", background: "transparent", color: LP.blue, fontWeight: 800, cursor: "pointer", padding: 0, fontFamily: "inherit", fontSize: 13.5 }}>כניסה</button> · <button onClick={onMore} style={{ border: "none", background: "transparent", color: LP.blue, fontWeight: 800, cursor: "pointer", padding: 0, fontFamily: "inherit", fontSize: 13.5 }}>עוד פרטים</button></div>
+        </div>
+      </div>
+      {tour != null && <FeatureViewer index={tour} onNav={setTour} onClose={() => setTour(null)} onSignup={() => { setTour(null); setTimeout(toForm, 60); }} />}
+      {!formSeen && tour == null && <div className="tp-2col-hide" style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 40, padding: "10px 14px calc(10px + env(safe-area-inset-bottom, 0px))", background: "rgba(255,255,255,.95)", borderTop: `1px solid ${C.line}`, backdropFilter: "blur(8px)" }}>
+        <button onClick={toForm} style={{ ...ctaStyle(false), width: "100%", maxWidth: 520, display: "block", margin: "0 auto", fontSize: 16, padding: "14px" }}>🎁 פתחו חנות בחינם — 2 דקות</button>
+      </div>}
+    </div>
+  );
+}
+function SupplierLanding({ state, setState, onLogin, onBack, source, startSignup }) {
+  const [signup, setSignup] = useState(!!startSignup); // מכפתור ההרשמה במסך הכניסה → ישר לטופס
+  const [login, setLogin] = useState(false); const [faq, setFaq] = useState(null);
   const open = () => { setSignup(true); setTimeout(() => { try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) {} }, 20); };
   const sec = { maxWidth: 1080, margin: "0 auto", padding: "46px 18px" };
   const h2 = { fontSize: 28, fontWeight: 800, textAlign: "center", margin: "0 0 8px", letterSpacing: "-0.5px" };
@@ -658,6 +960,7 @@ function SupplierLanding({ state, setState, onLogin, onBack, source }) {
     <div dir="rtl" style={{ minHeight: "100vh", fontFamily: FONT, color: C.ink, background: "#fff", paddingBottom: signup ? 0 : 76 }}>
       <div style={{ position: "sticky", top: 0, zIndex: 30, background: "rgba(255,255,255,.92)", backdropFilter: "blur(8px)", borderBottom: `1px solid ${C.line}` }}>
         <div style={{ maxWidth: 1080, margin: "0 auto", padding: "10px 18px", display: "flex", alignItems: "center", gap: 10 }}>
+          {startSignup && onBack && <button onClick={onBack} title="חזרה למסך הכניסה" style={{ border: `1px solid ${C.line}`, background: "#fff", borderRadius: 10, width: 38, height: 38, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: C.ink }}><ChevronRight size={20} /></button>}
           <img src={LOGO_IMG} alt="B2B+" style={{ width: 38, height: 38, borderRadius: 10, objectFit: "cover" }} />
           <div style={{ lineHeight: 1.1 }}><div style={{ fontWeight: 800, fontSize: 16 }}><bdi dir="ltr">B2B+</bdi></div><div style={{ fontSize: 11, color: C.sub }}>לספקים</div></div>
           <span style={{ flex: 1 }} />
@@ -665,12 +968,11 @@ function SupplierLanding({ state, setState, onLogin, onBack, source }) {
           {!signup && <button onClick={open} style={{ ...ctaStyle(false), padding: "9px 16px", fontSize: 14 }}>הרשמה בחינם</button>}
         </div>
       </div>
-      {(signup || login) ? (
+      {signup ? <SignupPage state={state} setState={setState} onLogin={onLogin} source={source} onCancel={() => (startSignup && onBack ? onBack() : setSignup(false))} onLoginClick={() => { setSignup(false); setLogin(true); }} onMore={() => setSignup(false)} />
+      : login ? (
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "18px 14px 60px" }}>
-          {signup && <SignupIntro />}
           <div style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 20, padding: "22px 18px", boxShadow: "0 12px 40px rgba(15,31,77,.10)" }}>
-            {signup && <><div style={{ fontWeight: 800, fontSize: 22, marginBottom: 4 }}>פותחים חנות בחינם</div><div style={{ fontSize: 14, color: C.sub, marginBottom: 16 }}>3 שלבים קצרים · חודש ניסיון · בלי כרטיס אשראי</div><QuickSignup state={state} setState={setState} onLogin={onLogin} onCancel={() => setSignup(false)} source={source} /></>}
-            {login && <LoginForm state={state} onLogin={onLogin} back={() => setLogin(false)} onForgot={() => setLogin(false)} />}
+            <LoginForm state={state} onLogin={onLogin} back={() => setLogin(false)} onForgot={() => setLogin(false)} />
           </div>
         </div>
       ) : (<>
@@ -808,7 +1110,7 @@ function RecruitPanel({ state, setState }) {
 }
 function AuthScreen({ state, setState, onLogin }) {
   const [mode, setMode] = useState("menu");
-  if (mode === "landing") return <SupplierLanding state={state} setState={setState} onLogin={onLogin} onBack={() => setMode("menu")} source={readUtm()} />;
+  if (mode === "landing") return <SupplierLanding state={state} setState={setState} onLogin={onLogin} onBack={() => setMode("menu")} source={readUtm()} startSignup />;
   return (
     <div dir="rtl" style={{ minHeight: "100vh", color: C.ink, fontFamily: FONT, display: "flex", flexDirection: "column", alignItems: "center", padding: "44px 16px", background: `radial-gradient(1200px 500px at 50% -8%, ${C.greenSoft}, ${C.bg})` }}>
       <div style={{ marginBottom: 12 }}><Logo size={122} /></div>
@@ -817,7 +1119,7 @@ function AuthScreen({ state, setState, onLogin }) {
       {mode === "menu" && (
         <div style={{ width: "100%", maxWidth: 380, display: "grid", gap: 12 }}>
           <BigBtn icon={<LogIn size={18} />} onClick={() => setMode("login")} primary>התחברות</BigBtn>
-          <button onClick={() => setMode("landing")} className="tp-click" style={{ border: "none", borderRadius: 14, padding: "14px 16px", cursor: "pointer", background: `linear-gradient(135deg, ${LP.orange}, ${LP.pink})`, color: "#fff", textAlign: "right", fontFamily: "inherit", boxShadow: "0 8px 22px rgba(219,39,119,.28)" }}><div style={{ fontWeight: 800, fontSize: 16 }}>🏪 ספק? פתחו חנות בחינם</div><div style={{ fontSize: 12.5, opacity: .92, marginTop: 2 }}>חודש ניסיון · בלי כרטיס אשראי · הרשמה ב-2 דקות</div></button>
+          <button onClick={() => setMode("landing")} className="tp-click" style={{ border: "none", borderRadius: 14, padding: "14px 16px", cursor: "pointer", background: `linear-gradient(135deg, ${LP.orange}, ${LP.pink})`, color: "#fff", textAlign: "right", fontFamily: "inherit", boxShadow: "0 8px 22px rgba(219,39,119,.28)" }}><div style={{ fontWeight: 800, fontSize: 16 }}>🏪 הרשמת ספק — פתחו חנות בחינם</div><div style={{ fontSize: 12.5, opacity: .92, marginTop: 2 }}>חודש ניסיון · בלי כרטיס אשראי · הרשמה ב-2 דקות</div></button>
           <BigBtn icon={<UserPlus size={18} />} onClick={() => setMode("register")}>הרשמת עסק (לקוח)</BigBtn>
         </div>
       )}
@@ -825,6 +1127,7 @@ function AuthScreen({ state, setState, onLogin }) {
       {mode === "forgot" && <ForgotForm state={state} back={() => setMode("login")} />}
       {mode === "supreg" && <SupplierRegister state={state} setState={setState} back={() => setMode("menu")} />}
       {mode === "register" && <RegisterForm state={state} setState={setState} back={() => setMode("menu")} />}
+      <div style={{ marginTop: 24, fontSize: 11.5, color: C.sub, opacity: .8 }}>גרסה <bdi dir="ltr">{APP_VERSION}</bdi></div>
     </div>
   );
 }
@@ -1688,6 +1991,7 @@ function InquiryChat({ q, state, setState }) {
 }
 function ClientView({ state, setState, clientId }) {
   const client = state.clients.find((c) => c.id === clientId);
+  const [reorder, setReorder] = useState(null); // "הזמן שוב" מהזמנה קודמת
   const [tab, setTab] = useState("home");
   const feat = state.features || {};
   const showPrizes = feat.prizes !== false && hasFeature(state, "prizes");
@@ -1696,8 +2000,8 @@ function ClientView({ state, setState, clientId }) {
   const tabs = [["home", "בית", Home], ["order", "הזמנה חדשה", ShoppingCart], ["orders", "הזמנות וקבלות", Receipt], showPrizes && ["prizes", "יעדים", Trophy], ["inbox", "תיבת דואר", Mail], showChat && ["chat", "צ'אט עם הספק", MessageSquare]].filter(Boolean);
   return (<div><Tabs tabs={tabs} active={tab} onChange={setTab} badges={{ inbox: unread }} />
     {tab === "home" && <ClientHome state={state} clientId={clientId} unread={unread} onOpen={setTab} />}
-    {tab === "order" && <OrderForm state={state} setState={setState} clientId={clientId} />}
-    {tab === "orders" && <ClientOrders state={state} setState={setState} clientId={clientId} canEdit editorRole="client" />}
+    {tab === "order" && <OrderForm key={reorder ? reorder.key : "new"} state={state} setState={setState} clientId={clientId} prefill={reorder && reorder.order} />}
+    {tab === "orders" && <ClientOrders state={state} setState={setState} clientId={clientId} canEdit editorRole="client" onReorder={(o) => { setReorder({ order: o, key: Date.now() }); setTab("order"); }} />}
     {tab === "prizes" && showPrizes && <PrizeLadder state={state} clientId={clientId} />}
     {tab === "inbox" && <Inbox state={state} setState={setState} clientId={clientId} />}
     {tab === "chat" && showChat && <Chat state={state} setState={setState} clientId={clientId} meRole="client" meName={client.name} />}
@@ -1797,8 +2101,12 @@ function Inbox({ state, setState, clientId }) {
   );
 }
 
-function OrderForm({ state, setState, clientId, agentName }) {
-  const [cart, setCart] = useState({}); const [toast, setToast] = useState(""); const [pq, setPq] = useState(""); const [pcat, setPcat] = useState("");
+// בונה עגלה מהזמנה קודמת: רק מוצרים שעדיין קיימים ובמלאי, עד כמות המלאי
+const cartFromOrder = (order, products) => { const c = {}; ((order && order.items) || []).forEach((it) => { const p = products.find((x) => x.id === it.pid); if (!p || !(p.stock > 0)) return; const q = Math.min(p.stock, it.cartons || 0); if (q > 0) c[it.pid] = (c[it.pid] || 0) + q; }); return c; };
+function OrderForm({ state, setState, clientId, agentName, prefill }) {
+  const [cart, setCart] = useState(() => prefill ? cartFromOrder(prefill, state.products) : {});
+  const lastOrder = state.orders.filter((o) => o.clientId === clientId).sort((a, b) => b.date - a.date)[0];
+  const loadOrder = (o) => { const c = cartFromOrder(o, state.products); setCart(c); const missing = (o.items || []).length - Object.keys(c).length; setToast("🔁 ההזמנה נטענה" + (missing > 0 ? " (" + missing + " מוצרים לא במלאי כרגע)" : "") + " — אפשר לשנות כמויות ולשלוח"); setTimeout(() => setToast(""), 4000); }; const [toast, setToast] = useState(prefill ? "🔁 ההזמנה הקודמת נטענה — אפשר לשנות כמויות ולשלוח" : ""); const [pq, setPq] = useState(""); const [pcat, setPcat] = useState("");
   const minOrder = (state.features && state.features.minOrder) || MIN_ORDER;
   const themeColor = (state.brand && state.brand.color) || C.greenDeep;
   const borderW = (state.brand && state.brand.borderW != null) ? state.brand.borderW : 2.5;
@@ -1812,6 +2120,7 @@ function OrderForm({ state, setState, clientId, agentName }) {
     <div className="tp-2col" style={{ paddingBottom: cartons > 0 ? 88 : 0 }}>
       <Panel style={{ boxShadow: SH }}>
         <SectionTitle icon={<Package size={18} />} extra={<span style={{ fontSize: 12, color: C.sub }}>מינימום {minOrder} קרטונים</span>}>{orderPitch(state).replace(/^הזמן /, "הזמנת ")}</SectionTitle>
+        {lastOrder && items.length === 0 && <button onClick={() => loadOrder(lastOrder)} className="tp-click" style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, textAlign: "right", border: `1.5px dashed ${themeColor}`, background: "#fff", borderRadius: 12, padding: "10px 12px", marginBottom: 12, cursor: "pointer", font: "inherit", color: "inherit" }}><span style={{ fontSize: 22 }}>🔁</span><div style={{ flex: 1 }}><div style={{ fontWeight: 800, color: themeColor }}>הזמן שוב את ההזמנה האחרונה</div><div style={{ fontSize: 12, color: C.sub }}>#{lastOrder.id} · {dayStr(lastOrder.date)} · {(lastOrder.items || []).length} מוצרים — נטען לעגלה, אפשר לשנות לפני שליחה</div></div></button>}
         <div style={{ display: "flex", alignItems: "center", gap: 6, border: `1px solid ${C.line}`, borderRadius: 10, padding: "0 10px", marginBottom: 12 }}><Search size={15} color={C.sub} /><input value={pq} onChange={(e) => setPq(e.target.value)} placeholder="חיפוש מוצר בקטלוג" style={{ border: "none", outline: "none", padding: "9px 4px", fontSize: 13, width: "100%", fontFamily: "inherit", background: "transparent" }} /></div>
           {(state.cats || []).length > 0 && <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>{[["", "הכל"], ...(state.cats || []).map((c) => [c, c])].map(([id, lbl]) => { const on = pcat === id; return <button key={id || "all"} onClick={() => setPcat(id)} style={{ border: `1.5px solid ${on ? themeColor : C.line}`, background: on ? themeColor : "#fff", color: on ? "#fff" : C.sub, borderRadius: 20, padding: "6px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>{lbl}</button>; })}</div>}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(158px,1fr))", gap: 12 }}>
@@ -1852,7 +2161,7 @@ function OrderForm({ state, setState, clientId, agentName }) {
   );
 }
 
-function ClientOrders({ state, setState, clientId, canEdit, editorRole }) {
+function ClientOrders({ state, setState, clientId, canEdit, editorRole, onReorder }) {
   const [inv, setInv] = useState(null); const [edit, setEdit] = useState(null); const [of, setOf] = useState("all"); // all | month | debt
   const allOrders = state.orders.filter((o) => o.clientId === clientId).sort((a, b) => b.date - a.date);
   const orders = allOrders.filter((o) => of === "all" || (of === "month" && monthKey(o.date) === nowMonth) || (of === "debt" && o.status === "delivered" && !o.paid));
@@ -1880,6 +2189,7 @@ function ClientOrders({ state, setState, clientId, canEdit, editorRole }) {
                 <div style={{ display: "flex", gap: 6 }}>
                   <button onClick={() => setInv(o)} style={miniBtn}><Receipt size={13} /> חשבונית</button>
                   {editable && <button onClick={() => setEdit(o)} style={{ ...miniBtn, color: C.blue, borderColor: C.blue }}><Pencil size={13} /> שינוי הזמנה</button>}
+                  {onReorder && <button onClick={() => onReorder(o)} style={{ ...miniBtn, color: C.greenDeep, borderColor: C.green }}>🔁 הזמן שוב</button>}
                   {o.status === "delivered" && (o.paid ? <Badge tone="green"><Check size={11} /> שולם</Badge> : <Badge tone="amber">לתשלום מול הספק</Badge>)}
                 </div>
                 <span style={{ fontWeight: 800, color: C.greenDeep }}>{NIS(orderTotal(o, state.products))}</span>
