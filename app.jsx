@@ -554,7 +554,7 @@ function SignupIntro() {
     </div>
   );
 }
-const APP_VERSION = "29.9.26-a"; // מופיע בתחתית מסך הכניסה — לבדוק שהעדכון עלה
+const APP_VERSION = "29.9.26-b"; // מופיע בתחתית מסך הכניסה — לבדוק שהעדכון עלה
 const LP = { navy: "#0A2A7A", blue: "#1463FF", orange: "#12C2EE", pink: "#1463FF", soft: "#F2F6FF" }; // accent: טורקיז → כחול
 const ctaStyle = (big) => ({ border: "none", background: "linear-gradient(135deg, #22D3EE 0%, #1463FF 60%, #0A4BDB 100%)", color: "#fff", fontWeight: 800, fontSize: big ? 18 : 15, padding: big ? "16px 28px" : "12px 20px", borderRadius: 14, cursor: "pointer", boxShadow: "0 8px 24px rgba(20,99,255,.35)", fontFamily: "inherit" });
 function PhoneMock({ items: itemsIn, title, store }) {
@@ -1133,8 +1133,12 @@ const SIGNUP_HIGHLIGHTS = [
   ["🛒", "ממשק הזמנות פעיל 24/7", "חנות משלכם עם קישור ללקוחות — הם מזמינים מתי שנוח להם", 0],
   ["📋", "מעקב אחר הזמנות", "כל הזמנה עם התראה, פירוט מלא וסטטוס עד המסירה", 1],
   ["📦", "מעקב אחר המלאי", "המלאי מתעדכן לבד, עם התראה לפני שמשהו נגמר", 2],
-  ["🧾", "חשבונית לכל לקוח", "מנפיקים חשבונית בלחיצה ורואים מי שילם ומי חייב", 5],
+  ["📸", "מצלמים חשבונית — והכל מתעדכן לבד", "המוצרים עולים לחנות, המלאי מתעדכן, ההוצאה נרשמת בדוח והחשבונית נשמרת", 3, "⚡ הכי חוסך זמן"],
+  ["📊", "דוחות הכנסות והוצאות", "בוחרים חודש ורואים הכל — מוכן לרואה החשבון", 4],
+  ["🧾", "חשבונית לכל לקוח", "מנפיקים בלחיצה ורואים מי שילם ומי חייב", 5],
   ["👥", "צוות עם ממשק לכל עובד", "מלקט, סוכן ונהג — כל אחד רואה רק מה שהוא צריך", 6],
+  ["💬", "מבצעים וצ'אט עם הלקוחות", "מבצע לכל הלקוחות בלחיצה, וצ'אט אישי עם כל לקוח", 7],
+  ["🏆", "תוכנית יעדים ללקוחות", "לבחירתכם — לקוחות צוברים נקודות ומזמינים יותר", 8],
 ];
 function SignupPage({ state, setState, onLogin, onCancel, source, onLoginClick, onMore }) {
   const formRef = React.useRef(null); const [formSeen, setFormSeen] = useState(false); const [tour, setTour] = useState(null);
@@ -1149,35 +1153,22 @@ function SignupPage({ state, setState, onLogin, onCancel, source, onLoginClick, 
             <div style={{ display: "inline-block", background: "rgba(255,255,255,.15)", borderRadius: 20, padding: "4px 12px", fontSize: 12.5, fontWeight: 700 }}>🎁 חודש ראשון חינם · בלי כרטיס אשראי</div>
             <h1 style={{ fontSize: "clamp(27px, 7vw, 38px)", fontWeight: 800, lineHeight: 1.15, margin: "12px 0 8px", letterSpacing: "-0.8px" }}>חוסכים זמן וכסף.<br /><span style={{ background: "linear-gradient(90deg,#67E8F9,#A5F3FC)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>מרוויחים יותר.</span></h1>
             <div style={{ fontSize: 15.5, opacity: .92, lineHeight: 1.6 }}>כל מה שספק צריך באפליקציה אחת — נוח לכם, ונוח ללקוחות שלכם.</div>
-            <button onClick={() => setTour(3)} className="tp-click" style={{ display: "block", width: "100%", textAlign: "right", marginTop: 16, padding: 2, borderRadius: 18, border: "none", cursor: "pointer", background: "linear-gradient(135deg,#67E8F9,#38BDF8,#818CF8)", fontFamily: "inherit", boxShadow: "0 10px 26px rgba(20,99,255,.35)" }}>
-              <div style={{ background: "linear-gradient(160deg,#13275E,#1E3FA8)", borderRadius: 16, padding: "14px 14px 12px", color: "#fff" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ width: 48, height: 48, borderRadius: 14, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, flexShrink: 0 }}>📸</span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "inline-block", fontSize: 11, fontWeight: 800, background: "linear-gradient(90deg,#12C2EE,#1463FF)", borderRadius: 20, padding: "2px 9px", marginBottom: 3 }}>⚡ הכי חוסך זמן</div>
-                    <div style={{ fontWeight: 800, fontSize: 18, lineHeight: 1.25 }}>מצלמים חשבונית — והכל מתעדכן לבד</div>
-                  </div>
-                </div>
-                <div style={{ fontSize: 13.5, opacity: .9, lineHeight: 1.6, marginTop: 8 }}>צילום אחד של חשבונית הספק, ובלי להקליד שורה אחת:</div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 6, marginTop: 8 }}>
-                  {[["🏪", "המוצרים עולים לחנות"], ["📦", "המלאי מתעדכן"], ["📊", "ההוצאה נרשמת בדוח"], ["🗂️", "החשבונית נשמרת מסודרת"]].map(([e, t]) => <div key={t} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,.12)", borderRadius: 10, padding: "7px 8px", fontSize: 12.5, fontWeight: 800 }}><span>{e}</span>{t}</div>)}
-                </div>
-                <div style={{ fontSize: 12.5, fontWeight: 800, marginTop: 10, color: "#67E8F9" }}>ראו איך זה עובד ›</div>
-              </div>
-            </button>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(260px,1fr))", gap: 7, marginTop: 10 }}>
-              {SIGNUP_HIGHLIGHTS.map(([e, t, d, tourIdx]) => (
-                <button key={t} onClick={() => setTour(tourIdx)} className="tp-click" style={{ display: "flex", alignItems: "center", gap: 10, textAlign: "right", background: "rgba(255,255,255,.11)", border: "1px solid rgba(255,255,255,.18)", borderRadius: 14, padding: "10px 11px", cursor: "pointer", color: "#fff", fontFamily: "inherit" }}>
-                  <span style={{ width: 38, height: 38, borderRadius: 11, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>{e}</span>
-                  <span style={{ flex: 1, minWidth: 0 }}><span style={{ display: "block", fontWeight: 800, fontSize: 14.5, lineHeight: 1.3 }}>{t}</span><span style={{ display: "block", fontSize: 12.5, opacity: .82, lineHeight: 1.4, marginTop: 2 }}>{d}</span></span>
-                  <span style={{ opacity: .7, fontSize: 18 }}>‹</span>
-                </button>))}
+            <div style={{ fontSize: 14, fontWeight: 800, margin: "16px 0 8px", display: "flex", alignItems: "center", gap: 6 }}>👇 מה מקבלים? לחצו על כל שורה וראו איך זה נראה</div>
+            <div style={{ background: "rgba(255,255,255,.08)", border: "1px solid rgba(255,255,255,.16)", borderRadius: 20, overflow: "hidden" }}>
+              {SIGNUP_HIGHLIGHTS.map(([e, t, d, tourIdx, badge], i) => { const prem = FEATURE_TOUR[tourIdx] && FEATURE_TOUR[tourIdx].premium; return (
+                <button key={t} onClick={() => setTour(tourIdx)} className="tp-click" style={{ width: "100%", display: "flex", alignItems: "center", gap: 11, textAlign: "right", background: badge ? "linear-gradient(90deg, rgba(103,232,249,.16), rgba(255,255,255,.04))" : "transparent", border: "none", borderTop: i ? "1px solid rgba(255,255,255,.12)" : "none", padding: "11px 12px", cursor: "pointer", color: "#fff", fontFamily: "inherit" }}>
+                  <span style={{ width: 42, height: 42, borderRadius: 13, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0, boxShadow: "0 6px 14px rgba(0,0,0,.18)" }}>{e}</span>
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}><span style={{ fontWeight: 800, fontSize: 14.5, lineHeight: 1.3 }}>{t}</span>{badge && <span style={{ fontSize: 10.5, fontWeight: 800, background: "linear-gradient(90deg,#22D3EE,#1463FF)", borderRadius: 20, padding: "2px 8px" }}>{badge}</span>}{prem && <span title="מסלול פרימיום · פתוח בחודש הניסיון" style={{ fontSize: 11 }}>⭐</span>}</span>
+                    <span style={{ display: "block", fontSize: 12.5, opacity: .82, lineHeight: 1.45, marginTop: 2 }}>{d}</span>
+                  </span>
+                  <span style={{ fontSize: 11.5, fontWeight: 800, color: "#A5F3FC", whiteSpace: "nowrap" }}>לצפייה ‹</span>
+                </button>); })}
             </div>
+            <div style={{ fontSize: 11.5, opacity: .75, marginTop: 6 }}>⭐ = מסלול פרימיום · בחודש הניסיון הכל פתוח</div>
             <div style={{ marginTop: 14, background: "linear-gradient(135deg, rgba(18,194,238,.95), rgba(20,99,255,.95))", borderRadius: 14, padding: "12px 14px", fontSize: 14.5, fontWeight: 700, lineHeight: 1.55 }}>
               ✨ הכל כבר מוכן בשבילכם: נרשמים ב-2 דקות, מעלים מוצרים ושולחים ללקוחות קישור — ומתחילים לקבל הזמנות. בלי סוכן, בלי התקנה, <u>והחודש הראשון עלינו</u>.
             </div>
-            <div style={{ fontSize: 13.5, fontWeight: 700, margin: "16px 0 8px", opacity: .95 }}>👇 רוצים לראות איך זה נראה? לחצו על כל חלון</div>
-            <FeatureTiles onOpen={setTour} />
             <button onClick={toForm} className="tp-2col-hide" style={{ ...ctaStyle(false), width: "100%", marginTop: 14, fontSize: 16, padding: "14px" }}>פתחו חנות בחינם — 2 דקות ↓</button>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 8, marginTop: 12 }}>
