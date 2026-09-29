@@ -557,7 +557,7 @@ function SignupIntro() {
     </div>
   );
 }
-const APP_VERSION = "29.9.26-e"; // מופיע בתחתית מסך הכניסה — לבדוק שהעדכון עלה
+const APP_VERSION = "29.9.26-f"; // מופיע בתחתית מסך הכניסה — לבדוק שהעדכון עלה
 const LP = { navy: "#0A2A7A", blue: "#1463FF", orange: "#12C2EE", pink: "#1463FF", soft: "#F2F6FF" }; // accent: טורקיז → כחול
 const ctaStyle = (big) => ({ border: "none", background: "linear-gradient(135deg, #22D3EE 0%, #1463FF 60%, #0A4BDB 100%)", color: "#fff", fontWeight: 800, fontSize: big ? 18 : 15, padding: big ? "16px 28px" : "12px 20px", borderRadius: 14, cursor: "pointer", boxShadow: "0 8px 24px rgba(20,99,255,.35)", fontFamily: "inherit" });
 function PhoneMock({ items: itemsIn, title, store }) {
@@ -1076,9 +1076,10 @@ const APP_GALLERY = [
 const GAL_GROUPS = [["ספק", "🏪 הספק"], ["לקוחות", "🛒 הלקוחות שלכם"], ["צוות", "👥 הצוות"]];
 function AppGallery({ start = 0, onClose, onSignup }) {
   const [i, setI] = useState(start); const n = APP_GALLERY.length; const [g, file, title, desc] = APP_GALLERY[i];
+  const [zoom, setZoom] = useState(false); // ברירת מחדל: כל המסך נכנס בגובה הטלפון; לחיצה = הגדלה
   const touch = React.useRef(null); const thumbs = React.useRef(null); const scroller = React.useRef(null);
   const go = (k) => setI((k + n) % n);
-  useEffect(() => { if (scroller.current) scroller.current.scrollTop = 0; const el = thumbs.current && thumbs.current.querySelector('[data-on="1"]'); if (el && el.scrollIntoView) el.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" }); }, [i]);
+  useEffect(() => { setZoom(false); if (scroller.current) scroller.current.scrollTop = 0; const el = thumbs.current && thumbs.current.querySelector('[data-on="1"]'); if (el && el.scrollIntoView) el.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" }); }, [i]);
   useEffect(() => { const k = (e) => { if (e.key === "Escape") onClose(); if (e.key === "ArrowLeft") go(i + 1); if (e.key === "ArrowRight") go(i - 1); }; window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k); }, [i]);
   const arrow = (d, lbl, side) => <button onClick={() => go(i + d)} aria-label={lbl} style={{ position: "absolute", top: "50%", [side]: 6, transform: "translateY(-50%)", zIndex: 3, width: 42, height: 42, borderRadius: "50%", border: "none", background: "rgba(10,42,122,.72)", color: "#fff", fontSize: 22, fontWeight: 800, cursor: "pointer", boxShadow: "0 6px 16px rgba(0,0,0,.3)", backdropFilter: "blur(4px)" }}>{d > 0 ? "‹" : "›"}</button>;
   return (
@@ -1092,18 +1093,21 @@ function AppGallery({ start = 0, onClose, onSignup }) {
       <div style={{ display: "flex", gap: 5, justifyContent: "center", padding: "2px 8px 6px" }}>
         {GAL_GROUPS.map(([k, l]) => { const on = g === k; return <button key={k} onClick={() => setI(APP_GALLERY.findIndex((x) => x[0] === k))} style={{ border: on ? "none" : "1px solid rgba(255,255,255,.35)", background: on ? "#fff" : "transparent", color: on ? C.blue : "#fff", fontWeight: 800, fontSize: 12.5, borderRadius: 20, padding: "5px 11px", cursor: "pointer", fontFamily: "inherit" }}>{l}</button>; })}
       </div>
-      <div style={{ textAlign: "center", padding: "0 14px 8px" }}>
-        <div style={{ fontWeight: 800, fontSize: 17 }}>{title}</div>
-        <div style={{ fontSize: 12.5, opacity: .88, lineHeight: 1.45, maxWidth: 480, margin: "2px auto 0" }}>{desc}</div>
+      <div style={{ textAlign: "center", padding: "0 14px 6px" }}>
+        <div style={{ fontWeight: 800, fontSize: 16 }}>{title}</div>
+        <div style={{ fontSize: 12, opacity: .88, lineHeight: 1.4, maxWidth: 480, margin: "1px auto 0", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{desc}</div>
       </div>
       <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
         {arrow(-1, "הקודם", "right")}{arrow(1, "הבא", "left")}
         <div ref={scroller} onTouchStart={(e) => { touch.current = [e.touches[0].clientX, e.touches[0].clientY]; }} onTouchEnd={(e) => { const s0 = touch.current; if (!s0) return; const dx = e.changedTouches[0].clientX - s0[0], dy = e.changedTouches[0].clientY - s0[1]; if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(i + (dx > 0 ? 1 : -1)); touch.current = null; }}
-          style={{ position: "absolute", inset: 0, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: "0 10px 12px" }}>
-          <img key={file} src={tourSrc(file)} alt={title} style={{ display: "block", width: "100%", maxWidth: 440, margin: "0 auto", borderRadius: 18, boxShadow: "0 18px 44px rgba(0,0,0,.4)", border: "4px solid #0f172a", background: "#EEF4FF", animation: "tpIn .3s ease" }} />
-          <div style={{ textAlign: "center", fontSize: 11.5, opacity: .7, marginTop: 8 }}>גללו למטה לראות את כל המסך · החליקו לצדדים למסך הבא</div>
+          style={zoom ? { position: "absolute", inset: 0, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: "0 10px 12px" } : { position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 8px 4px" }}>
+          <img key={file} src={tourSrc(file)} alt={title} onClick={() => setZoom(!zoom)}
+            style={zoom ? { display: "block", width: "100%", maxWidth: 440, margin: "0 auto", borderRadius: 18, boxShadow: "0 18px 44px rgba(0,0,0,.4)", border: "4px solid #0f172a", background: "#EEF4FF", cursor: "zoom-out" }
+              : { display: "block", height: "100%", width: "auto", maxWidth: "100%", objectFit: "contain", borderRadius: 22, boxShadow: "0 18px 44px rgba(0,0,0,.4)", border: "5px solid #0f172a", background: "#EEF4FF", cursor: "zoom-in", boxSizing: "border-box", animation: "tpIn .3s ease" }} />
+          {zoom && <div style={{ textAlign: "center", fontSize: 11.5, opacity: .7, marginTop: 8 }}>לחצו על המסך כדי לחזור לגודל רגיל</div>}
         </div>
       </div>
+      {!zoom && <div style={{ textAlign: "center", fontSize: 11.5, opacity: .75, padding: "2px 0 0" }}>🔍 לחצו על המסך להגדלה · החליקו לצדדים למסך הבא</div>}
       <div ref={thumbs} className="tp-desk-only" style={{ gap: 6, overflowX: "auto", padding: "8px 12px 0", scrollbarWidth: "none" }}>
         {APP_GALLERY.map((x, k) => <button key={x[1]} data-on={k === i ? "1" : "0"} onClick={() => setI(k)} aria-label={x[2]} style={{ flexShrink: 0, width: 38, height: 66, borderRadius: 8, overflow: "hidden", padding: 0, border: k === i ? "2.5px solid #67E8F9" : "2px solid rgba(255,255,255,.25)", background: "#fff", cursor: "pointer", opacity: k === i ? 1 : .7 }}><img src={tourSrc(x[1])} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} /></button>)}
       </div>
