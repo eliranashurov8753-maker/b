@@ -560,7 +560,7 @@ function SignupIntro() {
     </div>
   );
 }
-const APP_VERSION = "29.9.26-l"; // מופיע בתחתית מסך הכניסה — לבדוק שהעדכון עלה
+const APP_VERSION = "29.9.26-m"; // מופיע בתחתית מסך הכניסה — לבדוק שהעדכון עלה
 const LP = { navy: "#0A2A7A", blue: "#1463FF", orange: "#12C2EE", pink: "#1463FF", soft: "#F2F6FF" }; // accent: טורקיז → כחול
 const ctaStyle = (big) => ({ border: "none", background: "linear-gradient(135deg, #22D3EE 0%, #1463FF 60%, #0A4BDB 100%)", color: "#fff", fontWeight: 800, fontSize: big ? 18 : 15, padding: big ? "16px 28px" : "12px 20px", borderRadius: 14, cursor: "pointer", boxShadow: "0 8px 24px rgba(20,99,255,.35)", fontFamily: "inherit" });
 function PhoneMock({ items: itemsIn, title, store }) {
@@ -1204,16 +1204,73 @@ const SIGNUP_EASY = [
 const PREMIUM_FEAT = { "ליקוט ומשלוחים": 1, "סריקת חשבוניות": 1, "דוח רווח חודשי": 1, "מועדון לקוחות": 1 };
 // ================= הסבר קולי בהרשמה (קול עברי מובנה בטלפון — בלי קובצי שמע) =================
 const VOICE_SCRIPT = [["👋", "שלום! אם אתם ספקים שמוכרים סחורה לעסקים, ואתם עדיין מקבלים הזמנות בטלפון או בוואטסאפ, בי טו בי פלוס נבנתה בדיוק בשבילכם. בשתי דקות הקרובות אסביר לכם בדיוק מה אתם מקבלים מאיתנו.", "מקבלים הזמנות בטלפון ובוואטסאפ? B2B+ נבנתה בדיוק בשבילכם.", null], ["🏪", "אתם מעצבים חנות דיגיטלית משלכם, עם הלוגו שלכם. את המוצרים מוסיפים ידנית, או פשוט סורקים חשבונית קנייה, וכל המוצרים שבחשבונית נכנסים לחנות אוטומטית. נשאר לכם רק להוסיף תמונות ומחיר מכירה. שולחים ללקוחות קישור בוואטסאפ, הם לוחצים עליו ומזמינים מהחנות שלכם מתי שנוח להם, עשרים וארבע שעות ביממה, כשכל המוצרים מוצגים עם תמונות ומחירים.", "חנות דיגיטלית משלכם — מוצרים ידנית או מסריקת חשבונית, והלקוחות מזמינים מקישור 24/7.", 0], ["📋", "כל הזמנה מגיעה אליכם עם התראה ועם פירוט מלא של המוצרים והכמויות שהלקוח הזמין. אתם רואים בכל רגע הזמנות חדשות שנכנסו, הזמנות שצריך ללקט, הזמנות שהנהג אסף, והזמנות שנמסרו בהצלחה. בלי טלפונים, בלי פתקים ובלי טעויות.", "כל הזמנה עם התראה ופירוט מלא — חדשות, לליקוט, בדרך ונמסרו.", 1], ["📦", "המלאי מתעדכן לבד כשמוסיפים מוצרים או סורקים חשבונית קנייה. הוא יורד עם כל הזמנה ועולה עם כל סחורה שנכנסת. ואם משהו עומד להיגמר, תקבלו התראה בזמן.", "המלאי מתעדכן לבד — יורד עם כל הזמנה, עולה עם כל סחורה, והתראה לפני שנגמר.", 2], ["📸", "ועכשיו הדבר שהכי חוסך זמן: מצלמים חשבונית מהספק שלכם, גם אם יש בה כמה דפים. המערכת קוראת לבד את שם הספק, המוצרים, הכמויות והמחירים. אתם רק קובעים מחיר מכירה ומוסיפים תמונה, והמוצרים עולים לחנות, המלאי מתעדכן, וההוצאה נרשמת בדוח. בלי להקליד שורה אחת.", "מצלמים חשבונית ספק — המוצרים עולים לחנות, המלאי מתעדכן וההוצאה נרשמת בדוח.", 3], ["📊", "כל החשבוניות שמורות ומסודרות לפי חודשים. בוחרים חודש ושנה, ורואים בדיוק כמה נכנס מהזמנות, כמה יצא על סחורה ומה נשאר רווח. ואפשר להוריד דוח לאקסל שמוכן לרואה החשבון.", "החשבוניות מסודרות לפי חודשים — הכנסות, הוצאות ורווח, ודוח לאקסל לרואה החשבון.", 4], ["🧾", "לכל הזמנה המערכת מנפיקה חשבונית מסודרת בלחיצה, עם פרטי העסק שלכם, ושולחים אותה ללקוח. רואים מי שילם, מי חייב וכמה, ומסמנים תשלום במזומן, באשראי, בצ'ק או בהעברה.", "חשבונית לכל הזמנה בלחיצה — ורואים מי שילם, מי חייב וכמה.", 5], ["👥", "יש לכם צוות עובדים? מלקטים, נהגים וסוכנים? לכל אחד מהם יש ממשק שמותאם לתפקיד שלו. המלקט רואה מה להכין ושוקל, הנהג רואה לאן לנסוע ומסמן שהמשלוח נמסר, והסוכן מזמין עבור הלקוחות שלו. כל עובד רואה רק את מה שמותאם לו, ואתם רואים הכל.", "מלקטים, נהגים וסוכנים — לכל אחד ממשק מותאם, ואתם רואים הכל.", 6], ["💬", "רוצים למכור יותר? שולחים מבצע לכל הלקוחות בלחיצה אחת. המערכת אפילו מציעה רעיונות למבצעים מתוך המוצרים שלכם. ויש גם צ'אט עם כל לקוח, במקום אחד.", "מבצע לכל הלקוחות בלחיצה, רעיונות מהמוצרים שלכם, וצ'אט עם כל לקוח.", 7], ["🏆", "ואם תרצו, אפשר להפעיל תוכנית יעדים ללקוחות שלכם: הלקוחות צוברים נקודות על כל הזמנה, ורואים כמה חסר להם לפרס שאתם בחרתם. זה נותן להם סיבה להזמין יותר.", "תוכנית יעדים (לבחירתכם) — הלקוחות צוברים נקודות ומזמינים יותר.", 8], ["🎁", "הכל עובד מהטלפון, בלי התקנה, בלי ציוד ובלי סוכן. ההרשמה לוקחת שתי דקות, והחודש הראשון עלינו. בלי כרטיס אשראי, ואפשר לבטל בכל עת.", "הכל מהטלפון, בלי התקנה ובלי סוכן. הרשמה ב-2 דקות, והחודש הראשון עלינו.", null], ["🚀", "לחצו על פתחו חנות בחינם, ותתחילו לקבל הזמנות מסודרות כבר היום!", "לחצו על ״פתחו חנות בחינם״ — ותתחילו לקבל הזמנות מסודרות כבר היום!", null]]; // [אייקון, טקסט לקול הגיבוי, כתובית, מספר הכלי ברשימה]
-function VoiceIntro({ onDone, onStep }) {
+// נגן ההסבר הקולי על מסך מלא: לכל חלק בהקלטה — ההמחשה שלו
+function VoiceIntroVisual() {
+  return <div style={{ textAlign: "center", padding: "10px 6px" }}>
+    <div style={{ display: "grid", gap: 8, maxWidth: 300, margin: "0 auto" }}>
+      {[["📞", "\"תרשום לי 3 ארגזים...\"", .2], ["💬", "\"שכחתי להזמין, אפשר להוסיף?\"", .7], ["📝", "פתקים, הקלטות וטעויות", 1.2]].map(([e, t, d]) => <div key={t} style={{ display: "flex", alignItems: "center", gap: 10, background: "#fff", borderRadius: 14, padding: "10px 12px", boxShadow: "0 6px 16px rgba(0,0,0,.12)", ...anim("tpIn", d) }}><span style={{ fontSize: 24 }}>{e}</span><span style={{ fontWeight: 700, fontSize: 14, color: C.ink, textDecoration: "line-through", textDecorationColor: C.red }}>{t}</span></div>)}
+    </div>
+    <div style={{ fontSize: 30, margin: "12px 0 6px", ...anim("tpPop", 1.8) }}>⬇</div>
+    <div style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "#fff", borderRadius: 18, padding: "10px 16px", boxShadow: "0 12px 26px rgba(0,0,0,.2)", ...anim("tpPop", 2.2) }}><img src={LOGO_IMG} alt="B2B+" style={{ width: 44, height: 44, borderRadius: 12 }} /><div style={{ textAlign: "right" }}><div style={{ fontWeight: 800, color: C.ink, fontSize: 17 }}><bdi dir="ltr">B2B+</bdi></div><div style={{ fontSize: 12, color: C.sub }}>הזמנות מסודרות. אוטומטית.</div></div></div>
+  </div>;
+}
+function VoiceOfferVisual() {
+  return <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 10, maxWidth: 320, margin: "0 auto" }}>
+    {[["📱", "הכל מהטלפון"], ["⚙️", "בלי התקנה"], ["🙅", "בלי סוכן"], ["⏱️", "הרשמה ב-2 דקות"], ["🎁", "החודש הראשון עלינו"], ["↩️", "ביטול בכל עת"]].map(([e, t], i) => <div key={t} style={{ background: "#fff", borderRadius: 16, padding: "14px 8px", textAlign: "center", boxShadow: "0 8px 18px rgba(0,0,0,.14)", ...anim("tpPop", .15 + i * .3) }}><div style={{ fontSize: 26 }}>{e}</div><div style={{ fontWeight: 800, fontSize: 13.5, color: C.ink, marginTop: 4 }}>{t}</div></div>)}
+  </div>;
+}
+function VoicePlayer({ k, st, mute, onToggle, onPrev, onNext, onClose, onCta }) {
+  const part = VOICE_SCRIPT[k]; const idx = part[3]; const f = idx != null ? FEATURE_TOUR[idx] : null;
+  const title = f ? f.title : k === 0 ? "מקבלים הזמנות בטלפון ובוואטסאפ?" : k === VOICE_SCRIPT.length - 2 ? "ההצעה שלנו" : "מתחילים עכשיו";
+  const icon = f ? f.icon : part[0];
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 130, background: "linear-gradient(180deg,#0A2A7A 0%,#1463FF 58%,#0A2A7A 100%)", color: "#fff", display: "flex", flexDirection: "column", direction: "rtl" }}>
+      <style>{STORY_CSS}</style>
+      <HeroWaves />
+      <div style={{ position: "relative", display: "flex", alignItems: "center", gap: 8, padding: "calc(10px + env(safe-area-inset-top, 0px)) 12px 6px" }}>
+        <span style={{ fontWeight: 800, fontSize: 15 }}>🔊 הסבר קולי</span>
+        <span style={{ fontSize: 12, fontWeight: 800, background: "rgba(0,0,0,.25)", borderRadius: 20, padding: "3px 9px" }}><bdi dir="ltr">{k + 1} / {VOICE_SCRIPT.length}</bdi></span>
+        {mute && <span style={{ fontSize: 11.5, fontWeight: 700, background: "rgba(0,0,0,.25)", borderRadius: 20, padding: "3px 9px" }}>🔇 כתוביות בלבד</span>}
+        <span style={{ flex: 1 }} />
+        <button onClick={onClose} aria-label="סגור" style={{ width: 36, height: 36, borderRadius: "50%", border: "none", background: "rgba(255,255,255,.2)", color: "#fff", fontSize: 16, cursor: "pointer" }}>✕</button>
+      </div>
+      <div style={{ position: "relative", display: "flex", gap: 3, padding: "4px 12px 8px" }}>{VOICE_SCRIPT.map((_, i) => <div key={i} style={{ flex: 1, height: 4, borderRadius: 4, background: i < k ? "#67E8F9" : i === k ? "#fff" : "rgba(255,255,255,.25)" }} />)}</div>
+      <div key={"t" + k} style={{ position: "relative", display: "flex", alignItems: "center", gap: 10, padding: "0 14px 8px", animation: "tpIn .35s ease" }}>
+        <span style={{ width: 46, height: 46, borderRadius: 14, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0, boxShadow: "0 8px 18px rgba(0,0,0,.2)" }}>{icon}</span>
+        <div style={{ fontWeight: 800, fontSize: 19, lineHeight: 1.25 }}>{title}</div>
+      </div>
+      <div style={{ position: "relative", flex: 1, minHeight: 0, overflowY: "auto", padding: "0 12px" }}>
+        <div key={"v" + k} style={{ maxWidth: 440, margin: "0 auto", animation: "tpIn .35s ease" }}>
+          {f ? (f.story ? f.story() : f.visual()) : k === 0 ? <VoiceIntroVisual /> : k === VOICE_SCRIPT.length - 2 ? <VoiceOfferVisual /> :
+            <div style={{ textAlign: "center", paddingTop: 20 }}><button onClick={onCta} style={{ ...ctaStyle(true), animation: "tpGlow 1.4s ease-in-out infinite" }}>🎁 פתחו חנות בחינם ←</button><div style={{ fontSize: 13.5, opacity: .9, marginTop: 10 }}>חודש ראשון חינם · בלי כרטיס אשראי</div></div>}
+        </div>
+      </div>
+      <div style={{ position: "relative", padding: "8px 12px 0" }}>
+        <div key={"c" + k} style={{ display: "flex", alignItems: "center", gap: 10, background: "#fff", color: C.ink, borderRadius: 16, padding: "10px 12px", animation: "tpIn .3s ease", boxShadow: "0 8px 20px rgba(0,0,0,.2)" }}>
+          <span style={{ fontSize: 22 }}>{part[0]}</span><span style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.5 }}>{part[2]}</span>
+        </div>
+      </div>
+      <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", gap: 14, padding: "10px 12px 6px" }}>
+        <button onClick={onPrev} disabled={k === 0} aria-label="הקודם" style={{ width: 44, height: 44, borderRadius: "50%", border: "1px solid rgba(255,255,255,.4)", background: "transparent", color: "#fff", fontSize: 20, cursor: "pointer", opacity: k === 0 ? .35 : 1 }}>›</button>
+        <button onClick={onToggle} aria-label={st === "playing" ? "השהה" : "המשך"} style={{ width: 58, height: 58, borderRadius: "50%", border: "none", background: "#fff", color: C.blue, fontSize: 24, cursor: "pointer", boxShadow: "0 10px 22px rgba(0,0,0,.3)" }}>{st === "playing" ? "⏸" : "▶"}</button>
+        <button onClick={onNext} disabled={k === VOICE_SCRIPT.length - 1} aria-label="הבא" style={{ width: 44, height: 44, borderRadius: "50%", border: "1px solid rgba(255,255,255,.4)", background: "transparent", color: "#fff", fontSize: 20, cursor: "pointer", opacity: k === VOICE_SCRIPT.length - 1 ? .35 : 1 }}>‹</button>
+      </div>
+      <div style={{ position: "relative", padding: "4px 12px calc(10px + env(safe-area-inset-bottom, 0px))" }}>
+        <button onClick={onCta} style={{ ...ctaStyle(false), width: "100%", maxWidth: 520, display: "block", margin: "0 auto", fontSize: 15.5, padding: "13px" }}>🎁 פתחו חנות בחינם — 2 דקות</button>
+      </div>
+    </div>
+  );
+}
+function VoiceIntro({ onDone, onStep, onCta }) {
   const [st, setSt] = useState("idle"); // idle | playing | paused | done
   const [k, setK] = useState(0); const [mute, setMute] = useState(false); // mute = הקול לא עובד → כתוביות בקצב קריאה
-  const audio = React.useRef(null); const recOk = React.useRef(!!VOICE_AUDIO); const [usingRec, setUsingRec] = useState(false);
+  const audio = React.useRef(null); const recOk = React.useRef(!!VOICE_AUDIO); const [usingRec, setUsingRec] = useState(false); const setOpenRef = React.useRef(() => {});
   useEffect(() => {
     if (!VOICE_AUDIO || typeof Audio === "undefined") { recOk.current = false; return; }
     const a = new Audio(); a.preload = "auto"; a.src = VOICE_AUDIO; audio.current = a;
     const idxAt = (t) => { let i = 0; VOICE_TIMES.forEach((x, n) => { if (t + 0.08 >= x) i = n; }); return i; };
     a.ontimeupdate = () => setK(idxAt(a.currentTime));
-    a.onended = () => { setSt("done"); setK(VOICE_SCRIPT.length - 1); if (onDone) onDone(); };
+    a.onended = () => { setSt("done"); setK(VOICE_SCRIPT.length - 1); setOpenRef.current(false); if (onDone) onDone(); };
     a.onerror = () => { recOk.current = false; };
     return () => { try { a.pause(); } catch (e) {} a.ontimeupdate = null; a.onended = null; };
   }, []);
@@ -1225,7 +1282,7 @@ function VoiceIntro({ onDone, onStep }) {
   const readMs = (t) => Math.max(4000, 1200 + t.length * 62); // זמן קריאה נוח לכל משפט
   const say = (idx, id) => {
     if (!alive.current || id !== run.current) return;
-    if (idx >= VOICE_SCRIPT.length) { setSt("done"); setK(VOICE_SCRIPT.length - 1); if (onDone) onDone(); return; }
+    if (idx >= VOICE_SCRIPT.length) { setSt("done"); setK(VOICE_SCRIPT.length - 1); setOpenRef.current(false); if (onDone) onDone(); return; }
     setK(idx);
     const t0 = Date.now(); const minMs = readMs(VOICE_SCRIPT[idx][2]);
     const next = (delay) => { clearTimeout(timer.current); timer.current = setTimeout(() => { if (alive.current && id === run.current) say(idx + 1, id); }, Math.max(0, delay)); };
@@ -1261,18 +1318,23 @@ function VoiceIntro({ onDone, onStep }) {
   const pause = () => { run.current++; clearTimeout(timer.current); try { synth && synth.cancel(); } catch (e) {} try { audio.current && audio.current.pause(); } catch (e) {} setSt("paused"); };
   const jump = (d) => { const nk = Math.min(VOICE_SCRIPT.length - 1, Math.max(0, k + d)); if (usingRec && audio.current) { audio.current.currentTime = VOICE_TIMES[nk] + 0.01; setK(nk); return; } run.current++; clearTimeout(timer.current); try { synth && synth.cancel(); } catch (e) {} setK(nk); if (st === "playing") { const id = ++run.current; setTimeout(() => say(nk, id), 60); } };
   const [e, , cap] = VOICE_SCRIPT[k]; const active = st === "playing" || st === "paused";
+  const [open, setOpen] = useState(false); // נגן על מסך מלא עם ההמחשות
+  const closePlayer = () => { pause(); setOpen(false); };
+  setOpenRef.current = setOpen;
   useEffect(() => { if (onStep) onStep(active ? VOICE_SCRIPT[k][3] : null); }, [k, active]);
   const smallBtn = { border: "1px solid rgba(255,255,255,.35)", background: "transparent", color: "#fff", borderRadius: 10, padding: "6px 10px", fontSize: 12.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" };
   return (
     <div style={{ marginTop: 14, background: "rgba(255,255,255,.12)", border: "1px solid rgba(255,255,255,.22)", borderRadius: 18, padding: 12 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <button onClick={() => (st === "playing" ? pause() : play(true))} aria-label={st === "playing" ? "השהה" : "השמע הסבר קולי"} style={{ width: 52, height: 52, borderRadius: "50%", border: "none", background: "#fff", color: C.blue, fontSize: 22, cursor: "pointer", flexShrink: 0, boxShadow: st === "playing" ? "0 0 0 6px rgba(103,232,249,.35)" : "0 8px 18px rgba(0,0,0,.25)", animation: st === "idle" ? "tpGlow 1.6s ease-in-out infinite" : "none" }}>{st === "playing" ? "⏸" : "▶"}</button>
+        <button onClick={() => { if (st === "playing") pause(); else { setOpen(true); play(true); } }} aria-label={st === "playing" ? "השהה" : "השמע הסבר קולי"} style={{ width: 52, height: 52, borderRadius: "50%", border: "none", background: "#fff", color: C.blue, fontSize: 22, cursor: "pointer", flexShrink: 0, boxShadow: st === "playing" ? "0 0 0 6px rgba(103,232,249,.35)" : "0 8px 18px rgba(0,0,0,.25)", animation: st === "idle" ? "tpGlow 1.6s ease-in-out infinite" : "none" }}>{st === "playing" ? "⏸" : "▶"}</button>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontWeight: 800, fontSize: 15 }}>🔊 הסבר קולי — 3 דקות על כל האפליקציה</div>
-          <div style={{ fontSize: 12.5, opacity: .85 }}>{st === "idle" ? "הגבירו את הווליום ולחצו ▶" : st === "done" ? "זהו! עכשיו רק נרשמים ↓" : `${k + 1} מתוך ${VOICE_SCRIPT.length}${mute ? " · כתוביות בלבד" : ""}`}</div>
+          <div style={{ fontSize: 12.5, opacity: .85 }}>{st === "idle" ? "הגבירו את הווליום ולחצו ▶ — עם המחשה לכל חלק" : st === "done" ? "זהו! עכשיו רק נרשמים ↓" : `${k + 1} מתוך ${VOICE_SCRIPT.length}${mute ? " · כתוביות בלבד" : ""}`}</div>
         </div>
         {active && <button onClick={() => { pause(); try { if (audio.current) audio.current.currentTime = 0; } catch (e) {} setK(0); setSt("idle"); }} aria-label="עצור" style={smallBtn}>⏹ עצור</button>}
       </div>
+      {open && active && <VoicePlayer k={k} st={st} mute={mute} onToggle={() => (st === "playing" ? pause() : play(true))} onPrev={() => jump(-1)} onNext={() => jump(1)} onClose={closePlayer} onCta={() => { closePlayer(); if (onCta) onCta(); }} />}
+      {!open && active && <button onClick={() => setOpen(true)} style={{ marginTop: 8, width: "100%", border: "none", background: "#fff", color: C.blue, fontWeight: 800, fontSize: 13.5, borderRadius: 12, padding: "9px", cursor: "pointer", fontFamily: "inherit" }}>📺 הצגת ההמחשות על מסך מלא</button>}
       {st === "idle" && !recOk.current && <div style={{ fontSize: 11.5, opacity: .8, marginTop: 8 }}>📱 באייפון: ודאו שהמתג בצד הטלפון <b>לא</b> על מצב שקט (כתום), אחרת לא יישמע קול.</div>}
       {st !== "idle" && <>
         <div style={{ display: "flex", gap: 3, marginTop: 10 }}>{VOICE_SCRIPT.map((_, i) => <div key={i} style={{ flex: 1, height: 4, borderRadius: 4, background: i <= k ? "#67E8F9" : "rgba(255,255,255,.22)" }} />)}</div>
@@ -1315,7 +1377,7 @@ function SignupPage({ state, setState, onLogin, onCancel, source, onLoginClick, 
             <h1 style={{ fontSize: "clamp(27px, 7vw, 38px)", fontWeight: 800, lineHeight: 1.15, margin: "12px 0 8px", letterSpacing: "-0.8px" }}>חוסכים זמן וכסף.<br /><span style={{ background: "linear-gradient(90deg,#67E8F9,#A5F3FC)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>מרוויחים יותר.</span></h1>
             <div style={{ fontSize: 15.5, opacity: .92, lineHeight: 1.6 }}>כל מה שספק צריך באפליקציה אחת — נוח לכם, ונוח ללקוחות שלכם.</div>
             <style>{STORY_CSS}</style>
-            <VoiceIntro onDone={() => setTimeout(toForm, 1200)} onStep={setVoiceHi} />
+            <VoiceIntro onDone={() => setTimeout(toForm, 1200)} onStep={setVoiceHi} onCta={() => setTimeout(toForm, 80)} />
             <button onClick={() => setGallery(0)} className="tp-click" style={{ width: "100%", marginTop: 16, display: "flex", alignItems: "center", gap: 12, textAlign: "right", border: "none", borderRadius: 18, padding: "10px 12px", cursor: "pointer", fontFamily: "inherit", color: C.ink, background: "linear-gradient(135deg,#FFFFFF,#E6F6FF)", boxShadow: "0 12px 26px rgba(0,0,0,.22)" }}>
               <span style={{ display: "flex", flexShrink: 0 }}>{["s01_home", "c03_order", "s06_scan"].map((f, k) => <img key={f} src={tourSrc(f)} alt="" onError={(e) => { e.currentTarget.style.display = "none"; }} style={{ width: 34, height: 60, objectFit: "cover", objectPosition: "top", borderRadius: 7, border: "2px solid #fff", boxShadow: "0 4px 10px rgba(0,0,0,.2)", marginInlineStart: k ? -12 : 0, transform: `rotate(${(k - 1) * 6}deg)`, background: "#EEF4FF" }} />)}</span>
               <span style={{ flex: 1 }}><span style={{ display: "block", fontWeight: 800, fontSize: 15.5 }}>📱 סיור מלא באפליקציה</span><span style={{ display: "block", fontSize: 12.5, color: C.sub, marginTop: 2 }}>{APP_GALLERY.length} מסכים אמיתיים על מסך מלא — ספק, לקוחות וצוות</span></span>
