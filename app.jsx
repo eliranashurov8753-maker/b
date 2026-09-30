@@ -425,9 +425,9 @@ export default function App() {
   const [joinMode, setJoinMode] = useState(() => { try { return new URL(window.location.href).searchParams.has("join"); } catch { return false; } }); // קישור מפרסום: ?join=1
   const [joinSrc] = useState(readUtm);
   const [showProfile, setShowProfile] = useState(false); const [showBell, setShowBell] = useState(false); const [mgrIntent, setMgrIntent] = useState(null);
-  useEffect(() => { if (!document.getElementById("ff-rubik")) { const l = document.createElement("link"); l.id = "ff-rubik"; l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap"; document.head.appendChild(l); } if (!document.getElementById("tp-css")) { const st = document.createElement("style"); st.id = "tp-css"; st.textContent = ".tp-click{transition:transform .12s ease,box-shadow .12s ease}.tp-click:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(18,40,80,.14)!important}.tp-click:active{transform:translateY(0)}.tp-2col{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:20px}.tp-2eq{grid-template-columns:1fr 1fr}.tp-staff{grid-template-columns:1fr 1fr 1fr 1fr auto}.tp-fs{width:100%;max-width:520px;height:96vh;border-radius:28px}.tp-fs-wrap{padding:10px}@media(max-width:560px){.tp-fs{max-width:none;height:100%;border-radius:0}.tp-fs-wrap{padding:0}}.tp-desk-only{display:flex}@media(max-width:560px){.tp-desk-only{display:none}}.tp-2col-hide{display:none}@media(max-width:760px){.tp-2col-hide{display:block}.tp-2col{grid-template-columns:1fr}.tp-staff{grid-template-columns:1fr 1fr}}@media(max-width:560px){.tp-2eq{grid-template-columns:1fr}}"; document.head.appendChild(st); } }, []);
+  useEffect(() => { if (!document.getElementById("ff-rubik")) { const l = document.createElement("link"); l.id = "ff-rubik"; l.rel = "stylesheet"; l.href = "https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap"; document.head.appendChild(l); } if (!document.getElementById("tp-css")) { const st = document.createElement("style"); st.id = "tp-css"; st.textContent = ".tp-click{transition:transform .12s ease,box-shadow .12s ease}.tp-click:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(18,40,80,.14)!important}.tp-click:active{transform:translateY(0)}.tp-2col{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:20px}.tp-2eq{grid-template-columns:1fr 1fr}.tp-staff{grid-template-columns:1fr 1.4fr 1fr 1fr auto}.tp-fs{width:100%;max-width:520px;height:96vh;border-radius:28px}.tp-fs-wrap{padding:10px}@media(max-width:560px){.tp-fs{max-width:none;height:100%;border-radius:0}.tp-fs-wrap{padding:0}}.tp-desk-only{display:flex}@media(max-width:560px){.tp-desk-only{display:none}}.tp-2col-hide{display:none}@media(max-width:760px){.tp-2col-hide{display:block}.tp-2col{grid-template-columns:1fr}.tp-staff{grid-template-columns:1fr 1fr}}@media(max-width:560px){.tp-2eq{grid-template-columns:1fr}}"; document.head.appendChild(st); } }, []);
   if (!state) return <div dir="rtl" style={{ background: C.bg, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: C.sub }}>טוען…</div>;
-  if (session.kind === "none") { const storeSup = storeId ? state.suppliers.find((x) => x.id === storeId && x.status === "active") : null; if (joinMode && !storeSup) return <SupplierLanding state={state} setState={setState} onLogin={setSession} onBack={() => setJoinMode(false)} source={joinSrc} />; return storeSup ? <StorePage supplier={storeSup} state={state} setState={setState} onLogin={setSession} onHome={leaveStore} /> : <AuthScreen state={state} setState={setState} onLogin={setSession} />; }
+  if (session.kind === "none") { const storeSup = storeId ? state.suppliers.find((x) => x.id === storeId && x.status === "active") : null; if (joinMode && !storeSup) return <SupplierLanding state={state} setState={setState} onLogin={setSession} onBack={() => setJoinMode(false)} source={joinSrc} startSignup initDomains={readFields()} />; return storeSup ? <StorePage supplier={storeSup} state={state} setState={setState} onLogin={setSession} onHome={leaveStore} /> : <AuthScreen state={state} setState={setState} onLogin={setSession} />; }
   const save = async () => { try { await window.storage.set(KEY, JSON.stringify(state)); } catch {} setSaved(true); setTimeout(() => setSaved(false), 1600); };
   const isSuper = session.kind === "super";
   const isAgent = session.kind === "superagent";
@@ -518,7 +518,8 @@ export default function App() {
 /* ================= גיוס ספקים: דף נחיתה + הרשמה עצמית מהירה ================= */
 const autoApproveOn = (root) => !root || !root.settings || root.settings.autoApproveSuppliers !== false; // ברירת מחדל: פתוח מיד
 const readUtm = () => { try { const u = new URL(window.location.href); return u.searchParams.get("utm_source") || u.searchParams.get("src") || u.searchParams.get("ref") || ""; } catch (e) { return ""; } };
-const joinLink = (src) => { try { return window.location.origin + window.location.pathname + "?join=1" + (src ? "&utm_source=" + src : ""); } catch (e) { return "?join=1"; } };
+const joinLink = (src, field) => { const q = "?join=1" + (field ? "&field=" + field : "") + (src ? "&utm_source=" + src : ""); try { return window.location.origin + window.location.pathname + q; } catch (e) { return q; } };
+const readFields = () => { try { const v = new URL(window.location.href).searchParams.get("field") || ""; return v.split(",").map((x) => x.trim()).filter((x) => DOMAIN_BY_ID[x]); } catch (e) { return []; } };
 const makeSupplier = (f, { plan, active, source }) => ({
   id: "s" + Date.now(), name: f.name.trim(), ...domainPatch(f.domains), regions: f.regions || "", status: active ? "active" : "pending",
   owner: { email: f.email.trim(), password: f.password, contact: f.contact.trim(), phone: f.phone.trim() }, terms: { version: TERMS_VERSION, acceptedAt: Date.now() },
@@ -562,7 +563,7 @@ function SignupIntro() {
     </div>
   );
 }
-const APP_VERSION = "30.9.26-a"; // מופיע בתחתית מסך הכניסה — לבדוק שהעדכון עלה
+const APP_VERSION = "30.9.26-d"; // מופיע בתחתית מסך הכניסה — לבדוק שהעדכון עלה
 const LP = { navy: "#0A2A7A", blue: "#1463FF", orange: "#12C2EE", pink: "#1463FF", soft: "#F2F6FF" }; // accent: טורקיז → כחול
 const ctaStyle = (big) => ({ border: "none", background: "linear-gradient(135deg, #22D3EE 0%, #1463FF 60%, #0A4BDB 100%)", color: "#fff", fontWeight: 800, fontSize: big ? 18 : 15, padding: big ? "16px 28px" : "12px 20px", borderRadius: 14, cursor: "pointer", boxShadow: "0 8px 24px rgba(20,99,255,.35)", fontFamily: "inherit" });
 function PhoneMock({ items: itemsIn, title, store }) {
@@ -1543,9 +1544,9 @@ const SIGNUP_HIGHLIGHTS = [
   ["💬", "מבצעים וצ'אט עם הלקוחות", "מבצע לכל הלקוחות בלחיצה, וצ'אט אישי עם כל לקוח", 7],
   ["🏆", "תוכנית יעדים ללקוחות", "לבחירתכם — לקוחות צוברים נקודות ומזמינים יותר", 8],
 ];
-function SignupPage({ state, setState, onLogin, onCancel, source, onLoginClick, onMore }) {
+function SignupPage({ initDomains, state, setState, onLogin, onCancel, source, onLoginClick, onMore }) {
   const formRef = React.useRef(null); const [formSeen, setFormSeen] = useState(false); const [tour, setTour] = useState(null); const [gallery, setGallery] = useState(null); const [voiceHi, setVoiceHi] = useState(null); // הכלי שמדברים עליו עכשיו
-  const [doms, setDoms] = useState([]); const theme = React.useMemo(() => buildTheme(doms), [doms.join(",")]); // התחומים שהספק בחר → ההמחשות
+  const [doms, setDoms] = useState(() => (initDomains || []).slice()); const theme = React.useMemo(() => buildTheme(doms), [doms.join(",")]); // התחומים שהספק בחר → ההמחשות
   const voiceCtl = React.useRef(null);
   useEffect(() => { const el = formRef.current; if (!el || typeof IntersectionObserver === "undefined") return; const io = new IntersectionObserver((es) => setFormSeen(es[0].isIntersecting), { threshold: 0.15 }); io.observe(el); return () => io.disconnect(); }, []);
   const toForm = () => { const el = formRef.current; if (el && el.scrollIntoView) el.scrollIntoView({ behavior: "smooth", block: "start" }); };
@@ -1625,7 +1626,7 @@ function SignupPage({ state, setState, onLogin, onCancel, source, onLoginClick, 
     </ThemeCtx.Provider>
   );
 }
-function SupplierLanding({ state, setState, onLogin, onBack, source, startSignup }) {
+function SupplierLanding({ state, setState, onLogin, onBack, source, startSignup, initDomains }) {
   const [signup, setSignup] = useState(!!startSignup); // מכפתור ההרשמה במסך הכניסה → ישר לטופס
   const [login, setLogin] = useState(false); const [faq, setFaq] = useState(null);
   const open = () => { setSignup(true); setTimeout(() => { try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) {} }, 20); };
@@ -1654,7 +1655,7 @@ function SupplierLanding({ state, setState, onLogin, onBack, source, startSignup
           {!signup && <button onClick={open} style={{ ...ctaStyle(false), padding: "9px 16px", fontSize: 14 }}>הרשמה בחינם</button>}
         </div>
       </div>
-      {signup ? <SignupPage state={state} setState={setState} onLogin={onLogin} source={source} onCancel={() => (startSignup && onBack ? onBack() : setSignup(false))} onLoginClick={() => { setSignup(false); setLogin(true); }} onMore={() => setSignup(false)} />
+      {signup ? <SignupPage initDomains={initDomains} state={state} setState={setState} onLogin={onLogin} source={source} onCancel={() => (startSignup && onBack ? onBack() : setSignup(false))} onLoginClick={() => { setSignup(false); setLogin(true); }} onMore={() => setSignup(false)} />
       : login ? (
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "18px 14px 60px" }}>
           <div style={{ background: "#fff", border: `1px solid ${C.line}`, borderRadius: 20, padding: "22px 18px", boxShadow: "0 12px 40px rgba(15,31,77,.10)" }}>
@@ -1760,9 +1761,9 @@ function OnboardingCard({ state, setState, go }) {
 }
 // מנהל-על: גיוס ספקים — קישורים לפרסום, אישור אוטומטי ומקורות הגעה
 function RecruitPanel({ state, setState }) {
-  const [copied, setCopied] = useState(""); const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(""); const [open, setOpen] = useState(false); const [field, setField] = useState("");
   const auto = autoApproveOn(state);
-  const copy = (src) => { try { navigator.clipboard.writeText(joinLink(src)); } catch (e) {} setCopied(src || "main"); setTimeout(() => setCopied(""), 1600); };
+  const copy = (src) => { try { navigator.clipboard.writeText(joinLink(src, field)); } catch (e) {} setCopied(src || "main"); setTimeout(() => setCopied(""), 1600); };
   const sups = state.suppliers.filter((x) => !isDemoSup(x));
   const recent = sups.filter((x) => x.createdAt && Date.now() - x.createdAt < 30 * DAY_MS);
   const bySrc = {}; recent.forEach((x) => { const k = x.source || "direct"; bySrc[k] = (bySrc[k] || 0) + 1; });
@@ -1777,8 +1778,11 @@ function RecruitPanel({ state, setState }) {
       </button>
       {open && <div style={{ marginTop: 14, display: "grid", gap: 14 }}>
         <div>
-          <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 6 }}>קישור לדף ההרשמה (לשים במודעות)</div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}><input readOnly value={joinLink("")} onFocus={(e) => e.target.select()} dir="ltr" style={{ ...fieldStyle, flex: 1, minWidth: 220, background: "#F7F9FC" }} /><button onClick={() => copy("")} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 800, padding: "0 18px", borderRadius: 10, cursor: "pointer" }}>{copied === "main" ? "הועתק ✓" : "העתק"}</button><a href={joinLink("")} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", border: `1px solid ${C.line}`, borderRadius: 10, padding: "0 14px", color: C.blue, fontWeight: 700, textDecoration: "none" }}>צפייה ↗</a></div>
+          <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>קישור לדף ההרשמה (לשים במודעות)</div>
+          <div style={{ fontSize: 12.5, color: C.sub, marginBottom: 8 }}>נפתח ישר עמוד ההרשמה: "מה אתם מוכרים?", ההסבר הקולי וההמחשות.</div>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, fontSize: 13, fontWeight: 700, flexWrap: "wrap" }}>🎯 מודעה לתחום מסוים? <select value={field} onChange={(e) => setField(e.target.value)} style={{ ...fieldStyle, width: "auto", padding: "7px 10px" }}><option value="">כל התחומים (הספק יבחר)</option>{SUP_DOMAINS.map((d) => <option key={d.id} value={d.id}>{d.emoji} {d.label}</option>)}</select></label>
+          {field && <div style={{ fontSize: 12, color: C.greenDeep, marginBottom: 8 }}>✓ העמוד ייפתח עם "{(DOMAIN_BY_ID[field] || {}).label}" מסומן — וההמחשות כבר של התחום הזה</div>}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}><input readOnly value={joinLink("", field)} onFocus={(e) => e.target.select()} dir="ltr" style={{ ...fieldStyle, flex: 1, minWidth: 220, background: "#F7F9FC" }} /><button onClick={() => copy("")} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 800, padding: "0 18px", borderRadius: 10, cursor: "pointer" }}>{copied === "main" ? "הועתק ✓" : "העתק"}</button><a href={joinLink("", field)} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", border: `1px solid ${C.line}`, borderRadius: 10, padding: "0 14px", color: C.blue, fontWeight: 700, textDecoration: "none" }}>צפייה ↗</a></div>
           <div style={{ fontSize: 12.5, color: C.sub, marginTop: 8 }}>קישור נפרד לכל ערוץ — כדי לדעת מאיפה הגיע כל ספק:</div>
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>{SRC.map(([k, l]) => <button key={k} onClick={() => copy(k)} style={{ border: `1px solid ${C.line}`, background: copied === k ? C.greenSoft : "#fff", color: copied === k ? C.greenDeep : C.ink, borderRadius: 20, padding: "6px 12px", fontSize: 12.5, fontWeight: 700, cursor: "pointer" }}>{copied === k ? "✓ הועתק" : "🔗 " + l}</button>)}</div>
         </div>
@@ -1808,7 +1812,21 @@ function AuthScreen({ state, setState, onLogin }) {
       {mode === "menu" && (
         <div style={{ width: "100%", maxWidth: 380, display: "grid", gap: 12 }}>
           <BigBtn icon={<LogIn size={18} />} onClick={() => setMode("login")} primary>התחברות</BigBtn>
-          <button onClick={() => setMode("landing")} className="tp-click" style={{ border: "none", borderRadius: 14, padding: "14px 16px", cursor: "pointer", background: `linear-gradient(135deg, ${LP.orange}, ${LP.pink})`, color: "#fff", textAlign: "right", fontFamily: "inherit", boxShadow: "0 8px 22px rgba(20,99,255,.28)" }}><div style={{ fontWeight: 800, fontSize: 16 }}>🏪 הרשמת ספק — פתחו חנות בחינם</div><div style={{ fontSize: 12.5, opacity: .92, marginTop: 2 }}>חודש ניסיון · בלי כרטיס אשראי · הרשמה ב-2 דקות</div></button>
+          <button onClick={() => setMode("landing")} className="tp-click" style={{ position: "relative", overflow: "hidden", border: "none", borderRadius: 18, padding: "14px 14px 12px", cursor: "pointer", background: "linear-gradient(135deg, #22D3EE 0%, #1463FF 55%, #0A4BDB 100%)", color: "#fff", textAlign: "right", fontFamily: "inherit", boxShadow: "0 12px 28px rgba(20,99,255,.35)" }}>
+            <span style={{ position: "absolute", top: -40, left: -30, width: 130, height: 130, borderRadius: "50%", background: "radial-gradient(circle, rgba(255,255,255,.28), transparent 70%)" }} />
+            <span style={{ position: "relative", display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ width: 44, height: 44, borderRadius: 13, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0, boxShadow: "0 6px 14px rgba(0,0,0,.18)" }}>🏪</span>
+              <span style={{ flex: 1, minWidth: 0 }}>
+                <span style={{ display: "block", fontWeight: 800, fontSize: 16.5, lineHeight: 1.25 }}>הרשמת ספק — פתחו חנות בחינם</span>
+                <span style={{ display: "block", fontSize: 12.5, opacity: .92, marginTop: 2 }}>חודש ניסיון · בלי כרטיס אשראי · הרשמה ב-2 דקות</span>
+              </span>
+              <span style={{ fontSize: 22, fontWeight: 800, opacity: .9 }}>‹</span>
+            </span>
+            <span style={{ position: "relative", display: "block", marginTop: 10, paddingTop: 9, borderTop: "1px solid rgba(255,255,255,.25)", fontSize: 12.5, fontWeight: 700, opacity: .95 }}>לפני שנרשמים — תראו ותשמעו איך זה עובד:</span>
+            <span style={{ position: "relative", display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
+              {[["🔊", "הסבר קולי"], ["🎬", "המחשות מונפשות"], ["📱", "סיור באפליקציה"]].map(([e, t]) => <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: 5, background: "rgba(255,255,255,.18)", border: "1px solid rgba(255,255,255,.3)", borderRadius: 20, padding: "4px 10px", fontSize: 12, fontWeight: 800 }}>{e} {t}</span>)}
+            </span>
+          </button>
           <BigBtn icon={<UserPlus size={18} />} onClick={() => setMode("register")}>הרשמת עסק (לקוח)</BigBtn>
         </div>
       )}
@@ -3161,6 +3179,10 @@ function MgrOrders({ state, setState }) {
   const list = orders.filter((o) => inFilter(o) && inSearch(o));
   const assign = (oid, did) => setState((s) => ({ ...s, orders: s.orders.map((o) => o.id === oid ? { ...o, status: o.status === "new" ? "new" : "assigned", driverId: did } : o) }));
   const markPaid = (oid) => setState((s) => ({ ...s, orders: s.orders.map((o) => o.id === oid ? { ...o, paid: true } : o) }));
+  // אין נהג / המנהל בוחר לעשות לבד: המנהל הוא הנהג
+  const selfShip = (oid) => setState((s) => ({ ...s, orders: s.orders.map((o) => o.id === oid ? { ...o, status: "collected", driverId: "self" } : o) }));
+  const selfDeliver = (oid) => setState((s) => ({ ...s, orders: s.orders.map((o) => o.id === oid ? { ...o, status: "delivered", driverId: o.driverId || "self", deliveredAt: Date.now() } : o) }));
+  const pickers = state.staff.filter((x) => hasRole(x, "picker"));
   const slotDayLabel = (ds) => { const d = new Date(ds); return isNaN(d.getTime()) ? ds : d.toLocaleDateString("he-IL", { weekday: "long", day: "numeric", month: "numeric" }); };
   const setSlot = (oid, patch) => setState((s) => ({ ...s, orders: s.orders.map((o) => o.id === oid ? { ...o, ...patch, delivNotified: false } : o) }));
   const winPart = (o, i) => { const w = o.delivWindow || ""; return w.includes("-") ? w.split("-")[i] : ""; };
@@ -3201,10 +3223,19 @@ function MgrOrders({ state, setState }) {
                 <div style={{ marginTop: 8, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
                   <span style={{ fontSize: 12, color: C.sub }}>{o.driverId ? "שנה נהג:" : "הצב לנהג:"}</span>
                   {drivers.map((d) => { const on = o.driverId === d.id; return <button key={d.id} onClick={() => assign(o.id, d.id)} style={{ border: `1px solid ${C.plum}`, color: on ? "#fff" : C.plum, background: on ? C.plum : C.plumSoft, borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>{d.name}</button>; })}
+                  {(() => { const on = o.driverId === "self"; return <button onClick={() => assign(o.id, "self")} style={{ border: `1px solid ${C.blue}`, color: on ? "#fff" : C.blue, background: on ? C.blue : C.blueSoft, borderRadius: 8, padding: "4px 10px", fontSize: 12, fontWeight: 700, cursor: "pointer" }}>🙋 אני</button>; })()}
+                </div>
+              )}
+              {(o.status === "picked" || o.status === "assigned" || o.status === "collected") && (o.driverId === "self" || (!drivers.length && !o.driverId)) && (
+                <div style={{ marginTop: 8, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                  {o.status === "collected" ? <button onClick={() => selfDeliver(o.id)} style={{ border: "none", background: C.ok, color: "#fff", fontWeight: 800, fontSize: 13.5, padding: "9px 16px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><Check size={15} /> נמסר ללקוח · בוצע</button>
+                    : <button onClick={() => selfShip(o.id)} style={{ border: "none", background: GRAD, color: "#fff", fontWeight: 800, fontSize: 13.5, padding: "9px 16px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><Truck size={15} /> יצאתי למשלוח</button>}
+                  <span style={{ fontSize: 12, color: C.sub }}>{drivers.length ? "🙋 אתם מוסרים את ההזמנה הזו" : "אין נהגים בצוות — אתם הנהג"}</span>
                 </div>
               )}
               {o.status === "new" && (
-                <div style={{ marginTop: 8 }}>
+                <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                  {!pickers.length && <span style={{ fontSize: 12, color: C.sub, order: 2 }}>אין מלקטים בצוות — אתם המלקטים</span>}
                   <button onClick={() => setPickOrder(o)} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 800, fontSize: 13.5, padding: "9px 16px", borderRadius: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}><Scale size={15} /> לקט ושקול הזמנה</button>
                 </div>
               )}
@@ -4009,20 +4040,22 @@ function MgrClients({ state, setState }) {
 }
 function MgrStaff({ state, setState }) {
   const [f, setF] = useState({ name: "", role: "picker", email: "", password: "" }); const [err, setErr] = useState("");
+  const [sel, setSel] = useState(["picker"]); // תפקידים לעובד החדש — אפשר כמה
   const [edit, setEdit] = useState(null);
-  const add = () => { if (!f.name || !f.email || !f.password) return setErr("שם, אימייל וסיסמה חובה"); if ([...state.clients, ...state.staff].some((u) => u.email.trim().toLowerCase() === f.email.trim().toLowerCase())) return setErr("אימייל כבר קיים"); setState((s) => ({ ...s, staff: [...s.staff, { id: "u" + Date.now(), ...f }] })); setF({ name: "", role: "picker", email: "", password: "" }); setErr(""); };
+  const add = () => { if (!f.name || !f.email || !f.password) return setErr("שם, אימייל וסיסמה חובה"); if (!sel.length) return setErr("בחרו לפחות תפקיד אחד"); if ([...state.clients, ...state.staff].some((u) => u.email.trim().toLowerCase() === f.email.trim().toLowerCase())) return setErr("אימייל כבר קיים"); setState((s) => ({ ...s, staff: [...s.staff, { id: "u" + Date.now(), ...f, role: sel[0], roles: sel.slice(1) }] })); setF({ name: "", role: "picker", email: "", password: "" }); setSel(["picker"]); setErr(""); };
   const del = (id) => setState((s) => ({ ...s, staff: s.staff.filter((x) => x.id !== id) }));
   const eset = (k) => (e) => setEdit((s) => ({ ...s, [k]: e.target.value }));
   const saveEdit = () => { if (!edit.name || !edit.email || !edit.password) return; setState((s) => ({ ...s, staff: s.staff.map((u) => u.id === edit.id ? edit : u) })); setEdit(null); };
   return (
     <Panel style={{ boxShadow: SH }}>
       <SectionTitle icon={<ShieldCheck size={18} />}>צוות · מלקטים, נהגים וסוכנים</SectionTitle>
-      <div style={{ display: "grid", gap: 8, marginBottom: 16 }}>{state.staff.map((u) => (<div key={u.id} style={{ display: "flex", alignItems: "center", gap: 10, border: `1px solid ${C.line}`, borderRadius: 12, padding: "10px 14px", flexWrap: "wrap" }}><Badge tone={u.role === "agent" ? "plum" : u.role === "driver" ? "green" : "amber"}>{ROLE_LABEL[u.role]}</Badge>{(u.roles || []).map((r) => <Badge key={r}>+{ROLE_LABEL[r]}</Badge>)}<div style={{ flex: 1, minWidth: 140 }}><div style={{ fontWeight: 700 }}>{u.name}</div><div style={{ fontSize: 12, color: C.sub }}>{u.email}</div></div><button onClick={() => setEdit({ ...u })} style={miniBtn}><Pencil size={13} /> ערוך</button><button onClick={() => del(u.id)} style={{ border: "none", background: C.redSoft, color: C.red, borderRadius: 8, width: 32, height: 32, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Trash2 size={15} /></button></div>))}</div>
+      <div style={{ background: C.blueSoft, border: `1px solid #CFE0FF`, borderRadius: 12, padding: "10px 12px", fontSize: 13, lineHeight: 1.6, marginBottom: 12 }}>💡 <b>אין לכם צוות?</b> אין בעיה — כל התפקידים עליכם: במסך ההזמנות אתם מלקטים ושוקלים, יוצאים למשלוח ומסמנים "נמסר". <b>יש צוות?</b> כל עובד יכול לקבל כמה תפקידים — למשל מלקט וגם נהג.</div>
+      <div style={{ display: "grid", gap: 8, marginBottom: 16 }}>{state.staff.map((u) => (<div key={u.id} style={{ display: "flex", alignItems: "center", gap: 10, border: `1px solid ${C.line}`, borderRadius: 12, padding: "10px 14px", flexWrap: "wrap" }}>{[u.role, ...(u.roles || [])].filter((v, i, a) => v && a.indexOf(v) === i).map((r) => <Badge key={r} tone={r === "agent" ? "plum" : r === "driver" ? "green" : "amber"}>{ROLE_LABEL[r]}</Badge>)}<div style={{ flex: 1, minWidth: 140 }}><div style={{ fontWeight: 700 }}>{u.name}</div><div style={{ fontSize: 12, color: C.sub }}>{u.email}</div></div><button onClick={() => setEdit({ ...u })} style={miniBtn}><Pencil size={13} /> ערוך</button><button onClick={() => del(u.id)} style={{ border: "none", background: C.redSoft, color: C.red, borderRadius: 8, width: 32, height: 32, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><Trash2 size={15} /></button></div>))}</div>
       <div style={{ borderTop: `1px solid ${C.line}`, paddingTop: 14 }}>
         <div style={{ fontWeight: 700, marginBottom: 10, fontSize: 14 }}>פתיחת משתמש חדש לצוות</div>
         <div className="tp-staff" style={{ display: "grid", gap: 8, alignItems: "end" }}>
           <MiniField label="שם" value={f.name} onChange={(v) => setF({ ...f, name: v })} />
-          <label style={{ display: "block" }}><div style={{ fontSize: 12, color: C.sub, marginBottom: 3 }}>תפקיד</div><select value={f.role} onChange={(e) => setF({ ...f, role: e.target.value })} style={{ ...fieldStyle, padding: "8px" }}><option value="picker">מלקט</option><option value="driver">נהג</option><option value="agent">סוכן</option></select></label>
+          <div><div style={{ fontSize: 12, color: C.sub, marginBottom: 3 }}>תפקידים (אפשר כמה)</div><div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>{[["picker", "⚖️ מלקט"], ["driver", "🚚 נהג"], ["agent", "💼 סוכן"]].map(([r, l]) => { const on = sel.includes(r); return <button key={r} type="button" onClick={() => setSel((x) => on ? x.filter((y) => y !== r) : [...x, r])} style={{ border: `1.5px solid ${on ? C.blue : C.line}`, background: on ? C.blueSoft : "#fff", color: on ? C.blue : C.sub, borderRadius: 10, padding: "7px 9px", fontSize: 12.5, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>{on ? "✓ " : ""}{l}</button>; })}</div></div>
           <MiniField label="אימייל" value={f.email} onChange={(v) => setF({ ...f, email: v })} />
           <MiniField label="סיסמה" value={f.password} onChange={(v) => setF({ ...f, password: v })} />
           <button onClick={add} style={{ border: "none", background: C.green, color: "#fff", fontWeight: 700, padding: "10px 16px", borderRadius: 10, cursor: "pointer", height: 40 }}>הוסף</button>
